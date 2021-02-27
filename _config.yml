@@ -5,7 +5,7 @@ description       : "Saving things to lost thoughts."
 logo              : 'assets/images/lnz.png'
 favicon           : 'assets/images/lnz.png'
 url               : "https://lanzt.github.io" # the base hostname & protocol for your site e.g. "https://mmistakes.github.io"
-baseurl           : # the subpath of your site, e.g. "/blog"
+baseurl           : "/blog" # the subpath of your site, e.g. "/blog"
 repository        : "lanzt/lanz.github.io" # GitHub username/repo-name e.g. "mmistakes/minimal-mistakes"
 include           : ["_pages"]
 permalink         : /:categories/:title
