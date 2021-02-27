@@ -12,7 +12,7 @@ Máquina Windows nivel medio. Wowoworker, vamos a jugar mucho con repositorios y
 
 Creador: [ekenas](https://www.hackthebox.eu/profile/222808).
 
-<img src="https://raw.githubusercontent.com/lanzt/blog/main/assets/images/HTB/worker/270statistics.png" style="margin-left: 20px; zoom: 60%; width: 30%;" align=right/
+<img src="https://raw.githubusercontent.com/lanzt/blog/main/assets/images/HTB/worker/270statistics.png" style="margin-left: 20px; zoom: 60%; width: 30%;" align=right/>
 
 Linda maquina eh! 
 
