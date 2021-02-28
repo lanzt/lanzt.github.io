@@ -6,7 +6,7 @@
 
 <link rel="icon" href="{{ site.baseurl }}/assets/images/lanz2.png">
 
-<title>{{site.name}} | {{site.title}}</title>
+<title>{{page.title}} | {{site.name}}</title>
 
 {% seo %}
     
@@ -38,6 +38,7 @@ ga('send', 'pageview');
         <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.0.13/css/all.css" integrity="sha384-DNOHZ68U8hZfKXOrtjWvjxusGo9WQnrNx2sqG0tfsghAvtVlRW3tvkXWZh58N9jp" crossorigin="anonymous">
 	</noscript>
 
+
 <!-- Begin Sidebar Navigation
 ================================================== -->
 
@@ -50,11 +51,10 @@ ga('send', 'pageview');
 <nav id="menu">
     <ul>
         <h3>El tiempo a destiempo</h3>
-        <li><a href="{{ site.baseurl }}/">Home</a></li>
+        <li><a href="{{ site.baseurl }}/" style="color: rgb(255, 255, 255);">Volver a casa</a></li>
         <li><a href="{{ site.baseurl }}/categories#htb">HackTheBox</a></li>
         <li><a href="{{ site.baseurl }}/categories#thm">TryHackMe</a></li>
-        <li><a href="{{ site.baseurl }}/contact">Contact</a></li>       
-        <li><a href="{{ site.baseurl }}/about">About <span class="badge badge-primary">Memoirs Jekyll Theme</span></a></li>
+        <li><a href="{{ site.baseurl }}/about">Sobre ti</a></li>
     </ul>   
 </nav>
 

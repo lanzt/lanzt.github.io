@@ -8,6 +8,9 @@ url               : "https://lanzt.github.io" # the base hostname & protocol for
 baseurl           : # the subpath of your site, e.g. "/blog"
 repository        : "lanzt/blog" # GitHub username/repo-name e.g. "mmistakes/minimal-mistakes"
 include           : ["_pages"]
+google_analytics  : 'UA-xxxxxxxx-1'
+disqus            : 'demowebsite'
+mailchimp-list    : 'https://wowthemes.us11.list-manage.com/subscribe/post?u=8aeb20a530e124561927d3bd8&amp;id=8c3d2d214b'
 permalink         : /:categories/:title
 email             : lanz@lanz.com
 
@@ -19,7 +22,7 @@ authors:
     gravatar      : e56154546cf4be74e393c62d1ae9f9d4
     email         : lanz@lanz.com
     twitter       : https://twitter.com/lanz_qtE
-    description   : "I'm a shadow bro, just look between me."
+    description   : "I'm a shadow, just look between me."
 
 # Plugins
 plugins:
