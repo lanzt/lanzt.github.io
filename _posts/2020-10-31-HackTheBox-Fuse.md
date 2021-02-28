@@ -52,7 +52,7 @@ El escaneo va muy lento (realmente lento), una solucion podria ser cambiar `-T` 
 
 Ahora, con la función que creo [s4vitar](https://s4vitar.github.io/) podemos extraer los puertos del archivo **initScan** diciendole que nos los copie en la clipboard, evitando tener que escribirlos uno a uno para nuestro siguiente escaneo. La funcion simplemente en mi caso se agregaria al `$ ~/.bashrc`.
 
-![extractPorts](https://raw.githubusercontent.com/lanzt/blog/main/assets/images/HTB/servmon/extractPorts.jpg)
+![extractPorts](https://raw.githubusercontent.com/lanzt/blog/main/assets/images/HTB/magic/extractPorts.png)
 
 ```sh
 $ extractPorts initScan

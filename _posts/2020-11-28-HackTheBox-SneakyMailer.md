@@ -51,7 +51,7 @@ Pero va lento, agregando `-T` va más rápido. (Sin embargo es importante hacer 
 | -T5        | Forma de escanear súper rápido, (hace mucho ruido, pero al ser un entorno controlado no nos preocupamos) |
 | -n         | Evita que realice Host Discovery, en este caso el DNS (n)                                                |
 | -v         | Permite ver en consola lo que va encontrando                                                             |
-| -oG        | Guarda el output en formato grepeable (para usar una [función](https://raw.githubusercontent.com/lanzt/Writeups/master/HTB/Magic/images/extractPorts.png) de [S4vitar](https://s4vitar.github.io/) que me extrae los puertos)                  |
+| -oG        | Guarda el output en formato grepeable (para usar una [función](https://raw.githubusercontent.com/lanzt/blog/main/assets/images/HTB/magic/extractPorts.png) de [S4vitar](https://s4vitar.github.io/) que me extrae los puertos)                  |
 
 ```sh
 –» cat initScan 

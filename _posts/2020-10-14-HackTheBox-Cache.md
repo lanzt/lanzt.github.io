@@ -56,7 +56,7 @@ $ nmap -p- --open --min-rate=5000 -Pn -v 10.10.10.188 -oG initScan
 
 Con la función que creo [s4vitar](https://s4vitar.github.io/) podemos extraer los puertos del archivo **initScan** fácilmente, ya que nos los copia en la clipboard para tenerlos listos para el siguiente escaneo. Evitamos escribirlos uno a uno, en este caso se ve innecesario al ser solo 2 puertos, pero si tuviéramos muchos puertos nos sería de mucha utilidad (: hechenle un ojo. Solo deben agregarla en mi caso al `$ ~/.bashrc`.
 
-![extractPorts](https://raw.githubusercontent.com/lanzt/Writeups/master/HTB/ServMon/images/extractPorts.PNG)
+![extractPorts](https://raw.githubusercontent.com/lanzt/blog/main/assets/images/HTB/magic/extractPorts.png)
 
 Ahora que tenemos los puertos, haremos un escaneo para validar que versión y scripts maneja en este caso el puerto **HTTP** y el **SSH**.
 

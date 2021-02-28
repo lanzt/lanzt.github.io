@@ -53,7 +53,7 @@ En este caso no vamos a agregarle ningún argumento de más, ya que va bastante 
 | --open     | Solo los puertos que están abiertos                                                                      |
 | -Pn        | Evita que realice Host Discovery, como **ping** (P) y el **DNS** (n)                                     |
 | -v         | Permite ver en consola lo que va encontrando                                                             |
-| -oG        | Guarda el output en un archivo con formato grepeable para usar una [función](https://raw.githubusercontent.com/lanzt/Writeups/master/HTB/Magic/images/extractPorts.png) de [S4vitar](https://s4vitar.github.io/) que me extrae los puertos en la clipboard      |
+| -oG        | Guarda el output en un archivo con formato grepeable para usar una [función](https://raw.githubusercontent.com/lanzt/blog/main/assets/images/HTB/magic/extractPorts.png) de [S4vitar](https://s4vitar.github.io/) que me extrae los puertos en la clipboard      |
 
 ```sh
 –» cat initScan 

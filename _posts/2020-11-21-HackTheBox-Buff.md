@@ -44,7 +44,7 @@ $nmap -p- --open --min-rate=2000 -Pn -v 10.10.10.198
 | --min-rate | Indica que no queremos hacer peticiones menores al num que pongamos (i.e: --min-rate=5000)               |
 | -Pn        | Evita que realice Host Discovery, tales como Ping (P) y DNS (n)                                          |
 | -v         | Permite ver en consola lo que va encontrando                                                             |
-| -oG        | Guarda el output en un archivo (con formato grepeable, para usar una [función](https://raw.githubusercontent.com/lanzt/Writeups/master/HTB/Magic/images/extractPorts.png) de [S4vitar](https://s4vitar.github.io/) que me extrae los puertos en la clipboard)                              |
+| -oG        | Guarda el output en un archivo (con formato grepeable, para usar una [función](https://raw.githubusercontent.com/lanzt/blog/main/assets/images/HTB/magic/extractPorts.png) de [S4vitar](https://s4vitar.github.io/) que me extrae los puertos en la clipboard)                              |
 
 ![nmapinitscan](https://raw.githubusercontent.com/lanzt/blog/main/assets/images/HTB/buff/nmapinitscan.png)
 

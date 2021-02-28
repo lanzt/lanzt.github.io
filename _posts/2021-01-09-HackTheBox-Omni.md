@@ -52,7 +52,7 @@ Pero va algo lento, agregando `-T` va igual, podemos agregar `--min-rate` y ver 
 | --min-rate | Indica que no queremos hacer peticiones menores al num que pongamos                                      |
 | -Pn        | Evita que realice Host Discovery, como **ping** (P) y el **DNS** (n)                                     |
 | -v         | Permite ver en consola lo que va encontrando                                                             |
-| -oG        | Guarda el output en formato grepeable para usar una [función](https://raw.githubusercontent.com/lanzt/Writeups/master/HTB/Magic/images/extractPorts.png) de [S4vitar](https://s4vitar.github.io/) que me extrae los puertos en la clipboard      |
+| -oG        | Guarda el output en formato grepeable para usar una [función](https://raw.githubusercontent.com/lanzt/blog/main/assets/images/HTB/magic/extractPorts.png) de [S4vitar](https://s4vitar.github.io/) que me extrae los puertos en la clipboard      |
 
 ```sh
 –» cat initScan 
