@@ -24,7 +24,7 @@ body {
     line-height: 1.7;
     background: rgb(14,0,51);
     background: linear-gradient(90deg, rgba(14,0,51,1) 0%, rgba(57,0,121,1) 52%, rgba(60,3,129,1) 100%);
-    color: rgb(242, 190, 255);
+    color: rgb(250, 230, 255);
 }
 a {
     color: darken($primary, 24%);
@@ -153,7 +153,7 @@ img, img:hover {
             position: absolute;
             width: 18px;
             height: 2px;
-            background: #292C30;
+            background: #f200ff;
             border-radius: 1px;
         }
         &:before {
@@ -460,8 +460,8 @@ img, img:hover {
     }
     code {
         font-size: 15px;
-        color: #da9aff;
-        padding: 1px 5px 1px 5px;
+        color: #eac6ff;
+        padding: 2px 5px 2px 5px;
         border-radius: 4px;
         background-color: #290b31;
     }
