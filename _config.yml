@@ -4,8 +4,8 @@ title             : "Lanz blog"
 description       : "Saving things to lost thoughts."
 logo              : 'assets/images/lnz.png'
 favicon           : 'assets/images/lnz.png'
-url               : "https://lanzt.github.io" # the base hostname & protocol for your site e.g. "https://mmistakes.github.io"
-baseurl           : # the subpath of your site, e.g. "/blog"
+#url               : "https://lanzt.github.io" # the base hostname & protocol for your site e.g. "https://mmistakes.github.io"
+baseurl           : /blog # the subpath of your site, e.g. "/blog"
 repository        : "lanzt/blog" # GitHub username/repo-name e.g. "mmistakes/minimal-mistakes"
 include           : ["_pages"]
 google_analytics  : 'UA-xxxxxxxx-1'
