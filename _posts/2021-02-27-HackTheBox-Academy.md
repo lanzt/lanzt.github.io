@@ -1,8 +1,10 @@
 ---
 layout      : post
 title       : "HackTheBox - Academy"
+author      : lanz
 image       : https://raw.githubusercontent.com/lanzt/blog/main/assets/images/HTB/academy/297banner.png
 category    : [ htb ]
+tags        : [ logs, serialization, sudo, adm ]
 ---
 Máquina Linux nivel fácil. Pensaremos en bases de datos (eh?), deserializaremos mentes :o, jugaremos con archivos 'log' y romperemos un binario que nos dará en este caso dependencia de ser dueños del sistema :P
 
