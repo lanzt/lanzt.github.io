@@ -8,7 +8,7 @@ tags        : [ buffer-overflow ]
 ---
 Overflow pa toda la familia, nos moveremos a la función que contiene la flag.
 
-> You beat the first overflow challenge. Now overflow the buffer and change the return address to the flag function in this [program](https://raw.githubusercontent.com/lanzt/blog/main/assets/files/CTF/picoctf/2019/pwn/overflow1/vuln)? You can find it in /problems/overflow-1_1_e792baa0d29d24699530e6a26071a260 on the shell server. [Source](https://raw.githubusercontent.com/lanzt/blog/main/assets/files/CTF/picoctf/2019/pwn/overflow1/vuln.c).
+> You beat the first overflow challenge. Now overflow the buffer and change the return address to the flag function in this [program](https://github.com/lanzt/blog/blob/main/assets/files/CTF/picoctf/2019/pwn/overflow1/vuln)? You can find it in /problems/overflow-1_1_e792baa0d29d24699530e6a26071a260 on the shell server. [Source](https://github.com/lanzt/blog/blob/main/assets/files/CTF/picoctf/2019/pwn/overflow1/vuln.c).
 
 ### Spanish writeup
 
@@ -33,7 +33,7 @@ Woah, were jumping to 0x8048705 !
 
 Simplemente nos pide un input y nos dice la instrucción a la que hemos saltado. Así que cuando logremos llegar a la función `flag`, supongo que nos mostrara la dirección.
 
-Source [vuln.c](https://raw.githubusercontent.com/lanzt/blog/main/assets/files/CTF/picoctf/2019/pwn/overflow1/vuln.c).
+Source [vuln.c](https://github.com/lanzt/blog/blob/main/assets/files/CTF/picoctf/2019/pwn/overflow1/vuln.c).
 
 ```c
 #define BUFFSIZE 64
