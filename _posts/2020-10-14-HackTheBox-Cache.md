@@ -4,7 +4,7 @@ title       : "HackTheBox - Cache"
 author      : lanz
 image       : https://raw.githubusercontent.com/lanzt/blog/main/assets/images/HTB/cache/bannercache.png
 categories  : [ htb ]
-tags        : [ SQLi-blind, file-upload, Docker, memcached ]
+tags        : [ SQLi-blind, file-upload, docker, memcached ]
 ---
 Máquina Linux nivel medio. Veremos el uso del VirtualHosting, bypassearemos cositas e injectaremos otras. Tendremos que movernos mediante la cache en memoria y Docker para volvernos root.
 
