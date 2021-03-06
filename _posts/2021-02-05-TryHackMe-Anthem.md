@@ -1,6 +1,7 @@
 ---
 layout      : post
 title       : "TryHackMe - Anthem"
+author      : lanz
 image       : https://raw.githubusercontent.com/lanzt/blog/main/assets/images/THM/anthem/anthem_gif.gif
 category    : [ thm ]
 tags        : [ CMS, RDP, icacls ]
