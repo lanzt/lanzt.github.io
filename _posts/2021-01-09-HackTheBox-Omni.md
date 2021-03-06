@@ -1,6 +1,7 @@
 ---
 layout      : post
 title       : "HackTheBox - Omni"
+author      : lanz
 image       : https://raw.githubusercontent.com/lanzt/blog/main/assets/images/HTB/omni/banneromni.png
 category    : [ htb ]
 tags        : [ IoT, powershell ]
