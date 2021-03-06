@@ -1,6 +1,7 @@
 ---
 layout      : post
 title       : "HackTheBox - Doctor"
+author      : lanz
 image       : https://raw.githubusercontent.com/lanzt/blog/main/assets/images/HTB/doctor/278banner.png
 category    : [ htb ]
 tags        : [ SSTI, logs, splunk ]
