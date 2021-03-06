@@ -1,6 +1,7 @@
 ---
 layout      : post
 title       : "HackTheBox - Feline"
+author      : lanz
 image       : https://raw.githubusercontent.com/lanzt/blog/main/assets/images/HTB/feline/274banner.png
 categories  : [ htb ]
 tags        : [ docker, serialization, demon ]
