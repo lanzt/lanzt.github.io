@@ -1,8 +1,10 @@
 ---
 layout      : post
 title       : "HackTheBox - Cache"
+author      : lanz
 image       : https://raw.githubusercontent.com/lanzt/blog/main/assets/images/HTB/cache/bannercache.png
 categories  : [ htb ]
+tags        : [ SQLi-blind, file-upload, Docker, memcached ]
 ---
 Máquina Linux nivel medio. Veremos el uso del VirtualHosting, bypassearemos cositas e injectaremos otras. Tendremos que movernos mediante la cache en memoria y Docker para volvernos root.
 
@@ -24,21 +26,23 @@ Estando dentro de la máquina extraeremos data en caché que se está guardando 
 
 Tendremos 3 fases como casi siempre. Enumeración, explotación y escalada de privilegios :)
 
-1. [Enumeración](#enumeración)
-2. [Explotación](#explotación)
+1. [Enumeración](#enumeracion)
+2. [Explotación](#explotacion)
 3. [Escalada de privilegios](#escalada-de-privilegios)
 
-## Enumeración {#enumeración}
+...
+
+## Enumeración {#enumeracion}
 
 Iniciamos con un escaneo de servicios, usando `nmap` podemos validar que está corriendo cada puerto.
 
-```sh
+```bash
 $ nmap -p- --open -T5 -Pn -v 10.10.10.188 -oG initScan
 ```
 
 Pero este escaneo va algo lento, así que podemos agregarle otro parámetro y quitar él `-T`
 
-```sh
+```bash
 $ nmap -p- --open --min-rate=5000 -Pn -v 10.10.10.188 -oG initScan
 ```
 
@@ -60,7 +64,7 @@ Con la función que creo [s4vitar](https://s4vitar.github.io/) podemos extraer l
 
 Ahora que tenemos los puertos, haremos un escaneo para validar que versión y scripts maneja en este caso el puerto **HTTP** y el **SSH**.
 
-```sh
+```bash
 $ nmap -p22,80 -sC -sV 10.10.10.188 -oN portScan
 ```
 
@@ -104,9 +108,8 @@ Pues mirando nos dice que tiene otro proyecto llamado *Hospital Management Syste
 
 Si miramos los exploits de HMS, siempre los relacionan así:
 
-> 10.10.1.188/hospital/hospital/hms/cositasparomper.html
-
-> 10.10.1.188/hms/cositasparomper.html
+* `10.10.1.188/hospital/hospital/hms/cositasparomper.html`
+* `10.10.1.188/hms/cositasparomper.html`  
 
 Pero todas nos dan respuesta 404, así que debemos seguir enumerando.
 
@@ -120,7 +123,7 @@ Con base en lo que dice la página inicial y la página del autor haciendo alusi
 
 Haciendo la prueba con `cache.htb` me daba el mismo output de la página inicial.
 
-```sh
+```bash
 cat /etc/hosts
 
   10.10.10.188  cache.htb
@@ -128,7 +131,7 @@ cat /etc/hosts
 
 Pero indagando y leyendo, caí en cuenta que tenemos un "algo" relacionado a HMS, entonces podemos intentar que nuestra dirección IP **10.10.10.188** interprete su contenido con el hostname **hms.htb** en nuestro archivo `/etc/hosts`.
 
-```sh
+```bash
 cat /etc/hosts
 
   10.10.10.188  hms.htb
@@ -164,7 +167,7 @@ De la documentación hacen referencia a un archivo `http://hms.htb/admin.php` el
 
 Existen vaaaaaaaaaaarias vulnerabilidades en vaaaaaaaaarios archivos que maneja el servicio. Encontré un documento en el que relaciona la mayoría, es alucinante, emocionante y preocupante :D
 
-* [Reporte de vulnerabilidades.pdf](https://www.open-emr.org/wiki/images/1/11/Openemr_insecurity.pdf)
+* [Reporte de vulnerabilidades.pdf](https://www.open-emr.org/wiki/images/1/11/Openemr_insecurity.pdf).
 
 Bueno, empieza la locura :P
 
@@ -172,22 +175,26 @@ En el mismo `.pdf` la mayoría de cosas hermosas a explotar las podemos hacer so
 
 Alguna info sobre SQLi Blind: 
 
-1. [sql-injection/blind](https://portswigger.net/web-security/sql-injection/blind)
-2. [blind-sql-injection](https://medium.com/@nyomanpradipta120/blind-sql-injection-ac36d2c4daab)
-3. [blind-sql-injection-i-de-en-mysql](https://www.elladodelmal.com/2007/06/blind-sql-injection-i-de-en-mysql.html)
+1. [sql-injection/blind](https://portswigger.net/web-security/sql-injection/blind).
+2. [blind-sql-injection](https://medium.com/@nyomanpradipta120/blind-sql-injection-ac36d2c4daab).
+3. [blind-sql-injection-i-de-en-mysql](https://www.elladodelmal.com/2007/06/blind-sql-injection-i-de-en-mysql.html).
 4. [s4vitar](https://www.youtube.com/watch?v=DpLGgFrHe3o&t=1864) no puede faltar.
 
 Pues siguiendo el documento vemos que si hacemos una petición a alguna página que necesite autenticación, claramente nos debe salir un error o algo informándonos que no tenemos credenciales válidas.
 
 Ejemplo: 
 
-* Si hacemos una petición a `http://hms.htb/portal` y desde esa página (u otra) intentamos entrar a alguna página que si o si necesite autenticación (por ejemplo a `/portal/find_appt_popup_user.php`), pues nos va a salir un error y nos redirigirá a `/portal`. **Pero** si primero hacemos una petición a `http://hms.htb/portal/account/register.php` y posteriormente volvemos a hacer la petición a `/portal/find_appt_popup_user.php` nos dejará ver su respuesta :o 
+* Si hacemos una petición a `http://hms.htb/portal` y desde esa página (u otra) intentamos entrar a alguna página que si o si necesite autenticación (por ejemplo a `/portal/find_appt_popup_user.php`), pues nos va a salir un error y nos redirigirá a `/portal`. 
+
+**Pero** si primero hacemos una petición a `http://hms.htb/portal/account/register.php` y posteriormente volvemos a hacer la petición a `/portal/find_appt_popup_user.php` nos dejará ver su respuesta :o 
 
 Lo que hace la página `register.php` es que guarda 2 cookies, pero en este caso como si el usuario ya estuviera creado, pues nos aprovechamos de eso y usamos esas cookies para ingresar a alguna página que necesite autenticación.
 
 Como de nuestra enumeración inicial obtuvimos el nombre de la base de datos, algunas tablas y también algunos nombres de columnas. Pues podemos ahorrarnos la fase de descubrir eso e intentar sacar info de alguna tabla. 
 
-## Explotación
+...
+
+## Explotacion
 
 Me apoyé en el video de s4vitar para crear un exploit que me ayudara a explotar la vulnerabilidad, ya sabemos que tenemos una tabla llamada **users** (igual con el exploit podemos obtenerlos), será nuestro principal foco, queda dumpear la tabla a ver que data tiene.
 
@@ -224,7 +231,7 @@ salt = $2a$05$l2stlig6gtbeybf7takl6a$
 
 Pero revisando en la web tipos de hash, puede ser un **bcrypt** (por las iniciales, pero ningún identificador lo reconoce), solo que en la mayoría de los casos (sería muy loco donde nuestro hash no) también existen mayúsculas... Y en el que tenemos solo -tenemos- minúsculas... Jmmmmm.
 
-* Información sobre los [Hashes](https://hashcat.net/wiki/doku.php?id=example_hashes)
+* Información sobre los [Hashes](https://hashcat.net/wiki/doku.php?id=example_hashes).
 
 Fue todo un reto (más que todo por que tenía un signo mal en el script que no había captado y yo como loco buscando y releyendo cosas) pero logré encontrar la manera que me trajera la info tal como está en la tabla. Ya que nuestra anterior consulta no era sensible a mayúsculas o minúsculas. Intente poner en nuestra variable **dic** el abecedario en mayúscula pero daba igual, si encontraba la letra la traía en minúscula.
 
@@ -243,7 +250,7 @@ salt = $2a$05$l2XTLIG6GTBeyBf7TAKL6A$
 
 Claramente son muy diferentes con respecto a los otros que ya habíamos obtenido. Podemos usar de nuevo algún identificador de hashes, el cual nos confirma que es un hash bcrypt. Usaré **hashcat** para intentar crackearlo.
 
-```sh
+```bash
 $ hashcat -m 3200 -a 0 hash.txt /usr/share/wordlists/rockyou.txt
 ```
 
@@ -309,17 +316,17 @@ Enumerando el archivo `$ /etc/passwd` vemos 2 programas interesantes, **mysql** 
 
 Podríamos intentar con mysql ver si **luffy** está en la base de datos y obtener su password, pero no tendría sentido que (en caso de estar) la contraseña nos funcione, ya que sería una contraseña pero de *openemr* ósea del login y necesitamos una pero del sistema.
 
-Validando **memcached** por internet, la definición nos la da claramente el mismo [soporte](http://memcached.org/)
+Validando **memcached** por internet, la definición nos la da claramente el mismo [soporte](http://memcached.org/).
 
 > Sistema de almacenamiento en caché... Diseñado para acelerar las aplicaciones web dinámicas aliviando la carga de la base de datos.
 
 Pues esto ya suena raro e interesante. Previamente había visualizado con `$ netstat -a` que el puerto **11211** estaba a la escucha en local y siguiendo este informe (u otros) podemos ver que **memcached** usa ese puerto, los pasos para usarlo están en el mismo informe.
 
-* [Tutorial: Accessing-Memcached-from-the-command-line](https://techleader.pro/a/90-Accessing-Memcached-from-the-command-line)
+* [Tutorial: Accessing-Memcached-from-the-command-line](https://techleader.pro/a/90-Accessing-Memcached-from-the-command-line).
 
 Demosle 
 
-```sh
+```bash
 $ telnet localhost 11211
 ...
 ...
@@ -379,6 +386,8 @@ Obtuvimos una contraseña guardada en memoria del usuario **luffy**, validemos s
 
 ![revshsuluffy](https://raw.githubusercontent.com/lanzt/blog/main/assets/images/HTB/cache/revshsuluffy.png)
 
+...
+
 ## Escalada de privilegios
 
 Muy bien, muy bien... Vemos que tiene asignado el grupo **docker**, a hacer research y ver como podemos explotar eso... Hay varios blogs donde nos explican como vulnerar esto, necesitamos saber que `images` tiene docker, para posteriormente ejecutar un truco con el cual docker permite crear una montura de un archivo o directorio, y pues como para ejecutar **docker** se necesita ser administrador o estar en el grupo **docker** (que sería lo mismo que ser administrador)... Entonces lo que ejecutemos con docker será llevado a cabo con permisos de administrador (:
@@ -387,13 +396,13 @@ Muy bien, muy bien... Vemos que tiene asignado el grupo **docker**, a hacer rese
 
 Algunos artículos que encontré explicando la vulnerabilidad:
 
-* [root-your-docker-host-in-10-seconds-for-fun-and-profit](https://www.electricmonk.nl/log/2017/09/30/root-your-docker-host-in-10-seconds-for-fun-and-profit/)
-* [privilege-escalation-via-docker](https://fosterelli.co/privilege-escalation-via-docker)
-* [the-docker-group-and-privilege-escalation](https://blog.martiert.com/the-docker-group-and-privilege-escalation/)
+* [root-your-docker-host-in-10-seconds-for-fun-and-profit](https://www.electricmonk.nl/log/2017/09/30/root-your-docker-host-in-10-seconds-for-fun-and-profit/).
+* [privilege-escalation-via-docker](https://fosterelli.co/privilege-escalation-via-docker).
+* [the-docker-group-and-privilege-escalation](https://blog.martiert.com/the-docker-group-and-privilege-escalation/).
 
 Entonces... Necesitamos una imagen, podemos ver las que tiene la máquina con: 
 
-```sh
+```bash
 $ docker images
 ```
 
@@ -401,10 +410,10 @@ $ docker images
 
 Y ahora podemos decirle a docker que nos cree una montura en la que (mientras estemos conectados a docker) nos haga un espejo de (en este caso) toda la raíz del sistema en el directorio `/tmp/`, por lo que al ingresar a *tmp/* veremos la copia de los archivos y podremos recorrerla con una Shell :) como **root**
 
-* [Documentación **docker run**](https://docs.docker.com/engine/reference/run/)
-* [Info sobre **volumes**](https://docs.docker.com/storage/volumes/)
+* [Documentación **docker run**](https://docs.docker.com/engine/reference/run/).
+* [Info sobre **volumes**](https://docs.docker.com/storage/volumes/).
 
-```sh
+```bash
 $ docker run -it --volume /:/tmp/ ubuntu:latest
 ```
 
@@ -425,7 +434,7 @@ Pero no tenemos una Shell interactiva, acá podríamos hacer varias cosas, pasar
 
 Acá el script que automatiza la subida del archivo y genera la petición para obtener la Shell. Así que debes ponerte en escucha y ejecutarlo
 
-> [fileup2revsh.py](https://github.com/jntxJ/Writeups/blob/master/HTB/Cache/fileup2revsh.py)
+> [fileup2revsh.py](https://github.com/jntxJ/Writeups/blob/master/HTB/Cache/fileup2revsh.py).
 
 ...
 
