@@ -32,13 +32,13 @@ Démosle candela.
 
 Tendremos como siempre 3 fases:
 
-1. [Enumeración](#enumeración)
-2. [Explotación](#explotación)
+1. [Enumeración](#enumeracion)
+2. [Explotación](#explotacion)
 3. [Escalada de privilegios](#escalada-de-privilegios)
 
 ...
 
-## Enumeración [#](#enumeración) {#enumeración}
+## Enumeración [#](#enumeracion) {#enumeracion}
 
 Empezaremos realizando un escaneo de puertos sobre la máquina para saber que servicios está corriendo.
 
@@ -418,7 +418,7 @@ Después de mucha lectura sobre, `pipelines`, `builds` y demás cositas, entend�
 
 ...
 
-## Explotación [#](#explotación) {#explotación}
+## Explotación [#](#explotacion) {#explotacion}
 
 Inicialmente había probado simplemente en uno de los **repositorios** agregar un archivo y hacer un `commit`, pero obtenía el siguiente error:
 
