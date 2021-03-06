@@ -1,8 +1,10 @@
 ---
 layout      : post
 title       : "HackTheBox - OpenAdmin"
+author      : lanz
 image       : https://raw.githubusercontent.com/lanzt/blog/main/assets/images/HTB/openadmin/banneropenadmin.PNG
 categories  : [ htb ]
+tags        : [ Apache, sudo ]
 ---
 Maquina Linux nivel fácil. Jugaremos con inspección de código, peticiones web, movimientos internos con Apache, con SSH keys y romperemos /bin/nano.
 
@@ -10,17 +12,17 @@ Maquina Linux nivel fácil. Jugaremos con inspección de código, peticiones web
 
 Esta máquina es 90% de enumeración, veamos cuáles son los pasos que seguiremos.
 
-- [Enumeración](#enumeración)
-- [Explotación](#explotación)
+- [Enumeración](#enumeracion)
+- [Explotación](#explotacion)
 - [Escalada de privilegios](#escalada-de-privilegios)
 
 ...
 
-## Enumeración {#enumeración}
+## Enumeración {#enumeracion}
 
 Empecemos con el escaneo de red, usaremos `nmap`, el cual nos dará información sobre que puertos y servicios están corriendo sobre la máquina.
 
-```sh
+```bash
 $ nmap -sC -sV -p- --open -T4 -oN initialScan 10.10.10.171
 ```
 
@@ -47,7 +49,7 @@ Ok... **. _.** nos muestra la página por default de apache, así que usaremos h
 
 En este caso usaremos `dirsearch`.
 
-```sh
+```bash
 $ dirsearch -u http://10.10.10.171/ -e html,php,js,json
 ```
 
@@ -75,7 +77,7 @@ La página ya nos da información importante, estamos corriendo un servicio llam
 
 ...
 
-## Explotación {#explotación}
+## Explotación {#explotacion}
 
 Después de varios hoyos de dudas y sin saber que hacer con la interfaz, buscamos en Linux a través de una tool muy buena **searchsploit** que directamente es **exploidb** pero en la terminal. 
 
@@ -120,7 +122,7 @@ Hay 3 usuarios disponibles,
 
 Bien, conseguimos una pw. Veamos si es de alguno de los dos usuarios por medio de SSH
 
-```sh
+```bash
 $ ssh jimmy@10.10.10.171
 ```
 
@@ -128,7 +130,7 @@ Sip!! Entramos al perfil de **jimmy**, sigamos enumerando. No pondre todas las t
 
 Si utilizamos el comando `id` notamos que estamos dentro del grupo **internal**. Veamos desde la raiz del sistema que archivos son de jimmy y estan asignados al grupo internal
 
-```sh
+```bash
 $ find / -user jimmy -group internal
 ```
 
@@ -142,13 +144,13 @@ Si conseguimos entrar a `/main.php` se ejecutara una consulta al **id_rsa (priva
 
 Arriba en el exploit se usaba *curL* para enviar la data a una URL especificada. ¿Acá no es acaso lo mismo? ¿solo que en vez de data queremos entrar en un archivo dentro de una carpeta?
 
-```sh
+```bash
 $ curl http://10.10.10.171/internal/main.php
 ```
 
 Pero esto simplemente nos muestra:
 
-```sh
+```bash
 ...
 <title>404 Not Found</title>
 </head><body>                                                                         
@@ -192,6 +194,8 @@ Al ejecutarlo obtenemos el hash que en este caso con `john` nos ayuda perfecto.
 Obtenemos la password, intentando de nuevo la conexion, logramos entrar como **joanna**.
 
 ![sshconecttojoanna](https://raw.githubusercontent.com/lanzt/blog/main/assets/images/HTB/openadmin/sshconecttojoanna.png)
+
+...
 
 ## Escalada de privilegios {#escalada-de-privilegios}
 
