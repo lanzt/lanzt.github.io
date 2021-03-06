@@ -1,14 +1,16 @@
 ---
 layout      : post
 title       : "HackTheBox - Unbalanced"
+author      : lanz
 image       : https://raw.githubusercontent.com/lanzt/blog/main/assets/images/HTB/unbalanced/268banner.png
 category    : [ htb ]
+tags        : [ rsync, XML, XPath, squid, PiHole, Docker ]
 ---
 Máquina Linux nivel difícil. Nos enfrentaremos con encriptación, mucho jugueteo con XML (romperemos una clave y encontraremos un XPATH injection que automatizaremos para extraer credenciales), explotaremos PiHole y sobre todo, enumeraremos demasiado (:
 
 ![unbalancedHTB](https://raw.githubusercontent.com/lanzt/blog/main/assets/images/HTB/unbalanced/unbalancedHTB.png)
 
-## TL;DR (Spanish writeup)
+### TL;DR (Spanish writeup)
 
 Que bonita experiencia, primer maquina nivel difícil para mí:
 
@@ -29,17 +31,17 @@ Esto en <<pocas>> palabras, prendámosle candela...
 
 Tendremos 3 fases. Enumeración, explotación y escalada de privilegios (:
 
-1. [Enumeración](#enumeración)
-2. [Explotación](#explotación)
+1. [Enumeración](#enumeracion)
+2. [Explotación](#explotacion)
 3. [Escalada de privilegios](#escalada-de-privilegios)
 
 ...
 
-## Enumeración [#](#enumeración) {#enumeración}
+## Enumeración [#](#enumeracion) {#enumeracion}
 
 Empezaremos realizando un escaneo de puertos sobre la máquina para saber que servicios está corriendo.
 
-```sh
+```bash
 –» nmap -p- --open -v -Pn 10.10.10.200 -oG initScan
 ```
 
@@ -55,7 +57,7 @@ En este caso no vamos a agregarle ningún argumento de más, ya que va bastante 
 | -v         | Permite ver en consola lo que va encontrando                                                             |
 | -oG        | Guarda el output en un archivo con formato grepeable para usar una [función](https://raw.githubusercontent.com/lanzt/blog/main/assets/images/HTB/magic/extractPorts.png) de [S4vitar](https://s4vitar.github.io/) que me extrae los puertos en la clipboard      |
 
-```sh
+```bash
 –» cat initScan 
 # Nmap 7.80 scan initiated Thu Nov 12 25:25:25 2020 as: nmap -p- --open -v -Pn -oG initScan 10.10.10.200
 # Ports scanned: TCP(65535;1-65535) UDP(0;) SCTP(0;) PROTOCOLS(0;)
@@ -73,7 +75,7 @@ Muy bien, tenemos los siguientes servicios arriba:
 
 Hagamos nuestro escaneo de versiones y scripts en base a cada puerto, con ello obtenemos información más detallada de cada servicio:
 
-```sh
+```bash
 –» nmap -p 22,873,3128 -sC -sV 10.10.10.200 -oN portScan
 ```
 
@@ -84,7 +86,7 @@ Hagamos nuestro escaneo de versiones y scripts en base a cada puerto, con ello o
 | -sV       | Nos permite ver la versión del servicio                |
 | -oN       | Guarda el output en un archivo                         |
 
-```sh
+```bash
 –» cat portScan 
 # Nmap 7.80 scan initiated Thu Nov 12 25:25:25 2020 as: nmap -p 22,873,3128 -sC -sV -oN portScan 10.10.10.200
 Nmap scan report for 10.10.10.200
@@ -125,7 +127,7 @@ Buscando por internet encontramos el siempre confiable cheatsheet de [HackTricks
 
 Si nos conectamos mediante `netcat` nos responderá con la versión del servicio, debemos enviar ese mismo output para que el server nos entable una conexión. Después validamos si existe algún recurso alojado.
 
-```sh
+```bash
 –» nc -vn 10.10.10.200 873
 (UNKNOWN) [10.10.10.200] 873 (rsync) open
 @RSYNCD: 31.0      # Esta es la respuesta :P
@@ -139,7 +141,7 @@ Bien, ahora podemos usar otra utilidad que nos permita ver más a fondo el conte
 
 > **EncFS** es un sistema criptográfico de archivos gratuito. Trabaja de forma transparente, utilizando un directorio arbitrario como almacenamiento para los archivos cifrados. [Wikipedia](https://es.wikipedia.org/wiki/EncFS)
 
-```sh
+```bash
 –» rsync -av --list-only rsync://10.10.10.200/conf_backups
 receiving incremental file list
 drwxr-xr-x          4,096 2020/04/04 10:05:32 .
@@ -166,7 +168,7 @@ drwxr-xr-x          4,096 2020/04/04 10:05:32 .
 
 Ahora que sabemos que si tiene contenido, intentemos copiarlo a nuestra máquina para después jugar :P
 
-```sh
+```bash
 –» mkdir rsync_files
 –» cd rsync_files
 –» rsync -av rsync://10.10.10.200/conf_backups .
@@ -178,7 +180,7 @@ De estos pasos podemos obtener info tal como fecha y tamaño del archivo. Veamos
 
 Entre ellos hay un archivo oculto:
 
-```sh
+```bash
 –» ls -a
 .                                               cwJnkiUiyfhynK2CvJT7rbUrS3AEJipP7zhItWiLcRVSA1  Ni8LDatT134DF6hhQf5ESpo5
 ..                                              dF2GU58wFl3x5R7aDE6QEnDj                        Nlne5rpWkOxkPNC15SEeJ8g,
@@ -240,14 +242,14 @@ Buscando hay varias cosas interesantes, entre ellas destaco:
 
 ...
 
-## Explotación [#](#explotación) {#explotación}
+## Explotación [#](#explotacion) {#explotacion}
 
 Siguiendo la idea del post, usa un script llamado **encfs2john.py**, encontré [este en GitHub](https://github.com/truongkma/ctf-tools/blob/master/John/run/encfs2john.py), usémoslo.
 
 * Básicamente toma la carpeta donde esté el archivo `encfs6.xml` y extrae varios argumentos, que con ellos armara el **hash** que intentaremos crackear con **john**.
 * Juega con bytes y base64 para ir almacenando la data desencriptada.
 
-```sh
+```bash
 –» wget https://raw.githubusercontent.com/truongkma/ctf-tools/master/John/run/encfs2john.py
 –» chmod +x encfs2john.py
 –» python encfs2john.py rsync_files/ > encfs.xml.john
@@ -266,7 +268,7 @@ Session completed
 
 Peeeeeeerfecto, tenemos en texto plano el resultado: **bubblegum**. Ahora a desencriptar los archivos, siguiendo [esta guia](https://askmeaboutlinux.com/2014/01/25/how-to-use-encfs-on-linux-to-encrypt-data-and-decrypt-data-in-a-folder/) en un punto nos enseña como podríamos hacerlo. (<<Monta>> una montura mientras manejemos los archivos).
 
-```sh
+```bash
 –» encfs ~/rsync_files/ ~/rsync_plain   #Con esto le indicamos que el resultado lo guarde en la carpeta `rsync_plain` (tienen que ser rutas absolutas).
 Contraseña EncFS:
 –» ls rsync_plain/
@@ -292,7 +294,7 @@ Listo, recorramos los archivos y ver que cositas interesantes hay (:
 
 Tenemos un archivo que se relaciona con lo que encontramos en el escaneo inicial: `squid.conf`. 
 
-```sh
+```bash
 –» cat squid.conf
 #       WELCOME TO SQUID 4.6
 #       ----------------------------
@@ -315,7 +317,7 @@ Tenemos un archivo que se relaciona con lo que encontramos en el escaneo inicial
 
 Es bastante grande, pero la mayoría (según entiendo) son líneas comentadas, hagamos que nos muestre solo las lineas sin **#**, ósea las que no estan comentadas :P
 
-```sh
+```bash
 –» cat squid.conf | grep -v "#" | uniq
 acl SSL_ports port 443
 acl CONNECT method CONNECT
@@ -365,7 +367,7 @@ Inicialmente no había entendido en enfoque y agregue el dominio al `/etc/hosts`
 
 Le indicamos que nos muestre lo que vaya pasando (-v: verbose) al conectarnos al dominio **intranet.unbalanced.htb** pero mediante el proxy (-x o --proxy :P) que tenemos en **10.10.10.200** sobre el puerto **3128**.
 
-```sh
+```bash
 –» curl -v http://intranet.unbalanced.htb --proxy 10.10.10.200:3128
 *   Trying 10.10.10.200:3128...
 * TCP_NODELAY set
@@ -408,13 +410,13 @@ Entre la búsqueda de información encontré [este post](http://www.alcancelibre
 
 Después de un tiempo perdido, decidí buscar ayuda, le hable a [@TazWake](https://www.hackthebox.eu/profile/49335), miembro activo de HTB. Me indico que revisara muy bien el archivo, ya que se nos está permitiendo el acceso a otro recurso y prácticamente nos está diciendo que podemos ver con ese recurso... Pues después de esto, vi que tenemos acceso a `manager`:
 
-```sh
+```bash
 http_access allow manager
 ```
 
 Es una utilidad que muestra estadísticas sobre los procesos llevados a cabo por **squid**, además de ser una buena manera de llevar la cache. Podemos ver la info mediante la herramienta `squidclient`. Esta es la data que nos interesa:
 
-```sh
+```bash
 cachemgr_passwd Thah$Sh1 menu pconn mem diskd fqdncache filedescriptors objects vm_objects counters 5min 60min histograms cbdata sbuf events
 cachemgr_passwd disable all
 ```
@@ -424,7 +426,7 @@ Esto nos indica que la contraseña para autenticarnos hacia el proxy es `Thah$Sh
 * Así mismo encontré [esta tabla](http://etutorials.org/Server+Administration/Squid.+The+definitive+guide/Chapter+14.+Monitoring+Squid/14.2+The+Cache+Manager/) donde se detalla el uso de cada uno.
 * También nos indica la sintaxis de como se usa `manager`.
 
-```sh
+```bash
 –» squidclient -h 10.10.10.200 -p 3128 -w 'Thah$Sh1' mgr:menu
 HTTP/1.1 200 OK
 Server: squid/4.6
@@ -459,7 +461,7 @@ Connection: close
 
 Nos muestra los argumentos a los que tenemos acceso, viendo el output de cada uno (los que tenemos en `squid.conf` o los que en el anterior output nos indique `protected`) obtenemos uno interesante:
 
-```sh
+```bash
 –» squidclient -h 10.10.10.200 -p 3128 -w 'Thah$Sh1' mgr:fqdncache
 HTTP/1.1 200 OK
 Server: squid/4.6
@@ -505,7 +507,7 @@ Tenemos las direcciones y resoluciones DNS, vemos el dominio en donde estamos `i
 
 Entiendo que no se nos mostró en la cache ya que la "quitaron" para no dejar rastro (que por lo visto estaban teniendo problemas con ella) pero pues... (: Veamos si podemos encontrar algo con `gobuster`.
 
-```sh
+```bash
 –» gobuster dir -u http://172.31.179.1 -p http://10.10.10.200:3128 -b 404,403 -w /opt/SecLists/Discovery/Web-Content/raft-small-files.txt -t 100
 ===============================================================
 Gobuster v3.0.1
@@ -656,7 +658,7 @@ Si probamos con **SSH** cada credencial, las del usuario que tiene como rol **Sy
 
 Tenemos un archivo en el que se listan las tareas hechas y por hacer:
 
-```sh
+```bash
 bryan@unbalanced:~$ cat TODO 
 ############
 # Intranet #
@@ -690,7 +692,7 @@ La segunda es donde nos vamos a enfocar, nos indica que existe un contenedor que
 
 Validando comandos de **Docker** nos da un: **/docker.sock: connect: permission denied**. Veamos el servicio **docker** en el sistema:
 
-```sh
+```bash
 bryan@unbalanced:~$ systemctl status docker
 ● docker.service - Docker Application Container Engine
    Loaded: loaded (/lib/systemd/system/docker.service; enabled; vendor preset: enabled)
@@ -736,7 +738,7 @@ Después de un rato, estuve confundido y también simplemente leyendo archivos. 
 
 Estamos dentro del contenedor, por lo tanto podemos pasearnos por todo el <<contenedor>>, así que el acceso a la ruta `/root` (si miramos la imagen dice que somos **root** y estamos en el grupo **root**) no debe estar restringido (:
 
-```sh
+```bash
 www-data@pihole:/$ cd /root
 cd /root
 www-data@pihole:/root$ ls
@@ -747,7 +749,7 @@ www-data@pihole:/root$
 
 Si recordamos `/TODO` en la máquina de **bryan** hablaba de un archivo de configuración.
 
-```sh
+```bash
 bryan@unbalanced:~$ cat TODO
 ...
 * Set temporary admin password [DONE]
@@ -757,7 +759,7 @@ bryan@unbalanced:~$ cat TODO
 
 Veamos si se trata de `pihole_config.sh`:
 
-```sh
+```bash
 www-data@pihole:/root$ cat pihole_config.sh
 cat pihole_config.sh
 #!/bin/bash
