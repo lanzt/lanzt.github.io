@@ -1,6 +1,7 @@
 ---
 layout      : post
 title       : "HackTheBox - Worker"
+author      : lanz
 image       : https://raw.githubusercontent.com/lanzt/blog/main/assets/images/HTB/worker/270banner.png
 category    : [ htb ]
 tags        : [ devOps, repositories ]
