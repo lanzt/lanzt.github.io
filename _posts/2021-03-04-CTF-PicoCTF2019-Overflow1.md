@@ -2,7 +2,7 @@
 layout      : post
 title       : "PicoCTF2019 - Overflow1"
 author      : lanz
-image       : https://byte-off.com/wp-content/uploads/2017/04/PicoHeader-825x510.jpg
+image       : https://raw.githubusercontent.com/lanzt/blog/main/assets/images/CTF/picoctf/2019/pwn/overflow1.png
 category    : [ ctf ]
 tags        : [ buffer-overflow ]
 ---
