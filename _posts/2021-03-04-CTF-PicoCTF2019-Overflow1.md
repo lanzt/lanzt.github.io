@@ -2,7 +2,7 @@
 layout      : post
 title       : "PicoCTF2019 - Overflow1"
 author      : lanz
-image       : https://raw.githubusercontent.com/lanzt/blog/main/assets/images/CTF/picoctf/2019/pwn/overflow1.png
+image       : https://raw.githubusercontent.com/lanzt/blog/main/assets/images/CTF/picoctf/2019/pwn/overflow1/overflow1.jpeg
 category    : [ ctf ]
 tags        : [ buffer-overflow ]
 ---
