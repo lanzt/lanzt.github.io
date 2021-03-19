@@ -4,7 +4,7 @@ title       : "HackTheBox - Magic"
 author      : lanz
 image       : https://raw.githubusercontent.com/lanzt/blog/main/assets/images/HTB/magic/bannermagic.png
 categories  : [ htb ]
-tags        : [ magic-bytes, path-hijacking, file-upload ]
+tags        : [ file-upload, magic-bytes, path-hijacking ]
 ---
 Máquina Linux nivel medio. Inspeccionaremos un redireccionamiento web algo locochon, moveremos algunos Magic Bytes, iremos jugando con MySQL y haremos un Path Hijacking.
 

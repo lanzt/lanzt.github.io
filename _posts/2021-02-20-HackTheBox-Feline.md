@@ -4,7 +4,7 @@ title       : "HackTheBox - Feline"
 author      : lanz
 image       : https://raw.githubusercontent.com/lanzt/blog/main/assets/images/HTB/feline/274banner.png
 categories  : [ htb ]
-tags        : [ docker, serialization, demon ]
+tags        : [ serialization, docker, demon ]
 ---
 Máquina Linux nivel difícil. Beleza irmão! De cabezota nos encontraremos con serialización de objetos, enumeraremos y enumeraremos. Jugamos con los servicios que está corriendo **Docker** localmente y explotamos SaltStack. Pivotearemos entre containers rompiendo el demonio Docker.sock
 
