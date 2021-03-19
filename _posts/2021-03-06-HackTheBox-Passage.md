@@ -3,8 +3,8 @@ layout      : post
 title       : "HackTheBox - Passage"
 author      : lanz
 image       : https://raw.githubusercontent.com/lanzt/blog/main/assets/images/HTB/passage/206banner.png
-tags        : [ arbitrary-file-upload, cracking, magic-bytes, ssh-keys, demon ]
 category    : [ htb ]
+tags        : [ arbitrary-file-upload, cracking, magic-bytes, ssh-keys, demon ]
 ---
 Máquina Linux nivel medio. Explotaremos el servicio **CuteNews** para ejecutar comandos en el sistema, después jugaremos con hashes y crackeo. Jugaremos con llaves privadas y romperemos un proceso que se ejecuta con privilegios de administrador (**USBCreator**) para extraer archivos del sistema como usuario administrador.
 
