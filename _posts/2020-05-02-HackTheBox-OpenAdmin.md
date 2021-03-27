@@ -2,7 +2,7 @@
 layout      : post
 title       : "HackTheBox - OpenAdmin"
 author      : lanz
-image       : https://raw.githubusercontent.com/lanzt/blog/main/assets/images/HTB/openadmin/banneropenadmin.PNG
+image       : https://raw.githubusercontent.com/lanzt/blog/main/assets/images/HTB/openadmin/banneropenadmin.png
 categories  : [ htb ]
 tags        : [ apache, sudo ]
 ---
