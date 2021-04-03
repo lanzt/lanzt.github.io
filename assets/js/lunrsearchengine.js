@@ -37,7 +37,7 @@ function lunr_search(term) {
         //put results on the screen.
         var results = idx.search(term);
         if(results.length>0){
-            //console.log(idx.search(term));
+            console.log(idx.search(term));
             //if results
             for (var i = 0; i < results.length; i++) {
                 // more statements
