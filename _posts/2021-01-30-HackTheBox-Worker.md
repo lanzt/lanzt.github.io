@@ -14,8 +14,6 @@ Máquina Windows nivel medio. Wowoworker, vamos a jugar mucho con repositorios y
 
 Creador: [ekenas](https://www.hackthebox.eu/profile/222808).
 
-<img src="https://raw.githubusercontent.com/lanzt/blog/main/assets/images/HTB/worker/270statistics.png" style="margin-left: 20px; zoom: 60%; width: 30%;" align=right/>
-
 Linda maquina eh! 
 
 Empezaremos enumerando repositorios, nos copiaremos uno que está siendo mantenido como `dimensión.worker.htb`, esto hecho con la herramienta `svn` (que es uno de los servicios que tenemos corriendo). Jugando con los argumentos usaremos uno para ver los `commits` (un log de ellos) para así obtener un usuario: `nathen`. Después usaremos otro argumento para ver detalladamente cada commit, de ahí obtendremos la contraseña del usuario, con esas credenciales lograremos entrar a un nuevo dominio: `devops.worker.htb`.
@@ -25,13 +23,15 @@ Con enumeración básica encontraremos (casi que no) un disco nuevo: `w:\`. De a
 
 Usaremos una funcionalidad de `Azure DevOps` que nos permite ejecutar comandos en el sistema como "tareas". Nos daremos cuenta de que se están ejecutando como administrador. Aprovecharemos esa locura para obtener una reverse Shell. O bueno, algo parecido (:
 
+#### Clasificación de la máquina.
+
+Vamos a ensuciarnos un poco y trepa a la realidad.
+
+<img src="https://raw.githubusercontent.com/lanzt/blog/main/assets/images/HTB/worker/270statistics.png" style="display: block; margin-left: auto; margin-right: auto; width: 90%;"/>
+
 > Escribo para tener mis "notas", por si algun dia se me olvida todo, leer esto y reencontrarme :) además de enfocarme en plasmar mis errores y exitos (por si ves mucho texto).
 
-Démosle candela.
-
-...
-
-Tendremos como siempre 3 fases:
+Démosle candela. Tendremos como siempre 3 fases:
 
 1. [Enumeración](#enumeracion)
 2. [Explotación](#explotacion)

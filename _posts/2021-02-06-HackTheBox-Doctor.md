@@ -15,8 +15,6 @@ Máquina Linux nivel fácil. Sencilla, pero algo inquietante al inicio, jugaremo
 
 Creador: [egotisticalSW](https://www.hackthebox.eu/profile/94858).
 
-<img src="https://raw.githubusercontent.com/lanzt/blog/main/assets/images/HTB/doctor/278statistics.png" style="margin-left: 20px; zoom: 60%; width: 30%;" align=right/>
-
 Bueno bueno, inicio caótico, empezaremos jugando con el archivo `/etc/hosts`, encontraremos un login panel que está siendo ejecutado con la librería `Werkzeug` de `Python`. Después nos percataremos de una inyección por templates (`Server Side Template Injection`), en este caso el marco `Jinja2`. Usaremos esto para ejecutar comandos en el sistema como el usuario `web`, así mismo obtendremos una reverse Shell (:
 
 Estando dentro y enumerando los logs de la máquina nos encontraremos con una contraseña para un servicio que tenemos en el puerto `8089` (Splunk) y su usuario `shaun` (que también es usuario del sistema). Con esa contraseña tendremos acceso a la máquina y al servicio, 2x1 :)
@@ -26,6 +24,14 @@ En internet nos encontraremos con un exploit que aprovecha la creación de un se
 He creado un script para la generación del usuario en la web, nos logea, crea el post malicioso y hace el despliegue de la Reverse Shell. Hechenle un ojito si quieren ;)
 
 * [createuserdoctors.py](https://github.com/lanzt/blog/blob/main/assets/scripts/HTB/doctor/createuserdoctors.py)
+
+...
+
+#### Clasificación de la máquina.
+
+Neutral con puntos reales.
+
+<img src="https://raw.githubusercontent.com/lanzt/blog/main/assets/images/HTB/doctor/278statistics.png" style="display: block; margin-left: auto; margin-right: auto; width: 90%;"/>
 
 > Escribo para tener mis "notas", por si algun dia se me olvida todo, leer esto y reencontrarme (o talvez no) :) además de enfocarme en plasmar mis errores y exitos (por si ves mucho texto), todo desde una perspectiva más de enseñanza que de solo plasmar lo que hice.
 

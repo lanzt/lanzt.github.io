@@ -16,8 +16,6 @@ Máquina Linux nivel fácil. Pensaremos en bases de datos (eh?), deserializaremo
 
 **Este writeup lo hice después de haber resuelto la máquina, por lo tanto (quizás) iré muy directo :P**
 
-<img src="https://raw.githubusercontent.com/lanzt/blog/main/assets/images/HTB/academy/297statistics.png" style="margin-left: 20px; zoom: 60%; width: 30%;" align=right/>
-
 Holas, como tas?
 
 Bueno, empezaremos con un panel algo juguetón en el cual nos registraremos, asignándonos un rol distinto al que tiene por defecto, con él haremos que nuestro usuario se pueda logear en otro recurso solo para administradores e.e Conseguiremos un nuevo dominio en el que encontramos muchos errores :( de los cuales nos aprovecharemos de uno que explota una mala `deserialización` para conseguir una Shell como `www-data` :)
@@ -27,6 +25,12 @@ Ya estando dentro simplemente enumerando conseguiremos unas credenciales para mi
 Dando unas vueltas por internet y en la máquina, finalmente encontramos una herramienta que se complementa con los archivos `log` para conseguir las credenciales del usuario `mrb3n`, nos migraremos a él.
 
 Con enumeración básica nos daremos cuenta de que `mrb3n` puede ejecutar `/usr/bin/composer` en el sistema con permisos de adminstrador... Nos veremos forzados :P a usar esto para conseguir una Shell en el sistema como usuario `root`... A darle candela ;)
+
+#### Clasificación de la máquina.
+
+Enumeración pa rato y con tintes de realidad.
+
+<img src="https://raw.githubusercontent.com/lanzt/blog/main/assets/images/HTB/academy/297statistics.png" style="display: block; margin-left: auto; margin-right: auto; width: 90%;"/>
 
 > Escribo para tener mis "notas", por si algun dia se me olvida todo, leer esto y reencontrarme (o talvez no) :) además de enfocarme en plasmar mis errores y exitos (por si ves mucho texto), todo desde una perspectiva más de enseñanza que de solo plasmar lo que hice.
 

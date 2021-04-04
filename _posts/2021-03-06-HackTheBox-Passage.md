@@ -14,8 +14,6 @@ Máquina Linux nivel medio. Explotaremos el servicio **CuteNews** para ejecutar 
 
 **Creador**: [ChefByzen](https://www.hackthebox.eu/profile/140851).
 
-<img src="https://raw.githubusercontent.com/lanzt/blog/main/assets/images/HTB/passage/206statistics.png" style="margin-left: 20px; zoom: 60%; width: 30%;" align=right/>
-
 Hola hola!
 
 Empezaremos enumerando un servicio web, en el que no será necesario hacer fuerza bruta, simplemente abrir bien los ojos. Encontraremos una ruta hacia el servicio `CuteNews`, nos mirara a la cara un login y un área para registrarnos, despues de crear la cuenta obtendremos la versión del software, buscando en internet nos topamos con un `Arbitrary File Upload` del cual nos aprovecharemos jugando con los `Magic Bytes` para subir un archivo `PHP` y ejecutar comandos en el sistema remotamente. Enumerando obtenemos dos usuarios en el sistema: `paul` y `nadav`... Además en el directorio `CuteNews` encontraremos unos hashes, usaremos `hashcat` para crackearlos y obtener la contraseña del usuario `paul`.
@@ -23,6 +21,12 @@ Empezaremos enumerando un servicio web, en el que no será necesario hacer fuerz
 Migraremos a `nadav` con la llave privada del mismo encontrada en el `/home` de `paul`
 
 Para la escalada de privilegios encontraremos un proceso ejecutándose con privilegios de administrador (USBCreator), buscando en internet sobre él y exploits asociados, usando `gdbus` tenemos la capacidad de hacer uso de `USBCreator.Image` para (entre varios procesos) copiar archivos del sistema como el usuario `root`. Usaremos eso para extraer la llave privada (`id_rsa`) de él e ingresar como hicimos con el usuario `nadav` al sistema.
+
+#### Clasificación de la máquina.
+
+Tirando a real (:
+
+<img src="https://raw.githubusercontent.com/lanzt/blog/main/assets/images/HTB/passage/206statistics.png" style="display: block; margin-left: auto; margin-right: auto; width: 90%;"/>
 
 > Escribo para tener mis "notas", por si algun dia se me olvida todo, leer esto y reencontrarme (o talvez no) :) además de enfocarme en plasmar mis errores y exitos (por si ves mucho texto), todo desde una perspectiva más de enseñanza que de solo plasmar lo que hice.
 

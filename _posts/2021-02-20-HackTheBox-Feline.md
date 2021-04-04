@@ -16,13 +16,17 @@ Máquina Linux nivel difícil. Beleza irmão! De cabezota nos encontraremos con 
 
 Holas, ¿cómo están?
 
-<img src="https://raw.githubusercontent.com/lanzt/blog/main/assets/images/HTB/feline/274statistics.png" style="margin-left: 20px; zoom: 60%; width: 30%;" align=right/>
-
 Bueno, empezaremos jugando con `deserialización/serialización` de objetos `.JSP`, directamente obtendremos una Shell como el usuario `tomcat` en el sistema... 
 
 Enumerando los procesos activos encontraremos sobre el puerto `4506` del `localhost` el servicio `SaltStack`. Estará corriendo en un contenedor de `Docker`. Jugaremos con `Remote Port Forwarding`, después usaremos un exploit que nos permite ejecutar una reverse Shell para posicionarnos en la raíz del contenedor como el usuario `root`.
 
 Curiosamente el archivo `.bash_history` va a tener contenido, lo que nos permita percatarnos del demonio que tiene dentro el sistema (sonó chévere :P), `docker.sock`. Usaremos los privilegios que tiene el `daemon` para obtener una Shell en un contenedor que crearemos, pero que al mismo tiempo nos creara una montura de toda la raíz del sistema.
+
+#### Clasificación de la máquina.
+
+Va pa la realidad, cero juegos eh!
+
+<img src="https://raw.githubusercontent.com/lanzt/blog/main/assets/images/HTB/feline/274statistics.png" style="display: block; margin-left: auto; margin-right: auto; width: 90%;"/>
 
 > Escribo para tener mis "notas", por si algun dia se me olvida todo, leer esto y reencontrarme (o talvez no) :) además de enfocarme en plasmar mis errores y exitos (por si ves mucho texto), todo desde una perspectiva más de enseñanza que de solo plasmar lo que hice.
 
