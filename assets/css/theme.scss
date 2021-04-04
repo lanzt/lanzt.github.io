@@ -250,12 +250,11 @@ img, img:hover {
         margin-right: 7px;
     }
     .card {
-        border-top-left-radius: 20px;
-        border-bottom-right-radius: 20px;
-        border-bottom-left-radius: 20px;
+        border: 0;
+        width: 100%;
+        border-radius: 20px;
         background: rgb(139,56,255);
         background: radial-gradient(circle, rgba(139,56,255,1) 0%, rgba(40,0,144,0.7510601652770483) 100%);
-        border: 0;
         &:hover {           
            .card-title a { 
                 background-size: 100% 100%;
@@ -288,8 +287,8 @@ img, img:hover {
         font-size: 14px;
         border-top: 0;
         padding: 1rem 1.25rem;
-        border-bottom-left-radius: 20px;
-        border-bottom-right-radius: 20px;
+        border-bottom-left-radius: 10px;
+        border-bottom-right-radius: 10px;
         background: radial-gradient(circle, rgba(50,0,120,1) 0%, rgba(18,0,63,1) 100%);
         a {
             color: inherit;
@@ -462,9 +461,9 @@ img, img:hover {
     code {
         font-size: 15px;
         color: #eac6ff;
-        padding: 2px 5px 2px 5px;
+        padding: 2px 0;
         border-radius: 4px;
-        background-color: #290b31;
+        background-color: #2f0e38ce;
     }
     code[class*="language-"], pre[class*="language-"] {
         font-size: 15px;
