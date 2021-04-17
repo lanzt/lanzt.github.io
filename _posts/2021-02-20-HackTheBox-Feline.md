@@ -24,9 +24,9 @@ Curiosamente el archivo `.bash_history` va a tener contenido, lo que nos permita
 
 #### Clasificación de la máquina.
 
-Va pa la realidad, cero juegos eh!
-
 <img src="https://raw.githubusercontent.com/lanzt/blog/main/assets/images/HTB/feline/274statistics.png" style="display: block; margin-left: auto; margin-right: auto; width: 90%;"/>
+
+Va pa la realidad, cero juegos eh!
 
 > Escribo para tener mis "notas", por si algun dia se me olvida todo, leer esto y reencontrarme (o talvez no) :) además de enfocarme en plasmar mis errores y exitos (por si ves mucho texto), todo desde una perspectiva más de enseñanza que de solo plasmar lo que hice.
 

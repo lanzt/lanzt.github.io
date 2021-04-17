@@ -25,9 +25,9 @@ Usaremos una funcionalidad de `Azure DevOps` que nos permite ejecutar comandos e
 
 #### Clasificación de la máquina.
 
-Vamos a ensuciarnos un poco y trepa a la realidad.
-
 <img src="https://raw.githubusercontent.com/lanzt/blog/main/assets/images/HTB/worker/270statistics.png" style="display: block; margin-left: auto; margin-right: auto; width: 90%;"/>
+
+Vamos a ensuciarnos un poco y trepa a la realidad.
 
 > Escribo para tener mis "notas", por si algun dia se me olvida todo, leer esto y reencontrarme :) además de enfocarme en plasmar mis errores y exitos (por si ves mucho texto).
 

@@ -28,9 +28,9 @@ Con enumeración básica nos daremos cuenta de que `mrb3n` puede ejecutar `/usr/
 
 #### Clasificación de la máquina.
 
-Enumeración pa rato y con tintes de realidad.
-
 <img src="https://raw.githubusercontent.com/lanzt/blog/main/assets/images/HTB/academy/297statistics.png" style="display: block; margin-left: auto; margin-right: auto; width: 90%;"/>
+
+Enumeración pa rato y con tintes de realidad.
 
 > Escribo para tener mis "notas", por si algun dia se me olvida todo, leer esto y reencontrarme (o talvez no) :) además de enfocarme en plasmar mis errores y exitos (por si ves mucho texto), todo desde una perspectiva más de enseñanza que de solo plasmar lo que hice.
 

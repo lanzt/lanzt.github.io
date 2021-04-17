@@ -29,9 +29,9 @@ He creado un script para la generación del usuario en la web, nos logea, crea e
 
 #### Clasificación de la máquina.
 
-Neutral con puntos reales.
-
 <img src="https://raw.githubusercontent.com/lanzt/blog/main/assets/images/HTB/doctor/278statistics.png" style="display: block; margin-left: auto; margin-right: auto; width: 90%;"/>
+
+Neutral con puntos reales.
 
 > Escribo para tener mis "notas", por si algun dia se me olvida todo, leer esto y reencontrarme (o talvez no) :) además de enfocarme en plasmar mis errores y exitos (por si ves mucho texto), todo desde una perspectiva más de enseñanza que de solo plasmar lo que hice.
 

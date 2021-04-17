@@ -24,9 +24,9 @@ Para la escalada de privilegios encontraremos un proceso ejecutándose con privi
 
 #### Clasificación de la máquina.
 
-Tirando a real (:
-
 <img src="https://raw.githubusercontent.com/lanzt/blog/main/assets/images/HTB/passage/206statistics.png" style="display: block; margin-left: auto; margin-right: auto; width: 90%;"/>
+
+Tirando a real (:
 
 > Escribo para tener mis "notas", por si algun dia se me olvida todo, leer esto y reencontrarme (o talvez no) :) además de enfocarme en plasmar mis errores y exitos (por si ves mucho texto), todo desde una perspectiva más de enseñanza que de solo plasmar lo que hice.
 
