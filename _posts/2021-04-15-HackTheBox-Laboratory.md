@@ -364,11 +364,13 @@ git@git:/dev/shm/test/db$
 
 Es mucho texto y puede verse confuso, lo sé, pero podemos destacar la fecha de creación de los usuarios, si nos guiamos por eso, tenemos 3 interesantes:
 
+```html
 | username@correo      | Nombre           | Hash                                                         | Fecha creación |
 | -------------------- | :--------------- |:------------------------------------------------------------ | :------------- |
 | admin@example.com    | Dexter McPherson | $2a$10$.9fAYoRs9/Erjs0FH.OlN.OH.L4cj2at6RfTmIQ3CTEl2D4ylgJ6i | 2020-07-02     |
 | seven@laboratory.htb | Seven            | $2a$10$HkBO3A4k6G42X85r0ZIpO.RlSLCg9igEaiiU8r44Ymd7e2nWcjixC | 2020-07-17     |
 | ghost@example.com    | ghost            | -                                                            | 2020-07-02     | 
+```
 
 Perfeeecto, pues enfoquemosnos en esos hashes y veamos si los podemos crackear...
 
