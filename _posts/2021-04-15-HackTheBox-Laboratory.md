@@ -376,7 +376,7 @@ Perfeeecto, pues enfoquemosnos en esos hashes y veamos si los podemos crackear..
 
 Apoyado de [todos los ejemplos de hashes](https://hashcat.net/wiki/doku.php?id=example_hashes) que tiene [hashcat](https://hashcat.net/wiki/doku.php?id=example_hashes) en su wiki, encontramos que son tipo `bcrypt $2*$, Blowfish (Unix)`:
 
-![298page_example_hashcat_bcrypt](https://raw.githubusercontent.com/lanzt/blog/main/assets/images/HTB/laboratory/298page_example_hashcat_bcryp.png)
+![298page_example_hashcat_bcrypt](https://raw.githubusercontent.com/lanzt/blog/main/assets/images/HTB/laboratory/298page_example_hashcat_bcrypt.png)
 
 Guardamos los hashes en un archivo y procedemos, usare `hashcat`:
 
