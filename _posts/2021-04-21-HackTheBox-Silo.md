@@ -22,7 +22,7 @@ Nos toparemos con un volcado de memoria del sistema, jugaremos con la herramient
 
 #### Clasificación de la máquina
 
-<img src="https://raw.githubusercontent.com/lanzt/blog/main/assets/images/HTB/silo/131statistics.png" style="margin-left: 20px; zoom: 60%;" align=left />
+<img src="https://raw.githubusercontent.com/lanzt/blog/main/assets/images/HTB/silo/131statistics.png" style="display: block; margin-left: auto; margin-right: auto; width: 90%;"/>
 
 Bastante del lado real ;)
 
@@ -69,13 +69,13 @@ Entonces tenemos:
 
 | Puerto | Descripción |
 | ------ | :---------- |
-| 80     | **[HTTP]()** |
+| 80     | **[HTTP](https://searchnetworking.techtarget.com/definition/port-80)** |
 | 135    | **[RPC](https://book.hacktricks.xyz/pentesting/135-pentesting-msrpc)** |
 | 139    | **[SMB](https://www.varonis.com/blog/smb-port/)** |
 | 445    | **[SMB](https://www.varonis.com/blog/smb-port/)** |
 | 1521   | **[Oracle TNS](https://book.hacktricks.xyz/pentesting/1521-1522-1529-pentesting-oracle-listener)** |
-| 5985   | **[winrm]()** |
-| 47001  | **[winrm]()** |
+| 5985   | **[winrm](https://docs.microsoft.com/en-us/windows/win32/winrm/installation-and-configuration-for-windows-remote-management)** |
+| 47001  | **[winrm](https://docs.microsoft.com/en-us/windows/win32/winrm/installation-and-configuration-for-windows-remote-management)** |
 | 49152, 49153, 49154, 49155, 49159, 49160, 49161, 49162 | Desconocidos |
 
 Ahora hagamos un escaneo de scripts y versiones para tener info más especifica de cada puerto:
