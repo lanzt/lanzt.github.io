@@ -38,7 +38,7 @@ Soooooooooooooo, veremos:
 
 ...
 
-## Enumeración [#](#enumeración) {#enumeración}
+## Enumeración [#](#enumeracion) {#enumeracion}
 
 Veamos que servicios esta corriendo la máquina:
 
@@ -51,7 +51,7 @@ Veamos que servicios esta corriendo la máquina:
 | -p-       | Escanea todos los 65535                                                                                  |
 | --open    | Solo los puertos que están abiertos                                                                      |
 | -v        | Permite ver en consola lo que va encontrando                                                             |
-| -oG       | Guarda el output en un archivo con formato grepeable para usar una [función](https://raw.githubusercontent.com/lanzt/Writeups/master/HTB/Magic/images/extractPorts.png) de [S4vitar](https://s4vitar.github.io/) que me extrae los puertos en la clipboard |
+| -oG       | Guarda el output en un archivo con formato grepeable para usar una [función](https://raw.githubusercontent.com/lanzt/blog/main/assets/images/HTB/magic/extractPorts.png) de [S4vitar](https://s4vitar.github.io/) que me extrae los puertos en la clipboard |
 
 ```bash
 ───────┬───────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
@@ -185,7 +185,7 @@ Bueeeeno, parecen muchos puertos, pero realmente son pocos, Démosle a ver!
 
 ...
 
-### Puerto 80 (HTTP) [×](#puerto-80)
+### Puerto 80 [⌖](#puerto-80) {#puerto-80}
 
 Empezaremos revisando el servicio web. Si vamos al navegador y colocamos la IP, nos direcciona a:
 
@@ -197,7 +197,7 @@ Haciendo fuzzing tampoco encontramos nada, así que por ahora no tenemos nada co
 
 ...
 
-### Puerto 135 (RPC) [×](#puerto-135)
+### Puerto 135 (RPC) [⌖](#puerto-135) {#puerto-135}
 
 > **MSRPC** (Microsoft Remote Procedure Call): Nos permite ejecutar procesos remotamente, pueden ser en otros sistemas o recursos compartidos en la red.
 
@@ -213,7 +213,7 @@ Pero nada :( Sigamos.
 
 ...
 
-### Puerto 139-445 (SMB) [×](#puerto-139-445)
+### Puerto 139-445 (SMB) [⌖](#puerto-139-445) {#puerto-139-445}
 
 > **SAMBA**, en terminos generales nos permite compartir archivos (y otras cositas) entre usuarios de una misma red...
 
@@ -245,7 +245,7 @@ Nada, así que sigamos viendo los puertos disponibles.
 
 ...
 
-### Puerto 1521 (Oracle TNS) [×](#puerto-445-139)
+### Puerto 1521 (Oracle TNS) [⌖](#puerto-445-139) {#puerto-445-139}
 
 > **Oracle DB** es una base de datos relacional.
 
