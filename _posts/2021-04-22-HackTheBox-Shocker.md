@@ -6,7 +6,7 @@ image       : https://raw.githubusercontent.com/lanzt/blog/main/assets/images/HT
 category    : [ htb ]
 tags        : [ shellshock, sudo, perl ]
 ---
-Máquina Linux nivel fácil, nos dará un **shock** (?) al encontrarnos la vulnerabilidad **Shellshock** (muy linda) y lograr ejecutar comandos en el sistema. Después jugando con los permisos de usuario podremos obtener una sesión como **root** explotando el binario **Perl.
+Máquina Linux nivel fácil, nos dará un **shock** (?) al encontrarnos la vulnerabilidad **Shellshock** (muy linda) y lograr ejecutar comandos en el sistema. Después jugando con los permisos de usuario podremos obtener una sesión como **root** explotando el binario **Perl**.
 
 ![108shockerHTB](https://raw.githubusercontent.com/lanzt/blog/main/assets/images/HTB/shocker/108shockerHTB.png)
 
