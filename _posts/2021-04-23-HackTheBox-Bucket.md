@@ -579,7 +579,6 @@ roy@bucket:/var/www/bucket-app$ aws --endpoint-url=http://localhost:4566 dynamod
         "CapacityUnits": 1.0
     }
 }
-
 ```
 
 Validamos el contenido ahora:
@@ -647,7 +646,7 @@ Listo, pues intentemos agregar esta línea a la fila `data` de nuestra tabla y e
 
 ```bash
 roy@bucket:/var/www/bucket-app$ aws --endpoint-url=http://localhost:4566 dynamodb put-item --table-name alerts \
-        --item '{"title": {"S": "Ransomware"}, "data": {"S": "<pd4ml:attachment description=\"attached.txt\" icon=\"PushPin\">file:///etc/passwd</pd4ml:attachment>"}}'
+--item '{"title": {"S": "Ransomware"}, "data": {"S": "<pd4ml:attachment description=\"attached.txt\" icon=\"PushPin\">file:///etc/passwd</pd4ml:attachment>"}}'
 ```
 
 Escapamos las `""` (comillas) y le damos:
