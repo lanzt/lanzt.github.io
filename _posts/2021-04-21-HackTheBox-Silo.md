@@ -4,7 +4,7 @@ title       : "HackTheBox - Silo"
 author      : lanz
 image       : https://raw.githubusercontent.com/lanzt/blog/main/assets/images/HTB/silo/131banner.png
 category    : [ htb ]
-tags        : [ volatility, RCE, file-upload, oracle, winrm, passthehash ]
+tags        : [ windows, volatility, RCE, file-upload, oracle, winrm, passthehash ]
 ---
 Máquina Windows nivel medio, iremos de cabeza contra Oracle TNS, nos perderemos en un CVE :P, jugaremos con la base de datos y veremos que podemos ser los reyes de ella (**sysdba**), usaremos la herramienta **odat.py** pa (entre otras cositas) subir archivos, ¿qué subirías? Finalmente tendremos un volcán de memoria e.e del cual nos aprovecharemos para obtener los registros **SAM** y **SYSTEM** del sistema, lo demás son juegos de mesa.
 

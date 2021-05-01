@@ -4,7 +4,7 @@ title       : "HackTheBox - Laboratory"
 author      : lanz
 image       : https://raw.githubusercontent.com/lanzt/blog/main/assets/images/HTB/laboratory/298banner.png
 category    : [ htb ]
-tags        : [ gitlab, RCE, backup, git, SUID, path-hijacking ]
+tags        : [ linux, gitlab, RCE, backup, git, SUID, path-hijacking ]
 ---
 Máquina Linux nivel fácil. Tendremos al lobo naranja (GitLab) :P como punto de entrada, jugaremos con Backups y archivos **.bundle**, obtendremos las llaves de la casa y nos haremos dueños de la r(oo)ta mediante un PATH Hijacking.
 

@@ -4,7 +4,7 @@ title       : "HackTheBox - Buff"
 author      : lanz
 image       : https://raw.githubusercontent.com/lanzt/blog/main/assets/images/HTB/buff/bannerbuff.png
 category    : [ htb ]
-tags        : [ file-upload, buffer-overflow ]
+tags        : [ windows, file-upload, buffer-overflow ]
 ---
 Máquina Windows nivel fácil. Buff buff uff, explotaremos un gimnasio :o (casi) yyy aprovecharemos un Buffer Overflow para ser amos del sistema... ¿Sencillo, no? pues...
 

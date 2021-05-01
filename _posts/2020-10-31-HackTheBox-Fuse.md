@@ -4,7 +4,7 @@ title       : "HackTheBox - Fuse"
 author      : lanz
 image       : https://raw.githubusercontent.com/lanzt/blog/main/assets/images/HTB/fuse/bannerfuse.png
 category    : [ htb ]
-tags        : [ windows-privileges, VStudio, SMB ]
+tags        : [ windows, windows-privileges, visual-studio, SMB ]
 ---
 Máquina Windows nivel medio. Usaremos varios usuarios como diccionario para encontrar uno valido en el sistema, estando dentro explotaremos un permiso que nos deja subir drivers, subiremos uno conocido que tiene vulnerabilidades, aprovecharemos eso para lograr ejecución remota de comandos como Administrador. Debemos cambiarle claramente cosas al exploit por lo tanto debe ser compilado.
 

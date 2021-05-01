@@ -4,7 +4,7 @@ title       : "HackTheBox - Shocker"
 author      : lanz
 image       : https://raw.githubusercontent.com/lanzt/blog/main/assets/images/HTB/shocker/108banner.png
 category    : [ htb ]
-tags        : [ shellshock, sudo, perl ]
+tags        : [ linux, shellshock, sudo, perl ]
 ---
 Máquina Linux nivel fácil, nos dará un **shock** (?) al encontrarnos la vulnerabilidad **Shellshock** (muy linda) y lograr ejecutar comandos en el sistema. Después jugando con los permisos de usuario podremos obtener una sesión como **root** explotando el binario **Perl**.
 

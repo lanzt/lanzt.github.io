@@ -4,7 +4,7 @@ title       : "HackTheBox - Blunder"
 author      : lanz
 image       : https://raw.githubusercontent.com/lanzt/blog/main/assets/images/HTB/blunder/bannerblunder.png
 category    : [ htb ] 
-tags        : [ CMS, file-upload, cracking, sudo ]
+tags        : [ linux, CMS, file-upload, cracking, sudo ]
 ---
 Máquina Linux nivel fácil. Romperemos un CMS, encontraremos un File Upload que explotaremos para ejecutar comandos. Crackearemos cositas y nos apoyaremos de una locura relacionada con "sudo -l" para convertirnos en administradores del sistema.
 

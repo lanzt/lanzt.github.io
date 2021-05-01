@@ -4,7 +4,7 @@ title       : "HackTheBox - ServMon"
 author      : lanz
 image       : https://raw.githubusercontent.com/lanzt/blog/main/assets/images/HTB/servmon/bannerservmon.png
 categories  : [ htb ]
-tags        : [ FTP, LFI, NSClient, API ]
+tags        : [ windows, FTP, LFI, NSClient, API ]
 ---
 Máquina Windows nivel fácil. Iremos dando vueltas mediante FTP, exploraremos un Local File Inclusion. Jugaremos con la API del servicio NSClient para conseguir una shell como administrador.
 
