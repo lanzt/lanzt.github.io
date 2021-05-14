@@ -4,7 +4,7 @@ title       : "HackTheBox - Enterprise"
 author      : lanz
 image       : https://raw.githubusercontent.com/lanzt/blog/main/assets/images/HTB/enterprise/112banner.png
 category    : [ htb ]
-tags        : [ linux, buffer-overflow, SQLi, scripting, wordpress, joomla, docker, pivoting ]
+tags        : [ buffer-overflow, SQLi, scripting, wordpress, joomla, docker, pivoting ]
 ---
 Máquina Linux nivel medio, vamos a movernos entre sentencias **SQL** para generar pinchazos e.e Pivotearemos entre contenedores y compartiremos experiencias con el host... Finalmente explotaremos un **buffer overflow** mediante un **ret2libc** para obtener una **/bin/sh** en el host como **root**.
 
@@ -37,6 +37,8 @@ Estos son los scripts finales, en el post veremos la creación de ellos :)
 #### Clasificación de la máquina
 
 <img src="https://raw.githubusercontent.com/lanzt/blog/main/assets/images/HTB/enterprise/112statistics.png" style="display: block; margin-left: auto; margin-right: auto; width: 90%;"/>
+
+Bastante enumeración y a la vez bastante real, disfrutemos.
 
 > Escribo para tener mis "notas", por si algun dia se me olvida todo, leer esto y reencontrarme (o talvez no) :) además de enfocarme en plasmar mis errores y exitos (por si ves mucho texto), todo desde una perspectiva más de enseñanza que de solo plasmar lo que hice.
 
