@@ -4,7 +4,7 @@ title       : "HackTheBox - OpenAdmin"
 author      : lanz
 image       : https://raw.githubusercontent.com/lanzt/blog/main/assets/images/HTB/openadmin/banneropenadmin.png
 categories  : [ htb ]
-tags        : [ linux, apache, sudo ]
+tags        : [ apache, sudo ]
 ---
 Maquina Linux nivel fácil. Jugaremos con inspección de código, peticiones web, movimientos internos con Apache, con SSH keys y romperemos /bin/nano.
 

@@ -4,7 +4,7 @@ title       : "TryHackMe - Anthem"
 author      : lanz
 image       : https://raw.githubusercontent.com/lanzt/blog/main/assets/images/THM/anthem/anthem_gif.gif
 category    : [ thm ]
-tags        : [ windows, CMS, RDP, icacls ]
+tags        : [ CMS, RDP, icacls ]
 ---
 Máquina Windows nivel fácil. Jugaremos mucho a encontrar cosas en la web, caeremos en un Rabbit Hole con Umbraco (lindo, aprendimos bastante de esto) y accederemos remotamente a escritorios ajenos usando RDP.
 

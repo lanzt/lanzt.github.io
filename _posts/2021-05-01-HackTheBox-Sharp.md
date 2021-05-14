@@ -4,7 +4,7 @@ title       : "HackTheBox - Sharp"
 author      : lanz
 image       : https://raw.githubusercontent.com/lanzt/blog/main/assets/images/HTB/sharp/303banner.png
 category    : [ htb ]
-tags        : [ windows, crypto, dnSpy, deserialization, visual-studio, SMB ]
+tags        : [ crypto, dnSpy, deserialization, visual-studio, SMB ]
 ---
 Máquina Windows nivel difícil, vamos a movernos entre carpetas compartidas, organizaremos nuestras ideas con Kanban (🤪) y jugaremos con binarios `.exe` para aprovechar **deserializaciones** y errores de configuración.
 

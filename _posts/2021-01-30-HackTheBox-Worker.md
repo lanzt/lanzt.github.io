@@ -4,7 +4,7 @@ title       : "HackTheBox - Worker"
 author      : lanz
 image       : https://raw.githubusercontent.com/lanzt/blog/main/assets/images/HTB/worker/270banner.png
 category    : [ htb ]
-tags        : [ windows, devOps, repositories ]
+tags        : [ devOps, repositories ]
 ---
 Máquina Windows nivel medio. Wowoworker, vamos a jugar mucho con repositorios y ramas. Romperemos cositas de Azure DevOps para ejecutar comandos en el sistema como Administradores.
 

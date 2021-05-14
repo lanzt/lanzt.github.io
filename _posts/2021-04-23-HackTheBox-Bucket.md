@@ -4,7 +4,7 @@ title       : "HackTheBox - Bucket"
 author      : lanz
 image       : https://raw.githubusercontent.com/lanzt/blog/main/assets/images/HTB/bucket/283banner.png
 category    : [ htb ]
-tags        : [ linux, AWS, PD4ML, ssh-keys, API ]
+tags        : [ AWS, PD4ML, ssh-keys, API ]
 ---
 Máquina Linux nivel medio, jugaremos mucho con **AWS**, leeremos código fuente y descubriremos que podemos leer archivos como root. Esto mediante el juego entre la herramienta **PD4ML** y **AWS DynamoDB**.
 

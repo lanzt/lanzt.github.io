@@ -4,7 +4,7 @@ title       : "HackTheBox - Arkham"
 author      : lanz
 image       : https://raw.githubusercontent.com/lanzt/blog/main/assets/images/HTB/arkham/179banner.png
 category    : [ htb ]
-tags        : [ windows, deserialization, crypto, java, RPF, winrm ]
+tags        : [ deserialization, crypto, java, RPF, winrm ]
 ---
 Máquina Windows nivel medio, deserializaremos **JavaServer Faces**, jugaremos con muchos payloads con la necesidad de firmarlos con una llave :O Haremos **Port Fortwarding**, leeremos correos y montaremos el directorio **raiz** del sistema (**C:**) en otro con todos los permisos para leer archivos.
 

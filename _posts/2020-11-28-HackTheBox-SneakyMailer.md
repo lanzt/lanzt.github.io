@@ -4,7 +4,7 @@ title       : "HackTheBox - SneakyMailer"
 author      : lanz
 image       : https://raw.githubusercontent.com/lanzt/blog/main/assets/images/HTB/sneakymailer/bannersneakymailer.png
 category    : [ htb ]
-tags        : [ linux, phishing, FTP, PyPi, sudo ]
+tags        : [ phishing, FTP, PyPi, sudo ]
 ---
 Máquina Linux nivel medio pero que de medio muy poco, o pues casi me enloquezco :P SneakyMailer... Vaya locura, jugaremos simulando phishing, explotaremos cositas de FTP, romperemos PyPi para crearnos un paquete malicioso y generar ejecución remota de comandos y trolearemos un poco con los permisos de usuario.
 

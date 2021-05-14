@@ -4,7 +4,7 @@ title       : "HackTheBox - Tabby"
 author      : lanz
 image       : https://raw.githubusercontent.com/lanzt/blog/main/assets/images/HTB/tabby/bannertabby.png
 category    : [ htb ]
-tags        : [ linux, tomcat, LFI, cracking, LXD ]
+tags        : [ tomcat, LFI, cracking, LXD ]
 ---
 Máquina Linux nivel fácil. Tabbyen, jugaremos con un LFI, buscaremos hasta más no poder un archivo de tomcat, explotaremos al manager para que nos permita entrar en la casa de tom, crackearemos un archivo .zip para despues aprovecharnos del grupo LXD y tener control total del sistema.
 

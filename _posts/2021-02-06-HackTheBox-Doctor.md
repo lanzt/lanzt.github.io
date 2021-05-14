@@ -4,7 +4,7 @@ title       : "HackTheBox - Doctor"
 author      : lanz
 image       : https://raw.githubusercontent.com/lanzt/blog/main/assets/images/HTB/doctor/278banner.png
 category    : [ htb ]
-tags        : [ linux, SSTI, logs, splunk ]
+tags        : [ SSTI, logs, splunk ]
 
 ---
 Máquina Linux nivel fácil. Sencilla, pero algo inquietante al inicio, jugaremos con inyección en templates, los logs nos hablarán y romperemos `Splunk` montando servidores fake por todos lados para ejecutar comandos.
