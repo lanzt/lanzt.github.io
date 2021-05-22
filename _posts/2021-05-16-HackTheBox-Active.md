@@ -51,7 +51,7 @@ Vamos a empezar con nuestro escaneo de puertos:
 | -p-        | Escanea todos los 65535                      |
 | --open     | Solo los puertos que están abiertos          |
 | -v         | Permite ver en consola lo que va encontrando |
-| -oG        | Guarda el output en un archivo con formato grepeable para usar una [función](https://raw.githubusercontent.com/lanzt/Writeups/master/HTB/Magic/images/extractPorts.png) de [S4vitar](https://s4vitar.github.io/) que me extrae los puertos en la clipboard |
+| -oG        | Guarda el output en un archivo con formato grepeable para usar una [función](https://raw.githubusercontent.com/lanzt/blog/main/assets/images/HTB/magic/extractPorts.png) de [S4vitar](https://s4vitar.github.io/) que me extrae los puertos en la clipboard |
 
 ```bash
 ゝ cat initScan
