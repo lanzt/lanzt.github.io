@@ -124,36 +124,13 @@ PORT     STATE SERVICE VERSION
 |_    Content-Length: 0
 1 service unrecognized despite returning data. If you know the service/version, please submit the following fingerprint at https://nmap.org/cgi-bin/submit.cgi?new-service :
 SF-Port8065-TCP:V=7.80%I=7%D=1/12%Time=5FFDBB34%P=x86_64-pc-linux-gnu%r(Ge
-SF:nericLines,67,"HTTP/1\.1\x20400\x20Bad\x20Request\r\nContent-Type:\x20t
-SF:ext/plain;\x20charset=utf-8\r\nConnection:\x20close\r\n\r\n400\x20Bad\x
-SF:20Request")%r(GetRequest,DF3,"HTTP/1\.0\x20200\x20OK\r\nAccept-Ranges:\
-SF:x20bytes\r\nCache-Control:\x20no-cache,\x20max-age=31556926,\x20public\
-SF:r\nContent-Length:\x203108\r\nContent-Security-Policy:\x20frame-ancesto
-SF:rs\x20'self';\x20script-src\x20'self'\x20cdn\.rudderlabs\.com\r\nConten
-SF:t-Type:\x20text/html;\x20charset=utf-8\r\nLast-Modified:\x20Tue,\x2012\
-SF:x20Jan\x202021\x2014:01:26\x20GMT\r\nX-Frame-Options:\x20SAMEORIGIN\r\n
-SF:X-Request-Id:\x20sjgqngc48j8m3j91o7tu3pyigy\r\nX-Version-Id:\x205\.30\.
-SF:0\.5\.30\.1\.57fb31b889bf81d99d8af8176d4bbaaa\.false\r\nDate:\x20Tue,\x
-SF:2012\x20Jan\x202021\x2015:16:24\x20GMT\r\n\r\n<!doctype\x20html><html\x
-SF:20lang=\"en\"><head><meta\x20charset=\"utf-8\"><meta\x20name=\"viewport
-SF:\"\x20content=\"width=device-width,initial-scale=1,maximum-scale=1,user
-SF:-scalable=0\"><meta\x20name=\"robots\"\x20content=\"noindex,\x20nofollo
-SF:w\"><meta\x20name=\"referrer\"\x20content=\"no-referrer\"><title>Matter
-SF:most</title><meta\x20name=\"mobile-web-app-capable\"\x20content=\"yes\"
-SF:><meta\x20name=\"application-name\"\x20content=\"Mattermost\"><meta\x20
-SF:name=\"format-detection\"\x20content=\"telephone=no\"><link\x20re")%r(H
-SF:TTPOptions,5B,"HTTP/1\.0\x20405\x20Method\x20Not\x20Allowed\r\nDate:\x2
-SF:0Tue,\x2012\x20Jan\x202021\x2015:16:24\x20GMT\r\nContent-Length:\x200\r
-SF:\n\r\n")%r(RTSPRequest,67,"HTTP/1\.1\x20400\x20Bad\x20Request\r\nConten
-SF:t-Type:\x20text/plain;\x20charset=utf-8\r\nConnection:\x20close\r\n\r\n
-SF:400\x20Bad\x20Request")%r(Help,67,"HTTP/1\.1\x20400\x20Bad\x20Request\r
-SF:\nContent-Type:\x20text/plain;\x20charset=utf-8\r\nConnection:\x20close
-SF:\r\n\r\n400\x20Bad\x20Request")%r(SSLSessionReq,67,"HTTP/1\.1\x20400\x2
-SF:0Bad\x20Request\r\nContent-Type:\x20text/plain;\x20charset=utf-8\r\nCon
-SF:nection:\x20close\r\n\r\n400\x20Bad\x20Request")%r(TerminalServerCookie
-SF:,67,"HTTP/1\.1\x20400\x20Bad\x20Request\r\nContent-Type:\x20text/plain;
-SF:\x20charset=utf-8\r\nConnection:\x20close\r\n\r\n400\x20Bad\x20Request"
-SF:);
+SF:nericLines,67,"HTTP/1\.1..."
+...
+...
+# Esto no es necesario, además lo quito por unos problemas que me da con la busqueda
+...
+...
+
 Service Info: OS: Linux; CPE: cpe:/o:linux:linux_kernel
 
 Service detection performed. Please report any incorrect results at https://nmap.org/submit/ .
