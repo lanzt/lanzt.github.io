@@ -22,7 +22,7 @@ Nos daremos cuenta de que podemos (de nuevo :P) tanto descargar como subir archi
 
 Teniendo en cuenta esto, encontraremos la forma de ejecutar comandos remotamente aprovechándonos de la subida de archivos. Jugando con el servicio **WMI** y un objeto `.mof` le indicaremos que al ser compilado nos ejecute alguna instrucción (llegaremos a obtener una **Reverse Shell** con ayuda de `nc.exe`, todo esto definido dentro del propio archivo `.mof`). **(Ahondaremos en esto en su momento)**.
 
-Estando dentro de la máquina tendremos que jugar con el feature de **NTFS** llamado **ADS o Alternative Data Stream** el cual sirve como método para ocultar archivos dentro de otros archivos o directorios. Con esta premisa jugaremos con dos objetos interesantes, así encontraremos ocultas las flags tanto de `user.txt como de `root.txt` en uno de ellos (:
+Estando dentro de la máquina tendremos que jugar con el feature de **NTFS** llamado **ADS o Alternative Data Stream** el cual sirve como método para ocultar archivos dentro de otros archivos o directorios. Con esta premisa jugaremos con dos objetos interesantes, así encontraremos ocultas las flags tanto de `user.txt` como de `root.txt` en uno de ellos (:
 
 ...
 
