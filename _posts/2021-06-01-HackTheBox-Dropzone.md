@@ -30,7 +30,7 @@ Estando dentro de la máquina tendremos que jugar con el feature de **NTFS** lla
 
 <img src="https://raw.githubusercontent.com/lanzt/blog/main/assets/images/HTB/dropzone/139statistics.png" style="display: block; margin-left: auto; margin-right: auto; width: 90%;"/>
 
-Vulnerabilidades comunes o que tienen bastaaaaante información pero poco realista :(
+Vulnerabilidades comunes o que tienen bastaaaaante información pero más o menos realista :(
 
 > Escribo para tener mis "notas", por si algun dia se me olvida todo, leer esto y reencontrarme (o talvez no) :) además de enfocarme en plasmar mis errores y exitos (por si ves mucho texto), todo desde una perspectiva más de enseñanza que de solo plasmar lo que hice.
 
