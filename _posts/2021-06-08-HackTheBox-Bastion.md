@@ -6,7 +6,7 @@ image       : https://raw.githubusercontent.com/lanzt/blog/main/assets/images/HT
 category    : [ htb ]
 tags        : [ mRemoteNG, VHD, backups, cracking, mount, registry-files, SMB ]
 ---
-Máquina **Windows** nivel fácil. Nos moveremos con *Samba*, jugaremos con el backup de una máquina virtual **Windows** para extraer los archivos **SAM** y **SYSTEM**... Crackearemos cosillas y nos daremos cuenta que un software guarda contraseñas de acceso al sistema, ¿que procede? e.e
+Máquina **Windows** nivel fácil. Nos moveremos con *Samba*, jugaremos con el backup de una máquina virtual **Windows** para extraer los archivos **SAM** y **SYSTEM**... Crackearemos cosillas y nos daremos cuenta que un software guarda contraseñas de acceso al sistema, ¿qué procede? e.e
 
 ![186bastionHTB](https://raw.githubusercontent.com/lanzt/blog/main/assets/images/HTB/bastion/186bastionHTB.png)
 
@@ -16,9 +16,9 @@ Máquina **Windows** nivel fácil. Nos moveremos con *Samba*, jugaremos con el b
 
 ARAGANEEEEEEEEEEEEEEEZ! A jugar.
 
-Nos enfrentaremos a carpetas compartidas meditante **SMB**, una de ellas tendra un *Backup* de una máquina virtual **Windows**, jugando con algunas herramietnas y archivos (**SAM** y **SYSTEM**) obtendremos los hashes **NTLM** de los usuarios **Administrator**, **L4mpje** y **Guest**. Jugaremos con *cracking* para obtener la contraseña en texto plano del usuario **L4mpje**, conseguiremos una sesión mediante **SSH** como él en el sistema.
+Nos enfrentaremos a carpetas compartidas mediante **SMB**, una de ellas tendrá un *Backup* de una máquina virtual **Windows**, jugando con algunas herramientas y archivos (**SAM** y **SYSTEM**) obtendremos los hashes **NTLM** de los usuarios **Administrator**, **L4mpje** y **Guest**. Jugaremos con *cracking* para obtener la contraseña en texto plano del usuario **L4mpje**, conseguiremos una sesión mediante **SSH** como él en el sistema.
 
-Enumerando la máquina veremos que existe un programa llamado **mRemoteNG** (que se encarga entre otras cosas de proveer conexion entre protocolos (RDP, SSH, telnet, etc...)), en la web nos indican que ese servicio guarda las credenciales que se han usado para conectarse a otros protocolos (dichos antes, como **SSH**), encontraremos que se guardan en un objeto llamado `confCons.xml`, dentro estan las credenciales encriptadas, usando [mRemoteNG-Decrypt](https://github.com/haseebT/mRemoteNG-Decrypt) conseguiremos desencriptarlas y obtener la contraseña en texto plano usada por el usuario **Administrator** para conextarse al sistema... ¿Que harias?
+Enumerando la máquina veremos que existe un programa llamado **mRemoteNG** (que se encarga entre otras cosas de proveer conexión entre protocolos (RDP, SSH, telnet, etc...)), en la web nos indican que ese servicio guarda las credenciales que se han usado para conectarse a otros protocolos (dichos antes, como **SSH**), encontraremos que se guardan en un objeto llamado `confCons.xml`, dentro están las credenciales encriptadas, usando [mRemoteNG-Decrypt](https://github.com/haseebT/mRemoteNG-Decrypt) conseguiremos desencriptarlas y obtener la contraseña en texto plano usada por el usuario **Administrator** para conectarse al sistema... ¿Qué harías?
 
 A darle.
 
@@ -42,7 +42,7 @@ BUAAAJAJAAAAAaaaaaa, a rompernos!!
 
 ## Enumeración [#](#enumeracion) {#enumeracion}
 
-Como nunca hemos hecho, vamos a empezar por un escaneo de puertos mediante **nmap**, asi vemos por donde empezar a jugar:
+Como nunca hemos hecho, vamos a empezar por un escaneo de puertos mediante **nmap**, así vemos por donde empezar a jugar:
 
 ```bash
 ❱ nmap -p- --open -v 10.10.10.134 -oG initScan
@@ -60,8 +60,8 @@ Nos responde:
 ```bash
 # Nmap 7.80 scan initiated Wed Jun  2 25:25:25 2021 as: nmap -p- --open -v -oG initScan 10.10.10.134
 # Ports scanned: TCP(65535;1-65535) UDP(0;) SCTP(0;) PROTOCOLS(0;)
-Host: 10.10.10.134 ()	Status: Up
-Host: 10.10.10.134 ()	Ports: 22/open/tcp//ssh///, 135/open/tcp//msrpc///, 139/open/tcp//netbios-ssn///, 445/open/tcp//microsoft-ds///, 5985/open/tcp//wsman///, 47001/open/tcp//winrm///, 49664/open/tcp/////, 49665/open/tcp/////, 49666/open/tcp/////, 49667/open/tcp/////, 49668/open/tcp/////, 49669/open/tcp/////, 49670/open/tcp/////
+Host: 10.10.10.134 ()   Status: Up
+Host: 10.10.10.134 ()   Ports: 22/open/tcp//ssh///, 135/open/tcp//msrpc///, 139/open/tcp//netbios-ssn///, 445/open/tcp//microsoft-ds///, 5985/open/tcp//wsman///, 47001/open/tcp//winrm///, 49664/open/tcp/////, 49665/open/tcp/////, 49666/open/tcp/////, 49667/open/tcp/////, 49668/open/tcp/////, 49669/open/tcp/////, 49670/open/tcp/////
 # Nmap done at Wed Jun  2 25:25:25 2021 -- 1 IP address (1 host up) scanned in 76.08 seconds
 ```
 
@@ -76,7 +76,7 @@ Por lo tanto, tenemos:
 | 5985, 47001 | **[WinRM](https://docs.microsoft.com/en-us/windows/win32/winrm/installation-and-configuration-for-windows-remote-management)** |
 | 49664, 49665, 49666, 49667, 49668, 49669, 49670 | Desconocidos |
 
-Ahora hacemos un escaneo más profundo con base en los puertos encontrados, asi podemos investigar sobre que servicio es cada puerto, posiblemente su software y si tiene scripts de *nmap* relacionados:
+Ahora hacemos un escaneo más profundo con base en los puertos encontrados, así podemos investigar sobre que servicio es cada puerto, posiblemente su software y si tiene scripts de *nmap* relacionados:
 
 **~(Para copiar los puertos directamente en la clipboard, hacemos uso de la función referenciada antes**
  
@@ -173,9 +173,9 @@ Un sistema operativo del servidor *Samba*, pero poco podemos hacer desde ya, as�
 
 ### Puertos 139-445 SAMBA [⌖](#puertos-smb) {#puertos-smb}
 
-[SAMBA](https://www.ionos.es/digitalguide/servidores/know-how/server-message-block-smb/) en terminos generales permite a nodos de una red compartir informacion (: Corto y sencillo e.e
+[SAMBA](https://www.ionos.es/digitalguide/servidores/know-how/server-message-block-smb/) en términos generales permite a nodos de una red compartir información (: Corto y sencillo e.e
 
-Podemos jugar con la herramienta [smbmap](https://www.hackplayers.com/2015/05/smbmap-busca-carpetas-windows-desde-kali.html) para ver si existen recursos compatidos en la red, como no tenemos usuarios aún, probamos con una sesión nula:
+Podemos jugar con la herramienta [smbmap](https://www.hackplayers.com/2015/05/smbmap-busca-carpetas-windows-desde-kali.html) para ver si existen recursos compartidos en la red, como no tenemos usuarios aún, probamos con una sesión nula:
 
 ```bash
 ❱ smbmap -H 10.10.10.134 -u '' -p '' 
@@ -204,7 +204,7 @@ Pero jugando:
 
 ***)***
 
-Bien, vemos 4 recursos pero solo tenemos acceso de lectura a 2 de ellos: `Backups` y `IPC$`, para ver el contenido de esos directorios nos apoyamos de la herramienta [smbclient](https://jcsis.wordpress.com/2011/08/26/acceder-a-recurso-compartido-desde-un-terminal-linux-con-smbclient/), empecemos por `Backups`:
+Bien, vemos 4 recursos, pero solo tenemos acceso de lectura a 2 de ellos: `Backups` y `IPC$`, para ver el contenido de esos directorios nos apoyamos de la herramienta [smbclient](https://jcsis.wordpress.com/2011/08/26/acceder-a-recurso-compartido-desde-un-terminal-linux-con-smbclient/), empecemos por `Backups`:
 
 ```bash
 ❱ smbclient //10.10.10.134/Backups -U ''
@@ -221,7 +221,7 @@ smb: \> dir
 smb: \> 
 ```
 
-Opa, vemos algunos archivos y un directorio, para trabajar comodos vamos a descargarnos todo el directorio **Backups** a nuestro sistema, lo podemos hacer tambien con **smbclient**:
+Opa, vemos algunos archivos y un directorio, para trabajar cómodos vamos a descargarnos todo el directorio **Backups** a nuestro sistema, lo podemos hacer también con **smbclient**:
 
 ```bash
 smb: \> prompt off
@@ -232,7 +232,7 @@ getting file \SDT65CB.tmp of size 0 as SDT65CB.tmp (0,0 KiloBytes/sec) (average 
 getting file \WindowsImageBackup\L4mpje-PC\MediaId of size 16 as WindowsImageBackup/L4mpje-PC/MediaId (0,0 KiloBytes/sec) (average 0,1 KiloBytes/sec)
 ```
 
-Pero se queda ahí un rato, para ver el tamaño de lo que estamos descargando podemos usar [smbget](https://www.linuxito.com/gnu-linux/nivel-medio/1315-descargar-archivos-desde-un-servidor-samba-con-smbget) que tambien nos permite descargar directorios compartidos mediante *samba*:
+Pero se queda ahí un rato, para ver el tamaño de lo que estamos descargando podemos usar [smbget](https://www.linuxito.com/gnu-linux/nivel-medio/1315-descargar-archivos-desde-un-servidor-samba-con-smbget) que también nos permite descargar directorios compartidos mediante *samba*:
 
 ```bash
 ❱ smbget -R smb://10.10.10.134/Backups -U ''
@@ -244,9 +244,9 @@ smb://10.10.10.134/Backups/WindowsImageBackup/L4mpje-PC/Backup 2019-02-22 124351
 [WindowsImageBackup/L4mpje-PC/Backup 2019-02-22 124351/9b9cfbc4-369e-11e9-a17c-806e6f6e6963.vhd] 2,50MB of 5,05GB ...
 ```
 
-Pues con razón u.u **5.05** gigas se me descarga en 3 dias (:
+Pues con razón u.u **5.05** gigas se me descarga en 3 días (:
 
-Lo mejor en este caso, es hacer una [montura de la carpera compartida](https://linuxize.com/post/how-to-mount-cifs-windows-share-on-linux/), asi no tenemos que descargar nada (actualicen **cifs-utils**, me daba problemas y actualizandolo se soluciono):
+Lo mejor en este caso, es hacer una [montura de la carpeta compartida](https://linuxize.com/post/how-to-mount-cifs-windows-share-on-linux/), así no tenemos que descargar nada (actualicen **cifs-utils**, me daba problemas y actualizándolo se solucionó):
 
 ```bash
 ❱ mkdir /mnt/Backups
@@ -264,22 +264,22 @@ Y obtenemos:
 └── WindowsImageBackup
     └── L4mpje-PC
         ├── Backup 2019-02-22 124351
-        │   ├── 9b9cfbc3-369e-11e9-a17c-806e6f6e6963.vhd
-        │   ├── 9b9cfbc4-369e-11e9-a17c-806e6f6e6963.vhd
-        │   ├── BackupSpecs.xml
-        │   ├── cd113385-65ff-4ea2-8ced-5630f6feca8f_AdditionalFilesc3b9f3c7-5e52-4d5e-8b20-19adc95a34c7.xml
-        │   ├── cd113385-65ff-4ea2-8ced-5630f6feca8f_Components.xml
-        │   ├── cd113385-65ff-4ea2-8ced-5630f6feca8f_RegistryExcludes.xml
-        │   ├── cd113385-65ff-4ea2-8ced-5630f6feca8f_Writer4dc3bdd4-ab48-4d07-adb0-3bee2926fd7f.xml
-        │   ├── cd113385-65ff-4ea2-8ced-5630f6feca8f_Writer542da469-d3e1-473c-9f4f-7847f01fc64f.xml
-        │   ├── cd113385-65ff-4ea2-8ced-5630f6feca8f_Writera6ad56c2-b509-4e6c-bb19-49d8f43532f0.xml
-        │   ├── cd113385-65ff-4ea2-8ced-5630f6feca8f_Writerafbab4a2-367d-4d15-a586-71dbb18f8485.xml
-        │   ├── cd113385-65ff-4ea2-8ced-5630f6feca8f_Writerbe000cbe-11fe-4426-9c58-531aa6355fc4.xml
-        │   ├── cd113385-65ff-4ea2-8ced-5630f6feca8f_Writercd3f2362-8bef-46c7-9181-d62844cdc0b2.xml
-        │   └── cd113385-65ff-4ea2-8ced-5630f6feca8f_Writere8132975-6f93-4464-a53e-1050253ae220.xml
+        │   ├── 9b9cfbc3-369e-11e9-a17c-806e6f6e6963.vhd
+        │   ├── 9b9cfbc4-369e-11e9-a17c-806e6f6e6963.vhd
+        │   ├── BackupSpecs.xml
+        │   ├── cd113385-65ff-4ea2-8ced-5630f6feca8f_AdditionalFilesc3b9f3c7-5e52-4d5e-8b20-19adc95a34c7.xml
+        │   ├── cd113385-65ff-4ea2-8ced-5630f6feca8f_Components.xml
+        │   ├── cd113385-65ff-4ea2-8ced-5630f6feca8f_RegistryExcludes.xml
+        │   ├── cd113385-65ff-4ea2-8ced-5630f6feca8f_Writer4dc3bdd4-ab48-4d07-adb0-3bee2926fd7f.xml
+        │   ├── cd113385-65ff-4ea2-8ced-5630f6feca8f_Writer542da469-d3e1-473c-9f4f-7847f01fc64f.xml
+        │   ├── cd113385-65ff-4ea2-8ced-5630f6feca8f_Writera6ad56c2-b509-4e6c-bb19-49d8f43532f0.xml
+        │   ├── cd113385-65ff-4ea2-8ced-5630f6feca8f_Writerafbab4a2-367d-4d15-a586-71dbb18f8485.xml
+        │   ├── cd113385-65ff-4ea2-8ced-5630f6feca8f_Writerbe000cbe-11fe-4426-9c58-531aa6355fc4.xml
+        │   ├── cd113385-65ff-4ea2-8ced-5630f6feca8f_Writercd3f2362-8bef-46c7-9181-d62844cdc0b2.xml
+        │   └── cd113385-65ff-4ea2-8ced-5630f6feca8f_Writere8132975-6f93-4464-a53e-1050253ae220.xml
         ├── Catalog
-        │   ├── BackupGlobalCatalog
-        │   └── GlobalCatalog
+        │   ├── BackupGlobalCatalog
+        │   └── GlobalCatalog
         ├── MediaId
         └── SPPMetadataCache
             └── {cd113385-65ff-4ea2-8ced-5630f6feca8f}
@@ -317,7 +317,7 @@ cd113385-65ff-4ea2-8ced-5630f6feca8f_Writere8132975-6f93-4464-a53e-1050253ae220.
 
 Intentando con **strings** o **cat** ante los `.xml` no logramos ver nada...
 
-Buscando en internet y guiandonos por la descripción de los archivos, vemos que un objeto `.vhd` es usado para almacenar backups de discos duros virtuales (maquinas virtuales).
+Buscando en internet y guiándonos por la descripción de los archivos, vemos que un objeto `.vhd` es usado para almacenar backups de discos duros virtuales (máquinas virtuales).
 
 > May include disk partitions, a file system, files, and folders. [VHD extension](https://fileinfo.com/extension/vhd).
 
@@ -325,7 +325,7 @@ Bien, dando algunos pasos por ahí encontramos este recurso:
 
 * [How to mount VHD files](https://infinitelogins.com/2020/12/11/how-to-mount-extract-password-hashes-vhd-files/).
 
-Siguiendolo podemos aprovechar la máquina virtual (backup) que conseguimos para montarla y ver que hay, esto lo logramos con la herramienta **guestmount**:
+Siguiéndolo podemos aprovechar la máquina virtual (backup) que conseguimos para montarla y ver que hay, esto lo logramos con la herramienta **guestmount**:
 
 ```bash
 ❱ mkdir /mnt/vhd
@@ -365,7 +365,7 @@ Peeero antes de enloquecernos con tanto archivo, vamos a la fija, ya que es un *
 * [What is **Security Accounts Manager (SAM)**](https://www.top-password.com/blog/tag/windows-sam-registry-file/).
 * [Registros en *Windows*](https://docs.microsoft.com/en-us/troubleshoot/windows-server/performance/windows-registry-advanced-users).
 
-Por lo general están el la ruta `Windows/System32/config`:
+Por lo general están en la ruta `Windows/System32/config`:
 
 ```bash
 ❱ pwd
@@ -390,7 +390,7 @@ Ahora, juntando los archivos con la herramienta [samdump2](http://www.reydes.com
 L4mpje:1000:aad3b435b51404eeaad3b435b51404ee:26112010952d963c8dc4217daec986d9:::
 ```
 
-Tres usuarios y dos de ellos dicen *disabled* (ni idea que significara en el contexto), tomemos la ultima parte de los hashes (que si nos fijamos, es la única parte que es dinamica) y guardemosla en un archivo:
+Tres usuarios y dos de ellos dicen *disabled* (ni idea que significara en el contexto), tomemos la última parte de los hashes (que si nos fijamos, es la única parte que es dinámica) y guardémosla en un archivo:
 
 ```bash
 ❱ cat ntlm.hashes 
@@ -401,7 +401,7 @@ L4mpje:26112010952d963c8dc4217daec986d9
 
 Bien...
 
-Estuve probando con **evil-winrm**, **psexec**, **wmiexec** y **crackmapexec** con los hashes para hacer *PassTheHash* pero no tuve exito, asi que solo nos queda intentar crackearlos, usando [John The Ripper](https://www.redeszone.net/seguridad-informatica/john-the-ripper-crackear-contrasenas/) logramos esto, debemos pasarle unos parametros:
+Estuve probando con **evil-winrm**, **psexec**, **wmiexec** y **crackmapexec** con los hashes para hacer *PassTheHash*, pero no tuve éxito, así que solo nos queda intentar crackearlos, usando [John The Ripper](https://www.redeszone.net/seguridad-informatica/john-the-ripper-crackear-contrasenas/) logramos esto, debemos pasarle unos parámetros:
 
 ```bash
 ❱ john --wordlist=/usr/share/wordlists/rockyou.txt --format=NT ntlm.hashes
@@ -434,9 +434,9 @@ L4mpje:bureaulampje
 3 password hashes cracked, 0 left
 ```
 
-De los 3 usuarios encontro el resultado del hash de **L4mpje**, el cual da como contraseña a **bureaulampje** ✨
+De los 3 usuarios encontró el resultado del hash de **L4mpje**, el cual da como contraseña a **bureaulampje** ✨
 
-Despues de algo de tiempo muerto jugando con las herramietnas que use para el *PassTheHash* no consegui hacer funcionar las credenciales, pero con **crackmapexec** pude confirmar que si son validas:
+Despues de algo de tiempo muerto jugando con las herramientas que use para el *PassTheHash* no conseguí hacer funcionar las credenciales, pero con **crackmapexec** pude confirmar que si son válidas:
 
 ```bash
 ❱ crackmapexec smb 10.10.10.134 -u 'L4mpje' -p 'pwincorrecta?'
@@ -452,7 +452,7 @@ SMB         10.10.10.134    445    BASTION          [+] Bastion\L4mpje:bureaulam
 
 ¿Se ve la diferencia? e.e
 
-Al no saber donde más probar las credenciales, echamos un ojo al escaneo de **nmap** que hicimos y pues si, habia algo que no habiamos probado, el puerto **22** (SSH), validemos si por ahí las credenciales nos permiten entrar: (Pues como casi nunca esta en una máquina **Windows** pues ni me acordaba de él :P)
+Al no saber donde más probar las credenciales, echamos un ojo al escaneo de **nmap** que hicimos y pues sí, había algo que no habíamos probado, el puerto **22** (SSH), validemos si por ahí las credenciales nos permiten entrar: (Pues como casi nunca está en una máquina **Windows** pues ni me acordaba de él :P)
 
 ```bash
 ❱ ssh L4mpje@10.10.10.134
@@ -478,7 +478,7 @@ Sigamos.
 
 ## Escalada de privilegios [#](#escalada-de-privilegios) {#escalada-de-privilegios}
 
-Despues de un rato profundizando, encontramos un rabbit hole en el directorio `C:\Logs` (que suena llamativo pero no hay nada útil 🙃)...
+Despues de un rato profundizando, encontramos un rabbit hole en el directorio `C:\Logs` (que suena llamativo, pero no hay nada útil 🙃)...
 
 Peeeero, finalmente encontramos algo llamativo y distinto:
 
@@ -507,7 +507,7 @@ PS C:\Program Files (x86)>
 
 Ven algo raro? ¯\_(ツ)_/¯
 
-Pues si, hay un programa llamado **mRemoteNG** que normalmente no viene en los sistemas **Windows**, esto nos da un punto de partida para al menos ver de que se trata:
+Pues sí, hay un programa llamado **mRemoteNG** que normalmente no viene en los sistemas **Windows**, esto nos da un punto de partida para al menos ver de que se trata:
 
 > Este programa te permite administrar, en un mismo programa y con una interfaz muy sencilla y amigable, múltiples conexiones con diferentes protocolos. [¿mRemoteNG?](https://www.smythsys.es/10961/mremoteng-administrador-de-conexiones-de-codigo-abierto/).
 
@@ -515,17 +515,17 @@ Tales como:
 
 > RDP, VNC, SSH, Telnet, rlogin and other protocols. [mremoteng store passwords](https://www.rapid7.com/db/modules/post/windows/gather/credentials/mremote/).
 
-Y si, como se ve en la referencia anterior, encontramos una vulnerabilidad para ese servicio 🤭, ya que administra varios conexiones entre protocolos pero guarda las credenciales que se usan para esas conexiones ⚠️
+Y si, como se ve en la referencia anterior, encontramos una vulnerabilidad para ese servicio 🤭, ya que administra varios conexiones entre protocolos, pero guarda las credenciales que se usan para esas conexiones ⚠️
 
 > It saves the passwords in an encrypted format. [mremoteng store passwords](https://www.rapid7.com/db/modules/post/windows/gather/credentials/mremote/).
 
-Investigando **donde** las guarda, encontramos el modulo de **metasploit** al que se hace referencia y dentro el archivo con el que juega para extraer las credenciales:
+Investigando **donde** las guarda, encontramos el módulo de **metasploit** al que se hace referencia y dentro el archivo con el que juega para extraer las credenciales:
 
 * [metasploit-framework/mremote.rb](https://github.com/rapid7/metasploit-framework/blob/master/modules/post/windows/gather/credentials/mremote.rb).
 
 ![186google_mremoteNG_rb](https://raw.githubusercontent.com/lanzt/blog/main/assets/images/HTB/bastion/186google_mremoteNG_rb.png)
 
-Tenemso dos rutas para probar y buscar el archivo llamado `confCons.xml` o hacer una [busqueda recursiva](https://stackoverflow.com/questions/8677628/recursive-file-search-using-powershell) sobre todo el directorio `C:\Users` y ver si encuentra el objeto, hagamos esa opcion:
+Tenemos dos rutas para probar y buscar el archivo llamado `confCons.xml` o hacer una [búsqueda recursiva](https://stackoverflow.com/questions/8677628/recursive-file-search-using-powershell) sobre todo el directorio `C:\Users` y ver si encuentra el objeto, hagamos esa opción:
 
 ```powershell
 PS C:\Program Files (x86)> Get-Childitem -Path C:\Users\ -Filter confCons.xml -recurse -ErrorAction SilentlyContinue -Force  
@@ -539,7 +539,7 @@ Mode                LastWriteTime         Length Name
 PS C:\Program Files (x86)>
 ```
 
-Le indicamos que busque en el directorio `C:\Users` y que filtre por un archivo llamado `confCons.xml`, que lo haga recursivamente (en todos los directorios) y force a buscar archivos ocultos yyyy que si encuetra algun error lo salte y siga buscando.
+Le indicamos que busque en el directorio `C:\Users` y que filtre por un archivo llamado `confCons.xml`, que lo haga recursivamente (en todos los directorios) y fuerce a buscar archivos ocultos yyyy que si encuentra algún error lo salte y siga buscando.
 
 Y lo encontramos 🔥 lo tenemos en la ruta:
 
@@ -579,7 +579,7 @@ Y otras del usuario **L4mpje**:
 
 Pero, están encriptadas, como las desencriptamos ❓
 
-Con una simple busqueda de `decrypt mremoteng` en la web, obtenemos este recurso que se encarga de esa tarea:
+Con una simple búsqueda de `decrypt mremoteng` en la web, obtenemos este recurso que se encarga de esa tarea:
 
 * [https://github.com/haseebT/mRemoteNG-Decrypt](https://github.com/haseebT/mRemoteNG-Decrypt).
 
@@ -616,6 +616,6 @@ Veamos las flags...
 
 ...
 
-Bonita máquina, bastante juguetona y de enumerar bien, me gusto el tema de las monturas y el tener que jugar con un backup de una mpaquina virtual, lindo eso...
+Bonita máquina, bastante juguetona y de enumerar bien, me gusto el tema de las monturas y el tener que jugar con un backup de una máquina virtual, lindo eso...
 
-Bueno bueno, hasta acá hemos llegado, y que el camino los guie hacia la guia del camino :P COMO SIEMPRE!! A romper todo!
+Bueno bueno, hasta acá hemos llegado, y que el camino los guie hacia la guía del camino :P COMO SIEMPRE!! A romper todo!
