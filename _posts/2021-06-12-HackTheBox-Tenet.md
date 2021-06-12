@@ -6,7 +6,7 @@ image       : https://raw.githubusercontent.com/lanzt/blog/main/assets/images/HT
 category    : [ htb ]
 tags        : [ wordpress, deserialization, scripting, SSH, code-analysis ]
 ---
-Máquina **Linux** nivel medio. Exploraremos deserialización insegura de objetos en **PHP**, reutilización de contraseñas y encontrando pequeños fallos en scripts de **bash** :P
+Máquina **Linux** nivel medio. Exploraremos deserialización insegura de objetos en **PHP**, reutilización de contraseñas y encontraremos pequeños fallos en scripts de **bash** :P
 
 ![309tenetHTB](https://raw.githubusercontent.com/lanzt/blog/main/assets/images/HTB/tenet/309tenetHTB.png)
 
