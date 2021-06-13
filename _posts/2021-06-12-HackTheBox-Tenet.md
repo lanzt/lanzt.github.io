@@ -18,6 +18,8 @@ Bueno bueno bu e nooo ooo ¿Cómo estás?
 
 Nos encontraremos con una página web montada sobre `wordpress`, daremos algunas vueltas y despues de estar perdidos (como raro :P) encontramos dos archivos interesantes: `sator.php` y `sator.php.bak`. Nos aprovecharemos que podemos ver el código fuente para entender que podemos explotar una vulnerabilidad llamada **inyección de objetos PHP**. La usaremos para conseguir una sesión como `www-data`.
 
+* [Script para ejecutar cualquier comando en la máquina mediante la deserialización insegura](https://github.com/lanzt/blog/blob/main/assets/scripts/HTB/tenet/RCE_deserialization.py).
+
 Enumerando tendremos unas credenciales del usuario `neil` hacia la base de datos `mysql`, con las mismas credenciales lograremos obtener una sesión como el usuario `neil`.
 
 También enumerando (en la anterior también nos percatábamos de esto) encontramos un script que puede ser ejecutado como usuario administrador. Observando su fuente notaremos que podemos manipular el proceso, incluiremos nuestra llave pública al archivo `authorized_keys` del usuario `root`. Con esto conseguiremos una sesión como el usuario `root`.
@@ -379,6 +381,12 @@ Yyy obtenemos nuestra Shell:
 ![309page80_ajaTE_revSH](https://raw.githubusercontent.com/lanzt/blog/main/assets/images/HTB/tenet/309page80_ajaTE_revSH.png)
 
 PERFECTOOOOOOOOOOO, que vaina linda ehh!! ⛷️
+
+...
+
+* [Script para ejecutar cualquier comando en la máquina mediante la deserialización insegura](https://github.com/lanzt/blog/blob/main/assets/scripts/HTB/tenet/RCE_deserialization.py).
+
+...
 
 Bueno, hagamos tratamiento de la TTY y sigamos...
 
