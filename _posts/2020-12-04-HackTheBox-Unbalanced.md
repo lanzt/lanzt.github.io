@@ -4,7 +4,7 @@ title       : "HackTheBox - Unbalanced"
 author      : lanz
 image       : https://raw.githubusercontent.com/lanzt/blog/main/assets/images/HTB/unbalanced/268banner.png
 category    : [ htb ]
-tags        : [ rsync, XML, XPath, squid, PiHole, docker ]
+tags        : [ rsync, XML, XPath, squid-proxy, PiHole, docker ]
 ---
 Máquina Linux nivel difícil. Nos enfrentaremos con encriptación, mucho jugueteo con XML (romperemos una clave y encontraremos un XPATH injection que automatizaremos para extraer credenciales), explotaremos PiHole y sobre todo, enumeraremos demasiado (:
 
