@@ -291,7 +291,7 @@ Unos "usuarios" (son nombres, pero podemos pensar en ellos como usuarios tambié
 
 **auth user**:
 
-![156google_mdbonline_AUTHUSERtable](https://raw.githubusercontent.com/lanzt/blog/main/assets/images/HTB/access/156google_mdbonline_AUTHUSERtable.auth userpng)
+![156google_mdbonline_AUTHUSERtable](https://raw.githubusercontent.com/lanzt/blog/main/assets/images/HTB/access/156google_mdbonline_AUTHUSERtable.png)
 
 Encontramos otras credenciales, pero esta vez más directas e.e Tenemos usuarios y contraseñas, aunque una destaca (al ser distinta de las otras) ¿cuál será? e.e 😬
 
@@ -398,7 +398,7 @@ Efectivamente nos pide unas credenciales, pues probando las que conseguimos del 
 
 Peeeeeeeeeerrrrrrrrrrrrfecto, estamos dentro del sistema como el usuario **security** :o
 
-<img src="https://raw.githubusercontent.com/lanzt/blog/main/assets/images/HTB/access/156google_gif_grandpaDance.gif" style="display: block; margin-left: auto; margin-right: auto; width: 60%;"/>
+<img src="https://raw.githubusercontent.com/lanzt/blog/main/assets/images/HTB/access/156google_gif_grandpaDance.gif" style="display: block; margin-left: auto; margin-right: auto; width: 70%;"/>
 
 ...
 
