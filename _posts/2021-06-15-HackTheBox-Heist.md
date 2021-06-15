@@ -28,7 +28,7 @@ Enumerando el sistema nos daremos cuenta de que **Firefox** está instalado (es 
 
 <img src="https://raw.githubusercontent.com/lanzt/blog/main/assets/images/HTB/heist/201statistics.png" style="display: block; margin-left: auto; margin-right: auto; width: 90%;"/>
 
-Algo de suciedad en las manos con tintes de realidad (pero le cuesta e.e)
+Algo de suciedad en las manos con muchas ganas de llegar a ser real.
 
 > Escribo para tener mis "notas", por si algun dia se me olvida todo, leer esto y reencontrarme (o talvez no) :) además de enfocarme en plasmar mis errores y exitos (por si ves mucho texto), todo desde una perspectiva más de enseñanza que de solo plasmar lo que hice.
 
