@@ -2,6 +2,7 @@
 layout      : post
 title       : "Ocultando data en archivos de Windows (con ADS)"
 author      : lanz
+date        : 2021-06-15 23:35:10
 image       : https://raw.githubusercontent.com/lanzt/blog/main/assets/images/articles/ADS-Windows/ads_banner.png
 categories  : [ article ]
 tags        : [ ADS ]
