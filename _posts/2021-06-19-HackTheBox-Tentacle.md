@@ -12,7 +12,7 @@ Máquina Linux nivel difícil (pareció insana eh!). Nos toparemos con varios do
 
 ### TL;DR (Spanish writeup)
 
-**Creada por**: [polarbearer](https://www.hackthebox.eu/profile/159204)
+**Creada por**: [polarbearer](https://app.hackthebox.eu/users/159204).
 
 Bueno bueno, vamo a juga...
 
