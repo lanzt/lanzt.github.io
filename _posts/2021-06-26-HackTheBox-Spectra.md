@@ -12,7 +12,7 @@ Máquina Linux (**Chromium OS**) nivel fácil. Nos veremos las caras con **WordP
 
 ### TL;DR (Spanish writeup)
 
-**Creada por**: [egre55](https://www.hackthebox.eu/profile/1190).
+**Creador**: [egre55](https://www.hackthebox.eu/profile/1190).
 
 Opa opa, como es!
 
