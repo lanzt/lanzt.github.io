@@ -271,9 +271,9 @@ get_header(); ?>
 
 > File edited successfully.
 
-![317page80_theme_seven_404php_editHola](https://raw.githubusercontent.com/lanzt/blog/main/assets/images/HTB/spectra/317page80_theme_seven_404php_editHola.png)
+Validamos ahora en la web:
 
-![317page80_wp_admin_tE_twenty_404php_editHola](https://raw.githubusercontent.com/lanzt/blog/main/assets/images/HTB/spectra/317page80_wp_admin_tE_twenty_404php_editHola.png)
+![317page80_theme_seven_404php_editHola](https://raw.githubusercontent.com/lanzt/blog/main/assets/images/HTB/spectra/317page80_theme_seven_404php_editHola.png)
 
 Perfecto, podemos ver el contenido modificado. Ahora con esto podemos ejecutar comandos en el sistema, validémoslo:
 
