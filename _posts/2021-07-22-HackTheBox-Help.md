@@ -26,7 +26,7 @@ Enumerando lo que tenemos a la mano, nos fijaremos cuidadosamente en la versión
 
 #### Clasificación de la máquina según la gentesita
 
-<img src="https://raw.githubusercontent.com/lanzt/blog/main/assets/images/HTB/help/170statistics.png" style="display: block; margin-left: auto; margin-right: auto; width: 90%;"/>
+<img src="https://raw.githubusercontent.com/lanzt/blog/main/assets/images/HTB/help/170statistics.png" style="display: block; margin-left: auto; margin-right: auto; width: 80%;"/>
 
 Bastante R34LG4LIFE, lo cual ta buenisimooooooooooooooooo.
 
@@ -199,7 +199,7 @@ Le pasamos el **captcha** y damos clic en `Submit`.
 
 La web nos responde:
 
-![170page80_support_fileNotAllowed](https://raw.githubusercontent.com/lanzt/blog/main/assets/images/HTB/help/170page80_support_fileNotAllowed.png)
+<img src="https://raw.githubusercontent.com/lanzt/blog/main/assets/images/HTB/help/170page80_support_fileNotAllowed.png" style="display: block; margin-left: auto; margin-right: auto; width: 100%;"/>
 
 Así que al parecer no podemos subir archivos `.php`, podriamos intentar cambiar el contenido agregando `GIF8;` al inicio del objeto para que el sistema y la web interpreten que el contenido es un `gif`, pero realmente es codigo `.php`. Peero esto no nos funciona, si jugamos con la extension tampoco llegamos a ningun lado, así que sigamos enumerando la web...
 
@@ -363,7 +363,7 @@ found!
 
 OPAAA, pues visitemos ese link:
 
-![170page80_support_foundTicketRCE](https://raw.githubusercontent.com/lanzt/blog/main/assets/images/HTB/help/170page80_support_foundTicketRCE.png)
+<img src="https://raw.githubusercontent.com/lanzt/blog/main/assets/images/HTB/help/170page80_support_foundTicketRCE.png" style="display: block; margin-left: auto; margin-right: auto; width: 100%;"/>
 
 EJEEEEEEEEEEEE, tenemos ejecución remota de comandooooooooooooooooooooooos!!
 
