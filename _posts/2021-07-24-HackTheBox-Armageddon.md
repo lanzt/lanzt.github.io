@@ -4,7 +4,7 @@ title       : "HackTheBox - Armageddon"
 author      : lanz
 image       : https://raw.githubusercontent.com/lanzt/blog/main/assets/images/HTB/armageddon/323banner.png
 category    : [ htb ]
-tags        : [ drupal, snap, mysql ]
+tags        : [ drupal, snap ]
 ---
 Máquina Linux nivel fácil. Jugaremos con **CVE**s, romperemos **Drupal7** para ejecutar comandos, las malas configuraciones se revelarán y finalmente nos aprovechamos de nuestros permisos para ejecutar un paquete **snap** malicioso y obtener el privesc.
 
@@ -24,7 +24,9 @@ Finalmente validando nuestros permisos de ejecución como usuario **<u>root</u>*
 
 #### Clasificación de la máquina según la gentesita
 
-<img src="https://raw.githubusercontent.com/lanzt/blog/main/assets/images/HTB/armageddon/323statistics.png" style="display: block; margin-left: auto; margin-right: auto; width: 90%;"/>
+<img src="https://raw.githubusercontent.com/lanzt/blog/main/assets/images/HTB/armageddon/323statistics.png" style="display: block; margin-left: auto; margin-right: auto; width: 80%;"/>
+
+Tirando a vulns conocidas pero tambien algo juguetona y poco real.
 
 > Escribo para tener mis "notas", por si algun dia se me olvida todo, leer esto y reencontrarme (o talvez no) :) además de enfocarme en plasmar mis errores y exitos (por si ves mucho texto), todo desde una perspectiva más de enseñanza que de solo plasmar lo que hice.
 
