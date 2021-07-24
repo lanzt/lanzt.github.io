@@ -4,7 +4,7 @@ title       : "HackTheBox - Help"
 author      : lanz
 image       : https://raw.githubusercontent.com/lanzt/blog/main/assets/images/HTB/help/170banner.png
 category    : [ htb ]
-tags        : [ kernel-exploit, HelpDeskZ, mysql]
+tags        : [ kernel-exploit, HelpDeskZ, ticket-support ]
 ---
 Máquina Linux nivel fácil. Investigaremos subidas de archivos **.php** en el servicio **HelpDeskZ**, jueguitos sucios con **MySQL** y una explotación de un kernel con ganas de morir.
 
