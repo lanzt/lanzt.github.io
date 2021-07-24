@@ -4,7 +4,7 @@ title       : "HackTheBox - Delivery"
 author      : lanz
 image       : https://raw.githubusercontent.com/lanzt/blog/main/assets/images/HTB/delivery/308banner.png
 category    : [ htb ]
-tags        : [ cracking, osticket, mattermost, mysql, rule-based-attack ]
+tags        : [ cracking, osticket, mattermost, rule-based-attack, ticket-support ]
 ---
 Máquina Linux nivel fácil, jugaremos con **osTicket** creando tickets que nos servirán para ¿obtener emails externos en el propio status del ticket? ¿khE? (jajaj, sip), nos moveremos entre archivos y bases de datos **MySQL** y curiosamente usaremos las **reglas** para romper cosas con **HashCat** y **John The Ripper** :)
 
