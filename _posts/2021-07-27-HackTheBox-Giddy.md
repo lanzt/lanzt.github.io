@@ -20,7 +20,7 @@ Máquina, máquinita, máquinota. Vamos inicialmente a jugar con un servidor web
 
 Nos crearemos un liiiindo script para dumpear toda la data que queramos con respecto a **variables del sistema**, **tablas**, **columnas**, etc.
 
-> [extract_data_sqli_errorbased.py](https://github.com/lanzt/blog/blob/main/assets/scripts/HTB/giddy/extract_data_sqli_errorbased.py)
+> [extract_data_sqli.py](https://github.com/lanzt/blog/blob/main/assets/scripts/HTB/giddy/extract_data_sqli.py)
 
 Enumerando las bases de datos no encontraremos nada relevante, pasaremos a inyectar comandos del propio `MSSQL`, jugando con esto llegaremos a la función [xp_dirtree](https://www.patrickkeisler.com/2012/11/how-to-use-xpdirtree-to-list-all-files.html), la usaremos para por medio de la herramienta `responder` interceptar un hash `Net-NTLMv2` del usuario **Stacy**. 
 
@@ -194,6 +194,8 @@ Vemos un `commonName` muy atractivo:
 
 Nos da la idea de tener una Shell en la web, ya veremos.
 
+| Puerto | Servicio | Versión |
+| :----- | :------- | :------ |
 | 3389   | RDP      | Microsoft Terminal Services |
 
 Muchas referencias al nombre **Giddy** (mayusculas y minusculas)
@@ -296,7 +298,7 @@ Nos devuelve un error, pero además de eso vemos varias cositas, como una ruta a
 
 | Payload            | Descripción |
 | ------------------ | :---------- |
-| `1 order by 100`   | Así intentamos determinar cuantas columnas hay en la consulta actual, como ejemplo intentamos **100** columnas, si no existe ese número de columnas nos debería responder con un error, si vemos ese error, sabemos que es vulnerable y debemos empezar a jugar con el **100** hacia abajo para encontrar el número de columnas (cuando ya no nos arroje error sabremos que ese será el número de columnas). |
+| `1 order by 100`   | Así intentamos determinar cuantas columnas hay en la consulta actual, como ejemplo intentamos **100** columnas, si no existe ese número de columnas nos debería responder con un error, si llega el error sabemos que es vulnerable y debemos empezar a restar al **100** para encontrar el número de columnas (cuando ya no existan errores, tendremos el num de cols). |
 | `1 or sleep(5)`    | Para ver si existe una vulnerabilidad **SQL** basada en tiempo (si la consulta se demora 5 segundos en responder, sabríamos que es vulnerable). |
 | `;#`               | Hace referencia a un comentario (hay varias maneras), por lo que le decimos que tome toooooooodo lo que este después de nuestro payload como comentario para que no interfiera con nuestra explotación |
 
