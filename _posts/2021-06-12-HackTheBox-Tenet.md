@@ -4,7 +4,7 @@ title       : "HackTheBox - Tenet"
 author      : lanz
 image       : https://raw.githubusercontent.com/lanzt/blog/main/assets/images/HTB/tenet/309banner.png
 category    : [ htb ]
-tags        : [ wordpress, deserialization, scripting, SSH, code-analysis ]
+tags        : [ wordpress, deserialization, scripting, SSH-keys, code-analysis ]
 ---
 Máquina **Linux** nivel medio. Exploraremos deserialización insegura de objetos en **PHP**, reutilización de contraseñas y encontraremos pequeños fallos en scripts de **bash** :P
 
