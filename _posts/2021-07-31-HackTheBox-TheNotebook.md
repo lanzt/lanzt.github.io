@@ -4,7 +4,7 @@ title       : "HackTheBox - TheNotebook"
 author      : lanz
 image       : https://raw.githubusercontent.com/lanzt/blog/main/assets/images/HTB/thenotebook/320banner.png
 category    : [ htb ]
-tags        : [ docker, JWT, ssh-keys, runc ]
+tags        : [ docker, JWT, ssh-keys, runc, sudo ]
 ---
 Máquina Linux nivel medio. Exploraremos el mundo de los **JSON Web Tokens** para ingresar a una web con permisos administrativos. Jugaremos con llaves **SSH** y romperemos el siempre fiel **Docker** mediante un **CVE** que permite sobreescribir el contenido del binario **/bin/sh** con lo que queramos.
 
