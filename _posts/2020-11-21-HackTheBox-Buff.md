@@ -4,7 +4,7 @@ title       : "HackTheBox - Buff"
 author      : lanz
 image       : https://raw.githubusercontent.com/lanzt/blog/main/assets/images/HTB/buff/bannerbuff.png
 category    : [ htb ]
-tags        : [ file-upload, buffer-overflow ]
+tags        : [ gym-management-system, CloudMe, buffer-overflow ]
 ---
 Máquina Windows nivel fácil. Buff buff uff, explotaremos un gimnasio :o (casi) yyy aprovecharemos un Buffer Overflow para ser amos del sistema... ¿Sencillo, no? pues...
 
@@ -14,7 +14,7 @@ Máquina Windows nivel fácil. Buff buff uff, explotaremos un gimnasio :o (casi)
 
 Buenas buenas, e.e. Mediante la enumeración de servicios nos encontramos con el puerto `8080` abierto, dándole vueltas nos topamos con el software con que fue creada la página, `Gym Management System 1.0`, usando **searchsploit** y la web le encontramos un exploit, nos aprovecharemos de el para obtener acceso a la máquina. 
 
-Estando dentro veremos que el usuario `shaun` en sus carpetas tiene un binario interesante, el cual nos permite hacer cositas con las nubes :P, enumerando su origen veremos que existe un `Buffer Overflow` que afecta la versión que tenemos y nos permite ejecutar código como usuario **administrador**. Con esto en mente nos pondremos a jugar para hacer un `Remote Port Forwarding` ya que la maquina nos presentara limitantes. 
+Estando dentro veremos que el usuario `shaun` en sus carpetas tiene un binario interesante (del servicio **CloudMe**), el cual nos permite hacer cositas con las nubes :P, enumerando su origen veremos que existe un `Buffer Overflow` que afecta la versión que tenemos y nos permite ejecutar código como usuario **administrador**. Con esto en mente nos pondremos a jugar para hacer un `Remote Port Forwarding` ya que la maquina nos presentara limitantes. 
 
 Después del *RPF* usaremos nuestras propias herramientas para que el **BOF** nos genere una reverse Shell como el usuario administrador del sistema. Eeeeeeeeeeeeeesto en pocas palabras. Démosle candela (:
 
