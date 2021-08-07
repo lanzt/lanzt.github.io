@@ -4,7 +4,7 @@ title       : "HackTheBox - Dropzone"
 author      : lanz
 image       : https://raw.githubusercontent.com/lanzt/blog/main/assets/images/HTB/dropzone/139banner.png
 category    : [ htb ]
-tags        : [ ADS, TFTP, arbitrary-file-upload, MOF, WMI ]
+tags        : [ ADS, TFTP, MOF, WMI ]
 ---
 Máquina **Windows** nivel difícil, bastante bastante entretenida, jugaremos con un servicio **TFTP** para escribir archivos arbitrariamente en el sistema (sin restricción), usaremos esa habilidad para jugar con objetos **.mof** y el servicio **WMI**, consiguiendo así pasar de una simple subida de archivos a una "simple" ejecución remota de comandos en el sistema (: Finalmente debemos encontrar contenido oculto en archivos, esto mediante el feature **ADS** en Windows.
 
