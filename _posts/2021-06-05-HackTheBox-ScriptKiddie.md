@@ -4,7 +4,7 @@ title       : "HackTheBox - ScriptKiddie"
 author      : lanz
 image       : https://raw.githubusercontent.com/lanzt/blog/main/assets/images/HTB/scriptkiddie/314banner.png
 category    : [ htb ]
-tags        : [ sudo, command-injection, code-analysis ]
+tags        : [ sudo, command-injection, file-upload, code-analysis ]
 ---
 Máquina Linux nivel fácil. Un servidor web que ejecuta comandos específicos, pero que con uno de ellos podemos agregar un **"template"**, ¿qué puede salir mal? Inspeccionaremos un script al detalle y encontraremos una manera de cambiar el flujo del proceso para que haga lo que queramos :) Y validaremos permisos como **sudo**, con la sorpresa que ejecutando solo 2 líneas somos **root** mediante *msfconsole*.
 
