@@ -4,7 +4,7 @@ title       : "HackTheBox - Remote"
 author      : lanz
 image       : https://raw.githubusercontent.com/lanzt/blog/main/assets/images/HTB/remote/bannerremote.png
 categories  : [ htb ]
-tags        : [ cracking, CMS, UsoSvc, TeamViewer ]
+tags        : [ cracking, CMS, UsoSvc, TeamViewer, windows-privileges ]
 ---
 Máquina Windows nivel fácil. Jugaremos con monturas, crackeo, romperemos Umbraco yyyy encontraremos dos maneras de volvernos administradores del sistema, mediante UsoSvc y TeamViewer.
 
