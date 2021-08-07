@@ -4,7 +4,7 @@ title       : "HackTheBox - Love"
 author      : lanz
 image       : https://raw.githubusercontent.com/lanzt/blog/main/assets/images/HTB/love/344banner.png
 category    : [ htb ]
-tags        : [ .msi, arbitrary-file-upload ]
+tags        : [ MSI, registers, AlwaysInstallElevated, SSRF ]
 ---
 Máquina **Windows** nivel fácil, escanearemos archivos locales (**localhost**) en busca de malware e.e Encontraremos credenciales y generaremos votantes con fotos de perfil peligrosas... Jugaremos con registros e instalaremos paquetes **MSI** algo traviesos.
 
