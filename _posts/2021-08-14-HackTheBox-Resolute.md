@@ -1009,7 +1009,7 @@ Subimos a la ruta `C:\Windows\Temp` y nos ponemos en escucha por el puerto `4434
 
 Y LISTOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO...
 
-<img src="https://raw.githubusercontent.com/lanzt/blog/main/assets/images/HTB/resolute/220google_gif_girlPChappy.gif" style="display: block; margin-left: auto; margin-right: auto; width: 100%;"/>
+<img src="https://raw.githubusercontent.com/lanzt/blog/main/assets/images/HTB/resolute/220google_gif_girlPChappy.gif" style="display: block; margin-left: auto; margin-right: auto; width: 60%;"/>
 
 También obtenemos la reverse shell (: Así que tenemos 3 opciones, personalmente me gusta la segunda, ya que es muuuuuuuuuy sencilla de leer y saber que estamos haciendo.
 
