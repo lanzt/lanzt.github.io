@@ -896,7 +896,7 @@ Si nos fijamos la primera función se llama `DnsPluginInitialize`, lo que nos pu
 
 Listooos, apoyados de nuevo en el post vemos que implementa en esa función la instrucción `system()` para que le ejecute el binario `shell.cmd` de la raíz (que puede contener ya sea una reverse shell o lo que sea).
 
-Pues aprovechemos ese conocimiento para implementar en el archivo `Win32Project1.cpp` una línea con la función `sy, pero como prueba que nos haga un `ping` hacia nuestra máquina, con lo cual si obtenemos la traza, sabemos que estamos ejecutando comandos en el sistema por medio de la `DLL`.
+Pues aprovechemos ese conocimiento para implementar en el archivo `Win32Project1.cpp` una línea con la función `system()`, pero como prueba que nos haga un `ping` hacia nuestra máquina, con lo cual si obtenemos la traza, sabemos que estamos ejecutando comandos en el sistema por medio de la `DLL`.
 
 Nos movemos a una VM **Windows**, clonamos el repo, abrimos el objeto `Win32Project1.sln` (usaré [Visual Studio](https://visualstudio.microsoft.com/es/) para abrir el proyecto, modificarlo y compilarlo) y nos posicionamos en el archivo `Win32Project1.cpp`.
 
