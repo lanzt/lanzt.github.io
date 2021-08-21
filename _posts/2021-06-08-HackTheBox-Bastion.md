@@ -4,7 +4,7 @@ title       : "HackTheBox - Bastion"
 author      : lanz
 image       : https://raw.githubusercontent.com/lanzt/blog/main/assets/images/HTB/bastion/186banner.png
 category    : [ htb ]
-tags        : [ mRemoteNG, VHD, backups, cracking, mount, registry-files, SMB ]
+tags        : [ mRemoteNG, VHD, backup, cracking, mount, registry-files, SMB ]
 ---
 Máquina **Windows** nivel fácil. Nos moveremos con *Samba*, jugaremos con el backup de una máquina virtual **Windows** para extraer los archivos **SAM** y **SYSTEM**... Crackearemos cosillas y nos daremos cuenta que un software guarda contraseñas de acceso al sistema, ¿qué procede? e.e
 
