@@ -2,7 +2,6 @@
 layout      : post
 title       : "HackTheBox - Curling"
 author      : lanz
-date        : 2021-08-21 04:56:10
 image       : https://raw.githubusercontent.com/lanzt/blog/main/assets/images/HTB/curling/160banner.png
 category    : [ htb ]
 tags        : [ joomla, backup, cURL-config-file, /etc/shadow ]
