@@ -360,7 +360,7 @@ println(hudson.util.Secret.decrypt("{...}"))
 
 Leyendo [acá](https://gist.github.com/tuxfight3r/eca9442ff76649b057ab) entendemos el porqué hay unos `{}` en el ejemplo de arriba, ellos hacen parte del secreto, por lo que en caso de encontrar algún secreto para lograr desencriptarlo debemos agregar los `{}` también...
 
-Enumerando las carpetas vemos el archivo `config.xml` en la ruta `..\Administrator\.jenkins\users\admin`; en su contenido hay un **token** entre `{}`:
+Enumerando las carpetas vemos el archivo `config.xml` en la ruta `..\Administrator\.jenkins\\users\admin`; en su contenido hay un **token** entre `{}`:
 
 <img src="https://raw.githubusercontent.com/lanzt/blog/main/assets/images/HTB/jeeves/114bash_kohsukeRevSH_adminConfigXML_token.png" style="display: block; margin-left: auto; margin-right: auto; width: 100%;"/>
 
