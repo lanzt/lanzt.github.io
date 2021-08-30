@@ -4,7 +4,7 @@ title       : "HackTheBox - Knife"
 author      : lanz
 image       : https://raw.githubusercontent.com/lanzt/blog/main/assets/images/HTB/knife/347banner.png
 category    : [ htb ]
-tags        : [ PHP, knife, chef, sudo ]
+tags        : [ PHP-explotation, knife, chef, sudo ]
 ---
 Máquina Linux nivel fácil, explotaremos **PHP** y jugaremos con la herramienta **knife** para ejecutar código **Ruby** como el usuario **root** (mediante **sudo**).
 
