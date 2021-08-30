@@ -26,6 +26,20 @@ body {
     background: linear-gradient(90deg, rgba(14,0,51,1) 0%, rgba(57,0,121,1) 52%, rgba(60,3,129,1) 100%);
     color: rgb(250, 230, 255);
 }
+
+// Scrollbar theme custom
+::-webkit-scrollbar {  // Tamaño de la barra, tanto vertical como horizontal
+    width: 15px; height: 10px;
+}
+::-webkit-scrollbar-track-piece {  // Color del fondo debajo de la barra
+    background-color: rgb(39, 0, 57);
+}
+::-webkit-scrollbar-thumb {  // Color de la barra y radio
+    height: 50px; 
+    background-color: rgb(80, 80, 80); 
+    border-radius: 20px;
+}
+
 a {
     color: darken($primary, 24%);
 }
@@ -230,6 +244,10 @@ img, img:hover {
                 position: relative;
             }
         }
+    }
+    a:hover {
+        color: rgb(255, 255, 255);
+        text-decoration: underline;
     }
 }
 
