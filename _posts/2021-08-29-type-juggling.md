@@ -6,7 +6,7 @@ image       : https://raw.githubusercontent.com/lanzt/blog/main/assets/images/ar
 category    : [ article ]
 tags        : [ type-juggling, PHP ]
 ---
-Jugaremos con la pobre validación que se hace a veces en formularios o procesos en `PHP`, estos llevados a cabo con `==` o `!=`.
+Jugaremos con la **pobre validación** que se hace a veces en formularios o procesos de `PHP`, estos llevados a cabo con `==` o `!=`.
 
 ...
 
