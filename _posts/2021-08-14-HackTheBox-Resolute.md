@@ -581,7 +581,7 @@ Y simplemente quitamos los `[]` de la cadena:
 
 Listones, al final le agregamos un archivo donde queremos guardar esos valores (`... > rids.txt`) y ya tenemos los `rids` (: 
 
-Ahora volvemos a usar `rp, pero con el comando `queryuser` y le vamos pasando los `rids` del archivo, primero hagamos una prueba con el usuario `Administrator`, ya vimos todos los campos que nos devuelve al ejecutar el comando, quedémonos con el nombre del usuario y su descripción, ningún otro campo se ve llamativo así que juguemos con esos dos:
+Ahora volvemos a usar `rpcclient`, pero con el comando `queryuser` y le vamos pasando los `rids` del archivo, primero hagamos una prueba con el usuario `Administrator`, ya vimos todos los campos que nos devuelve al ejecutar el comando, quedémonos con el nombre del usuario y su descripción, ningún otro campo se ve llamativo así que juguemos con esos dos:
 
 ```bash
 ❱ rpcclient 10.10.10.169 -U "" -N -c 'queryuser 0x1f4' -N | grep -E "User Name|Description"
