@@ -802,3 +802,24 @@ table {
     }
     margin: 0 0 30px 0;
 }
+
+// tags
+// - Block
+ul.tag-box li {
+    display: inline-block;
+    list-style: none;
+    list-style-image: none;
+    margin: 0 0 10px 0;
+}
+// - Background and tag
+ul.tag-box li a {
+    background: rgba(14, 0, 51, 0.837);
+    padding: 4px 8px;
+    border-radius: 3px;
+    color: rgb(255, 165, 255);
+}
+// - Post count
+ul.tag-box li span.size {
+    font-weight: 300;
+    color: rgb(234, 0, 255);
+}
