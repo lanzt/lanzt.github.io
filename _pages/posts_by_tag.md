@@ -21,17 +21,12 @@ permalink: /tags
   {% assign t = tag | first %}
   {% assign posts = tag | last %}
 
-<h4 id="{{ t }}">{{ t }}</h4>
-<ul>
-{% for post in posts %}
-  {% if post.tags contains t %}
-    <li>
-      <span class="date">{{ post.date | date: '%d %b %y' }}</span>:  <a href="{{ post.url }}">{{ post.title }}</a>
-    </li>
-  {% endif %}
+  <h4 class="mt-5 mb-neg-30" id="{{ t }}">🎈 <u>{{ t }}</u></h4>
+  <div class="blog-grid-container">
+    {% for post in posts %}
+      {% if post.tags contains t %}
+        {% include postbox.html %}
+      {% endif %}
+    {% endfor %}
+  </div>
 {% endfor %}
-</ul>
-{% endfor %}
-
-...
-
