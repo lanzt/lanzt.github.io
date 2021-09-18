@@ -4,7 +4,7 @@ title       : "HackTheBox - Breadcrumbs"
 author      : lanz
 image       : https://raw.githubusercontent.com/lanzt/blog/main/assets/images/HTB/breadcrumbs/316banner.png
 category    : [ htb ]
-tags        : [ SQLi, LFI, cookie-hijacking, file-upload, port-forwarding, AES ]
+tags        : [ SQLi, LFI, cookie-hijacking, file-upload, port-forwarding, AES, JWT ]
 ---
 Máquina Windows nivel difícil. Jugaremos mucho con inyecciones y robos :P Encontraremos un **LFI**, haremos **cookie-hijacking**, leeremos contraseñas almacenadas, jugando con binarios encontramos una **URL** que nos llevara de la mano a un **SQLi** y haremos desencriptación con claves **AES**.
 
