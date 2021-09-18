@@ -8,7 +8,7 @@ permalink: /tags
 
 **Acá están listados los tags de toooooodos los posts del blog, solo que relacionamos que artículos se enfocan en X tag.**
 
-{% assign sorted_tags = (site.tags | sort:0) %}
+{% assign sorted_tags = site.tags | sort %}
 <ul class="tag-box">
 	{% for tag in sorted_tags %}
 		{% assign t = tag | first %}
