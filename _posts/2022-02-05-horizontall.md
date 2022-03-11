@@ -4,7 +4,7 @@ title       : "HackTheBox - Horizontall"
 author      : lanz
 image       : https://raw.githubusercontent.com/lanzt/blog/main/assets/images/HTB/horizontall/374banner.png
 category    : [ htb ]
-tags        : [ deserialization, Laravel 8, Ignition PHP, Strapi, SSH-Keys ]
+tags        : [ deserialization, Laravel 8, Ignition PHP, Strapi, ssh-keys ]
 ---
 Máquina Linux nivel fácil. Inspección de código fuente, problemitas con `Strapi`, con `Laravel` y con reverse shells.
 
