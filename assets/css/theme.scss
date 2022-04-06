@@ -14,6 +14,7 @@ $enable-rounded: false;
 @import "bootstrap/mixins";
 @import 'bootstrap/bootstrap';
 @import 'stars';
+@import url('https://fonts.googleapis.com/css?family=Special+Elite');
 
 
 // general
@@ -40,13 +41,19 @@ body {
     border-radius: 1px;
 }
 
+// Links (href)
 a {
-    color: darken($primary, 24%);
+    color: darken($primary, 17%);
+}
+a:hover {
+    text-decoration: none;
+    color: rgb(178, 55, 209);
 }
 a:focus {
-    color: rgb(177, 41, 211);
+    color: rgb(178, 55, 209);
 }
 
+// Images of site
 img {
     max-width: 100%;
     height: auto;
@@ -78,17 +85,39 @@ h1,h2,h3,h4,h5,h6 {
     min-width: 180px;
 }
 blockquote {
-    font-family: Times New Roman;
-    font-style: italic;
-    font-size: 20px;
-    position: relative;
-    border-left: 4px solid rgb(20, 0, 36);
-    margin-left: 10px;
-    padding-left: 15px;
+    font-family: 'Special Elite', cursive;
+    font-weight: 100;
+	font-size: 27px;
+	max-width: 100%;;
+	line-height: 1.2;
+	position: relative;
+	margin: 0;
+	padding: .5rem;
     cite {
-        font-weight:700;
+        line-height: 3;
+        text-align: left;
     }
 }
+blockquote:before, blockquote:after {
+	position: absolute;
+	color: #f1efe6;
+	font-size: 8rem;
+	width: 4rem;
+	height: 4rem;
+}
+blockquote:before {
+    color: #000000;
+	content: '“';
+	left: -5rem;
+	top: 0rem;
+}
+blockquote:after {
+    color: #000000;
+	content: '”';
+	right: -5rem;
+	bottom: 1rem;
+}
+
 // animation
 .nav-icon, 
 .hamburger-bar, 
@@ -238,19 +267,37 @@ img, img:hover {
                 padding: 2vh 0px 2vh 0px;
                 line-height: 20px;
                 text-decoration: none;
-                color: #8E9AA7;
+                color: #b041ff;
                 font-weight: 400;
-                font-size: 18px;
+                line-height: 1.7;
+                font-size: 23px;
                 position: relative;
+            }
+            a#menu-home {
+                color: rgb(255, 255, 255);
+            }
+            a#menu-aboutme {
+                color: rgb(73, 73, 73);
             }
         }
     }
     a:hover {
         color: rgb(255, 255, 255);
-        text-decoration: underline;
+        text-decoration: none;
+    }
+    a#menu-home:hover {
+        color: rgb(255, 0, 234);
+    }
+    a#menu-hackthebox:hover {
+        color: rgb(0, 255, 8);
+    }
+    a#menu-tryhackme:hover {
+        color: rgb(0, 8, 227);
+    }
+    a#menu-aboutme:hover {
+        color: rgb(255, 0, 238);
     }
 }
-
 
 // blog grid
 .blog-grid-container {
@@ -318,6 +365,7 @@ img, img:hover {
         }
     }
     .post-date {
+        color: white;
         float:right;
         margin-top: 10px;
     }
