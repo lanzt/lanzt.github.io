@@ -8,7 +8,7 @@ tags        : [ IPMI, command-injection, mariadb-vuln, Zabbix ]
 ---
 Máquina Linux nivel medio. Jugaremos con protocolos para controlar la existencia (`IPMI`), reutilización de credenciales, inyección de comandos (en `Zabbix`) y más inyección de comandos (en `mysql`).
 
-![410shibbolethHTB](https://raw.githubusercontent.com/lanzt/blog/main/assets/images/HTB/shibboleth/410shibbolethHTB.png)
+<img src="https://raw.githubusercontent.com/lanzt/blog/main/assets/images/HTB/shibboleth/410shibbolethHTB.png" class="img-to-zoom" data-toggle="modal" data-target=".modal-zoomed-img" style="width: 100%;"/>
 
 ## TL;DR (Spanish writeup)
 
@@ -28,9 +28,9 @@ Jugando con reutilización de contraseñas nos moveremos al usuario `ipmi-svc`, 
 
 ### Clasificación de la máquina según la gentesita
 
-<img src="https://raw.githubusercontent.com/lanzt/blog/main/assets/images/HTB/shibboleth/410rating.png" style="display: block; margin-left: auto; margin-right: auto; width: 30%;"/>
+<img src="https://raw.githubusercontent.com/lanzt/blog/main/assets/images/HTB/shibboleth/410rating.png" class="img-to-zoom" data-toggle="modal" data-target=".modal-zoomed-img" style="width: 30%;"/>
 
-<img src="https://raw.githubusercontent.com/lanzt/blog/main/assets/images/HTB/shibboleth/410statistics.png" style="display: block; margin-left: auto; margin-right: auto; width: 80%;"/>
+<img src="https://raw.githubusercontent.com/lanzt/blog/main/assets/images/HTB/shibboleth/410statistics.png" class="img-to-zoom" data-toggle="modal" data-target=".modal-zoomed-img" style="width: 80%;"/>
 
 Muuuuuuchas vulns públicas y conocidas (= máquina llevada a la realidad) (me gusta).
 
@@ -156,7 +156,7 @@ Recordemos que tenemos un redirect, por lo que al intentar una petición contra 
 
 Yyyy:
 
-<img src="https://raw.githubusercontent.com/lanzt/blog/main/assets/images/HTB/shibboleth/410page80.png" style="display: block; margin-left: auto; margin-right: auto; width: 100%;"/>
+<img src="https://raw.githubusercontent.com/lanzt/blog/main/assets/images/HTB/shibboleth/410page80.png" class="img-to-zoom" data-toggle="modal" data-target=".modal-zoomed-img" style="width: 100%;"/>
 
 Ya tenemos acceso al sitio...
 
@@ -195,7 +195,7 @@ Uhh tenemos 3 subdominios (: Pues hacemos lo mismo de antes, los agregamos al ob
 
 Todos responden con un login-panel del software [zabbix](https://es.wikipedia.org/wiki/Zabbix):
 
-<img src="https://raw.githubusercontent.com/lanzt/blog/main/assets/images/HTB/shibboleth/410page80_zabbix_loginPanel.png" style="display: block; margin-left: auto; margin-right: auto; width: 100%;"/>
+<img src="https://raw.githubusercontent.com/lanzt/blog/main/assets/images/HTB/shibboleth/410page80_zabbix_loginPanel.png" class="img-to-zoom" data-toggle="modal" data-target=".modal-zoomed-img" style="width: 100%;"/>
 
 ¿Pero qué es **zabbix**? Rápidamente:
 
@@ -203,7 +203,7 @@ Todos responden con un login-panel del software [zabbix](https://es.wikipedia.or
 
 Perfecto, lo primero fue probar credenciales por default en varios sistemas (como `admin`:`admin`), pero no logramos pasar el login-panel, también jugamos con algunos payloads, ya sea para generar errores llamativos o incluso bypassear el login, solo que tampoco fue fructifero :'( Después revisando el código fuente de la web encontramos la versión de `zabbix` que esta siendo usada:
 
-<img src="https://raw.githubusercontent.com/lanzt/blog/main/assets/images/HTB/shibboleth/410page80_zabbix_loginPanel_sourceCode_version.png" style="display: block; margin-left: auto; margin-right: auto; width: 100%;"/>
+<img src="https://raw.githubusercontent.com/lanzt/blog/main/assets/images/HTB/shibboleth/410page80_zabbix_loginPanel_sourceCode_version.png" class="img-to-zoom" data-toggle="modal" data-target=".modal-zoomed-img" style="width: 100%;"/>
 
 Esto nos permite direccionar nuestra siguiente búsqueda en la web: `zabbix 5.0 exploit`, obtenemos algunos recursos llamativos:
 
@@ -299,7 +299,7 @@ Error: Unable to establish IPMI v2 / RMCP+ session
 
 Quiere decir que el usuario `root` no nos permite generar una sesión (por lo tanto, no es válido), después de probar algunos obtenemos esta respuesta con `Administrator`:
 
-<img src="https://raw.githubusercontent.com/lanzt/blog/main/assets/images/HTB/shibboleth/410bash_ipmi_bypassAuth_Administrator_userList.png" style="display: block; margin-left: auto; margin-right: auto; width: 100%;"/>
+<img src="https://raw.githubusercontent.com/lanzt/blog/main/assets/images/HTB/shibboleth/410bash_ipmi_bypassAuth_Administrator_userList.png" class="img-to-zoom" data-toggle="modal" data-target=".modal-zoomed-img" style="width: 100%;"/>
 
 OPAAA LA POPAAA! Pues efectivamente se logra el **bypass** y vemos todos los usuarios, aunque solo notamos a `Administrator` entre todos los **63** (solo liste 15 :P) campos disponibles.
 
@@ -324,13 +324,13 @@ Es muy sencillo, juega con `ipmitool` para extraer una identidad, del output (co
 
 Le pasamos el wordlist `rockyou.txt` (`/usr/share/wordlists/rockyou.txt`) yyyyyyyyyyy:
 
-<img src="https://raw.githubusercontent.com/lanzt/blog/main/assets/images/HTB/shibboleth/410bash_PY_bruteforceIPMI_foundPW.png" style="display: block; margin-left: auto; margin-right: auto; width: 100%;"/>
+<img src="https://raw.githubusercontent.com/lanzt/blog/main/assets/images/HTB/shibboleth/410bash_PY_bruteforceIPMI_foundPW.png" class="img-to-zoom" data-toggle="modal" data-target=".modal-zoomed-img" style="width: 100%;"/>
 
 VAMOOOOOOOOOOOOOO! Encontramos una coincidencia, por lo tanto, tenemos una contraseñaaaaaa y un usuario, recordemos que tenemos un login-panel, pues intentemos hacer reutilización de contraseñas, quizás sea válida ahí...
 
-<img src="https://raw.githubusercontent.com/lanzt/blog/main/assets/images/HTB/shibboleth/410page80_zabbix_loginWITHcreds.png" style="display: block; margin-left: auto; margin-right: auto; width: 100%;"/>
+<img src="https://raw.githubusercontent.com/lanzt/blog/main/assets/images/HTB/shibboleth/410page80_zabbix_loginWITHcreds.png" class="img-to-zoom" data-toggle="modal" data-target=".modal-zoomed-img" style="width: 100%;"/>
 
-<img src="https://raw.githubusercontent.com/lanzt/blog/main/assets/images/HTB/shibboleth/410page80_zabbix_dashboard.png" style="display: block; margin-left: auto; margin-right: auto; width: 100%;"/>
+<img src="https://raw.githubusercontent.com/lanzt/blog/main/assets/images/HTB/shibboleth/410page80_zabbix_dashboard.png" class="img-to-zoom" data-toggle="modal" data-target=".modal-zoomed-img" style="width: 100%;"/>
 
 Y SÍ! Conseguimos acceso al sitio y sus funcionalidades (:
 
@@ -338,7 +338,7 @@ Y SÍ! Conseguimos acceso al sitio y sus funcionalidades (:
 
 Abriendo bien los ojos en la parte de abajo notamos la versión actual ya clarísima de `zabbix`:
 
-<img src="https://raw.githubusercontent.com/lanzt/blog/main/assets/images/HTB/shibboleth/410page80_dashboard_zabbixVersionFULL.png" style="display: block; margin-left: auto; margin-right: auto; width: 100%;"/>
+<img src="https://raw.githubusercontent.com/lanzt/blog/main/assets/images/HTB/shibboleth/410page80_dashboard_zabbixVersionFULL.png" class="img-to-zoom" data-toggle="modal" data-target=".modal-zoomed-img" style="width: 100%;"/>
 
 Esto nos permite direccionar nuevas búsquedas como: `xabbix 5.0.17 exploit` y encontrar cositas -como-:
 
@@ -346,7 +346,7 @@ Esto nos permite direccionar nuevas búsquedas como: `xabbix 5.0.17 exploit` y e
 
 El exploit aprovecha una opción para ejecutar comandos, en su lógica nos indica que la explotación en **blind** (no obtenemos output), así que ejecuta una Reverse Shell únicamente, descarguémoslo y corrámoslo:
 
-<img src="https://raw.githubusercontent.com/lanzt/blog/main/assets/images/HTB/shibboleth/410bash_PY_rceZabbix.png" style="display: block; margin-left: auto; margin-right: auto; width: 100%;"/>
+<img src="https://raw.githubusercontent.com/lanzt/blog/main/assets/images/HTB/shibboleth/410bash_PY_rceZabbix.png" class="img-to-zoom" data-toggle="modal" data-target=".modal-zoomed-img" style="width: 100%;"/>
 
 Antes de ejecutarlo debemos levantar nuestro listener (en donde llegará la RevShell):
 
@@ -357,7 +357,7 @@ listening on [any] 4433 ...
 
 Y ahora si ejecutamos, enviara una petición con una `/bin/sh` al puerto **4433** de la dirección IP **10.10.14.142**:
 
-<img src="https://raw.githubusercontent.com/lanzt/blog/main/assets/images/HTB/shibboleth/410bash_PY_rceZabbix_id.png" style="display: block; margin-left: auto; margin-right: auto; width: 100%;"/>
+<img src="https://raw.githubusercontent.com/lanzt/blog/main/assets/images/HTB/shibboleth/410bash_PY_rceZabbix_id.png" class="img-to-zoom" data-toggle="modal" data-target=".modal-zoomed-img" style="width: 100%;"/>
 
 Y TENEMOS NUESTRA REVERSE SHEEEEEELL! Hagámosla linda rápidamente (para tener histórico, movernos entre comandos y ejecutar tranquilamente `CTRL^C`):
 
@@ -379,7 +379,7 @@ drwxr-xr-x  4 ipmi-svc ipmi-svc 4096 Apr  1 15:59 ipmi-svc
 
 Si volvemos a jugar con **reutilización de contraseñas** logramos una sesión como él:
 
-<img src="https://raw.githubusercontent.com/lanzt/blog/main/assets/images/HTB/shibboleth/410bash_SUipmisvc_RevSH_id.png" style="display: block; margin-left: auto; margin-right: auto; width: 100%;"/>
+<img src="https://raw.githubusercontent.com/lanzt/blog/main/assets/images/HTB/shibboleth/410bash_SUipmisvc_RevSH_id.png" class="img-to-zoom" data-toggle="modal" data-target=".modal-zoomed-img" style="width: 100%;"/>
 
 Ahora si veamos como volvernos **admin** en esta vuelta...
 
@@ -415,11 +415,11 @@ En su contenido hay varios comentarios (empiezan con `#`), si los quitamos y ade
 ipmi-svc@shibboleth:~$ cat /etc/zabbix/zabbix_server.conf | grep -vE "^#" | sort -u
 ```
 
-<img src="https://raw.githubusercontent.com/lanzt/blog/main/assets/images/HTB/shibboleth/410bash_zabbixRevSH_findGROUPfilesIPMISVC_foundZabbixConf.png" style="display: block; margin-left: auto; margin-right: auto; width: 100%;"/>
+<img src="https://raw.githubusercontent.com/lanzt/blog/main/assets/images/HTB/shibboleth/410bash_zabbixRevSH_findGROUPfilesIPMISVC_foundZabbixConf.png" class="img-to-zoom" data-toggle="modal" data-target=".modal-zoomed-img" style="width: 100%;"/>
 
 Si nos fijamos tenemos unas credenciales de `mysql` :o Probemos a ver si son válidas (:
 
-<img src="https://raw.githubusercontent.com/lanzt/blog/main/assets/images/HTB/shibboleth/410bash_zabbixRevSH_mysql_withCredsZabbix_done.png" style="display: block; margin-left: auto; margin-right: auto; width: 100%;"/>
+<img src="https://raw.githubusercontent.com/lanzt/blog/main/assets/images/HTB/shibboleth/410bash_zabbixRevSH_mysql_withCredsZabbix_done.png" class="img-to-zoom" data-toggle="modal" data-target=".modal-zoomed-img" style="width: 100%;"/>
 
 Peeerfeto! Antes de profundizar intentamos reutilización de contraseñas, pero nope, no son válidas contra `root`. Tampoco logramos nada interesante en las tablas que tiene la base de datos `zabbix`.
 
@@ -427,13 +427,13 @@ Algo que debemos probar siempre es ver las versiones tanto del kernel, de servic
 
 Si enumeramos la versión de `mysql` (pues ya que estamos jugando con él) vemos:
 
-<img src="https://raw.githubusercontent.com/lanzt/blog/main/assets/images/HTB/shibboleth/410bash_zabbixRevSH_mysql_version.png" style="display: block; margin-left: auto; margin-right: auto; width: 100%;"/>
+<img src="https://raw.githubusercontent.com/lanzt/blog/main/assets/images/HTB/shibboleth/410bash_zabbixRevSH_mysql_version.png" class="img-to-zoom" data-toggle="modal" data-target=".modal-zoomed-img" style="width: 100%;"/>
 
 Esta usando la versión `10.3.25` de [MariaDB](https://es.wikipedia.org/wiki/MariaDB) yyyyyyyyy como dije antes, esto nos sirve para buscar exploits en internet, llegamos a este repo que nos pone muuyyy atentos:
 
 * [https://github.com/Al1ex/CVE-2021-27928](https://github.com/Al1ex/CVE-2021-27928)
 
-<img src="https://raw.githubusercontent.com/lanzt/blog/main/assets/images/HTB/shibboleth/410google_github_CVE_2021_27928_appearsVulnerable.png" style="display: block; margin-left: auto; margin-right: auto; width: 100%;"/>
+<img src="https://raw.githubusercontent.com/lanzt/blog/main/assets/images/HTB/shibboleth/410google_github_CVE_2021_27928_appearsVulnerable.png" class="img-to-zoom" data-toggle="modal" data-target=".modal-zoomed-img" style="width: 100%;"/>
 
 Contamos con una de las versiones vulnerables! Y es un **command-injection**! Uhh uhh uuuuuuh...
 
@@ -519,15 +519,15 @@ ERROR 2013 (HY000): Lost connection to MySQL server during query
 
 PEEEEEEEEEEERO en nuestro listener:
 
-<img src="https://raw.githubusercontent.com/lanzt/blog/main/assets/images/HTB/shibboleth/410bash_rootRevSH_netcat_done.png" style="display: block; margin-left: auto; margin-right: auto; width: 100%;"/>
+<img src="https://raw.githubusercontent.com/lanzt/blog/main/assets/images/HTB/shibboleth/410bash_rootRevSH_netcat_done.png" class="img-to-zoom" data-toggle="modal" data-target=".modal-zoomed-img" style="width: 100%;"/>
 
 TENEMOS PETICIÓóÓóóóN! Y si intentamos ejecutar comandos:
 
-<img src="https://raw.githubusercontent.com/lanzt/blog/main/assets/images/HTB/shibboleth/410bash_rootRevSH_id.png" style="display: block; margin-left: auto; margin-right: auto; width: 100%;"/>
+<img src="https://raw.githubusercontent.com/lanzt/blog/main/assets/images/HTB/shibboleth/410bash_rootRevSH_id.png" class="img-to-zoom" data-toggle="modal" data-target=".modal-zoomed-img" style="width: 100%;"/>
 
 Somos **root** compita! Veamos las flags:
 
-<img src="https://raw.githubusercontent.com/lanzt/blog/main/assets/images/HTB/shibboleth/410flags.png" style="display: block; margin-left: auto; margin-right: auto; width: 100%;"/>
+<img src="https://raw.githubusercontent.com/lanzt/blog/main/assets/images/HTB/shibboleth/410flags.png" class="img-to-zoom" data-toggle="modal" data-target=".modal-zoomed-img" style="width: 100%;"/>
 
 Nospi :*
 

