@@ -873,3 +873,32 @@ ul.tag-box li span.size {
     color: rgb(234, 0, 255);
 }
 // - Description Box (take attributes from 'blog-grid-container')
+
+.img-to-zoom {
+    cursor: -moz-zoom-in; 
+    cursor: -webkit-zoom-in; 
+    cursor: zoom-in;
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+#zoomed-img{
+    max-width:fit-content;
+    max-height:90%;
+    object-fit: contain;
+    width: 80%;
+    height: 80%;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}
+
+.modal-content {
+    background: none;
+}
+
+.modal-open {
+    padding-right: 0 !important;
+}
