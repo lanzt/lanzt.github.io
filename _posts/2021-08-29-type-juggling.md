@@ -35,11 +35,11 @@ Démosle...
 
 **Some type of juggling**...
 
-<img src="https://raw.githubusercontent.com/lanzt/blog/main/assets/images/articles/typejuggling/juggling_RCTS2021web_juggling_descriptionChall.png" class="img-to-zoom" data-toggle="modal" data-target=".modal-zoomed-img" style="width: 60%;"/>
+<img src="https://raw.githubusercontent.com/lanzt/blog/main/assets/images/articles/typejuggling/juggling_RCTS2021web_juggling_descriptionChall.png" style="width: 60%;"/>
 
 Entramos al sitio web y obtenemos esto:
 
-<img src="https://raw.githubusercontent.com/lanzt/blog/main/assets/images/articles/typejuggling/juggling_RCTS2021web_juggling_home.png" class="img-to-zoom" data-toggle="modal" data-target=".modal-zoomed-img" style="width: 100%;"/>
+<img src="https://raw.githubusercontent.com/lanzt/blog/main/assets/images/articles/typejuggling/juggling_RCTS2021web_juggling_home.png" style="width: 100%;"/>
 
 Nos provee con el código fuente de la web y además nos indica que debemos usar el parámetro `hash` para obtener la flag.
 
@@ -108,7 +108,7 @@ Inicialmente vemos que si le pasamos al parámetro `hash` el valor `240610708` n
 
 * [Operadores de comparación en **PHP**](https://www.php.net/manual/es/language.operators.comparison.php).
 
-<img src="https://raw.githubusercontent.com/lanzt/blog/main/assets/images/articles/typejuggling/juggling_google_operatorsComparision.png" class="img-to-zoom" data-toggle="modal" data-target=".modal-zoomed-img" style="width: 100%;"/>
+<img src="https://raw.githubusercontent.com/lanzt/blog/main/assets/images/articles/typejuggling/juggling_google_operatorsComparision.png" style="width: 100%;"/>
 
 En caso de no ser iguales y no ver el error, toma el valor del parámetro y el de la variable `$value` y genera un **hash MD5** (***Message-Digest Algorithm 5***) para cada uno, que ese tipo de **hash** es muy usado para comprobar si un archivo ha sido modificado en alguna transmisión o proceso.
 
@@ -161,7 +161,7 @@ $value = "240610708";
 $hash_get = "240610708";
 ```
 
-<img src="https://raw.githubusercontent.com/lanzt/blog/main/assets/images/articles/typejuggling/juggling_testPHP_exit1.png" class="img-to-zoom" data-toggle="modal" data-target=".modal-zoomed-img" style="width: 100%;"/>
+<img src="https://raw.githubusercontent.com/lanzt/blog/main/assets/images/articles/typejuggling/juggling_testPHP_exit1.png" style="width: 100%;"/>
 
 Así que F.
 
@@ -181,7 +181,7 @@ $value = "240610708";
 $hash_get = "0e462097431906509019562988736854";
 ```
 
-<img src="https://raw.githubusercontent.com/lanzt/blog/main/assets/images/articles/typejuggling/juggling_testPHP_sendHASHofVALUE_notSAME.png" class="img-to-zoom" data-toggle="modal" data-target=".modal-zoomed-img" style="width: 100%;"/>
+<img src="https://raw.githubusercontent.com/lanzt/blog/main/assets/images/articles/typejuggling/juggling_testPHP_sendHASHofVALUE_notSAME.png" style="width: 100%;"/>
 
 Exacto, no son iguales, ya que esta generando un hash nuevo con el valor `0e462097431906509019562988736854`, así que tampoco es por acá...
 
@@ -199,7 +199,7 @@ Investiguemos.
 
 Buscando `juggling php` llegamos a esta brutal descripción del propio manual de **PHP**:
 
-<img src="https://raw.githubusercontent.com/lanzt/blog/main/assets/images/articles/typejuggling/juggling_google_ManualPHPdescriptionJuggling.png" class="img-to-zoom" data-toggle="modal" data-target=".modal-zoomed-img" style="width: 100%;"/>
+<img src="https://raw.githubusercontent.com/lanzt/blog/main/assets/images/articles/typejuggling/juggling_google_ManualPHPdescriptionJuggling.png" style="width: 100%;"/>
 
 Perfecto, el primer párrafo ya nos explica que es eso del "**juggling**" (**type juggling**), básicamente es el juego entre tipos de variables, donde podemos definir una que sea tipo `int` (`$hola=1;`) pero después darle otro valor que cambie su tipo, por ejemplo `string` (`$hola="1";`) sin tener problemas.
 
@@ -219,7 +219,7 @@ Esto es interesante, porque si validamos los dos resultados, ¿serían iguales? 
 ?>
 ```
 
-<img src="https://raw.githubusercontent.com/lanzt/blog/main/assets/images/articles/typejuggling/juggling_testPHP_validationINTwithSTRING.png" class="img-to-zoom" data-toggle="modal" data-target=".modal-zoomed-img" style="width: 100%;"/>
+<img src="https://raw.githubusercontent.com/lanzt/blog/main/assets/images/articles/typejuggling/juggling_testPHP_validationINTwithSTRING.png" style="width: 100%;"/>
 
 WTF, ¿kheeeeeeeeeeee? (antes ya expliqué la razón, pero ¿la recuerdas?).
 
@@ -320,7 +320,7 @@ En internet encontramos muchísimos valores con los que podríamos probar:
 
 Si tomamos alguno, por ejemplo: `NOOPCJF` y lo probamos en nuestro `test.php`, generamos el bypass:
 
-<img src="https://raw.githubusercontent.com/lanzt/blog/main/assets/images/articles/typejuggling/juggling_testPHP_bypasswith_NOOPCFJ_WEB.png" class="img-to-zoom" data-toggle="modal" data-target=".modal-zoomed-img" style="width: 100%;"/>
+<img src="https://raw.githubusercontent.com/lanzt/blog/main/assets/images/articles/typejuggling/juggling_testPHP_bypasswith_NOOPCFJ_WEB.png" style="width: 100%;"/>
 
 **Ya podríamos probar en la web y también obtendríamos la flag, solo que sería la del reto.**
 
@@ -376,7 +376,7 @@ while True:
 
 Si lo ejecutamos (lo dicho, dándole tiempo) llegamos a obtener una cadena:
 
-<img src="https://raw.githubusercontent.com/lanzt/blog/main/assets/images/articles/typejuggling/juggling_juglPY_foundPOSSIBLEtext2bypass.png" class="img-to-zoom" data-toggle="modal" data-target=".modal-zoomed-img" style="width: 100%;"/>
+<img src="https://raw.githubusercontent.com/lanzt/blog/main/assets/images/articles/typejuggling/juggling_juglPY_foundPOSSIBLEtext2bypass.png" style="width: 100%;"/>
 
 Y si hacemos las respectivas prueeeebaas:
 
@@ -385,11 +385,11 @@ $value = "240610708";·
 $hash_get = "TP4KzMGZ";
 ```
 
-<img src="https://raw.githubusercontent.com/lanzt/blog/main/assets/images/articles/typejuggling/juggling_testPHP_bypassWITHstringOFpy.png" class="img-to-zoom" data-toggle="modal" data-target=".modal-zoomed-img" style="width: 100%;"/>
+<img src="https://raw.githubusercontent.com/lanzt/blog/main/assets/images/articles/typejuggling/juggling_testPHP_bypassWITHstringOFpy.png" style="width: 100%;"/>
 
 Opa, es válidooooooooooo, si lo probamos ahora contra el sitio real:
 
-<img src="https://raw.githubusercontent.com/lanzt/blog/main/assets/images/articles/typejuggling/juggling_RCTS2021web_bypassWITHscriptOFpy_flag.png" class="img-to-zoom" data-toggle="modal" data-target=".modal-zoomed-img" style="width: 100%;"/>
+<img src="https://raw.githubusercontent.com/lanzt/blog/main/assets/images/articles/typejuggling/juggling_RCTS2021web_bypassWITHscriptOFpy_flag.png" style="width: 100%;"/>
 
 Y listoos, hemos bypasseado la validación de hashes aprovechando la pobre comparación que `PHP` hace al usar `==` y no `===`. Esto para hacer un match en cuanto a los tipos de variables aunque el contenido de ellas sea distinto.
 

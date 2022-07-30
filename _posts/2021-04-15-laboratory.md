@@ -8,7 +8,7 @@ tags        : [ gitlab, backup, git, SUID, path-hijacking ]
 ---
 Máquina Linux nivel fácil. Tendremos al lobo naranja (GitLab) :P como punto de entrada, jugaremos con Backups y archivos **.bundle**, obtendremos las llaves de la casa y nos haremos dueños de la r(oo)ta mediante un PATH Hijacking.
 
-<img src="https://raw.githubusercontent.com/lanzt/blog/main/assets/images/HTB/laboratory/298laboratoryHTB.png" class="img-to-zoom" data-toggle="modal" data-target=".modal-zoomed-img" style="width: 100%;"/>
+<img src="https://raw.githubusercontent.com/lanzt/blog/main/assets/images/HTB/laboratory/298laboratoryHTB.png" style="width: 100%;"/>
 
 ### TL;DR (Spanish writeup)
 
@@ -22,7 +22,7 @@ Buscando archivos relacionados con **dexter** encontramos un `SUID` llamativo, j
 
 #### Clasificación de la máquina.
 
-<img src="https://raw.githubusercontent.com/lanzt/blog/main/assets/images/HTB/laboratory/298statistics.png" class="img-to-zoom" data-toggle="modal" data-target=".modal-zoomed-img" style="width: 90%;"/>
+<img src="https://raw.githubusercontent.com/lanzt/blog/main/assets/images/HTB/laboratory/298statistics.png" style="width: 90%;"/>
 
 Bastante RealG4Life. A darleeeeeeeeee.
 

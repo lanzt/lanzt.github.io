@@ -8,7 +8,7 @@ tags        : [ docker, JWT, ssh-keys, file-upload, runc, sudo ]
 ---
 Máquina Linux nivel medio. Exploraremos el mundo de los **JSON Web Tokens** para ingresar a una web con permisos administrativos. Jugaremos con llaves **SSH** y romperemos el siempre fiel **Docker** mediante un **CVE** que permite sobreescribir el contenido del binario **/bin/sh** con lo que queramos.
 
-<img src="https://raw.githubusercontent.com/lanzt/blog/main/assets/images/HTB/thenotebook/320thenotebookHTB.png" class="img-to-zoom" data-toggle="modal" data-target=".modal-zoomed-img" style="width: 100%;"/>
+<img src="https://raw.githubusercontent.com/lanzt/blog/main/assets/images/HTB/thenotebook/320thenotebookHTB.png" style="width: 100%;"/>
 
 ### TL;DR (Spanish writeup)
 
@@ -30,7 +30,7 @@ Validando los permisos de administrador que tenemos sobre el sistema, nos daremo
 
 #### Clasificación de la máquina según la gentesita
 
-<img src="https://raw.githubusercontent.com/lanzt/blog/main/assets/images/HTB/thenotebook/320statistics.png" class="img-to-zoom" data-toggle="modal" data-target=".modal-zoomed-img" style="width: 80%;"/>
+<img src="https://raw.githubusercontent.com/lanzt/blog/main/assets/images/HTB/thenotebook/320statistics.png" style="width: 80%;"/>
 
 Vulns conocidas, le cuesta mucho llegar a ser real (pero lo intenta).
 
@@ -183,7 +183,7 @@ Y si, se crea... Pero no logre hacer nada con esto :P
 
 Dando vueltas y revisando cositas, nos damos cuenta de algo lindo en nuestra cookie: (podemos verla de varias formas, pero como lo divide el navegador esta bien para que se entienda mejor lo que haremos)
 
-<img src="https://raw.githubusercontent.com/lanzt/blog/main/assets/images/HTB/thenotebook/320page80_cookie.png" class="img-to-zoom" data-toggle="modal" data-target=".modal-zoomed-img" style="width: 100%;"/>
+<img src="https://raw.githubusercontent.com/lanzt/blog/main/assets/images/HTB/thenotebook/320page80_cookie.png" style="width: 100%;"/>
 
 Es un formato que había usado en alguna ocasión y de una me acordé de que trataba (también por el inicio de la cadena (`ey`, que en `base64` es `{"` (o sea el inicio de un JSON e.e))... 
 
@@ -502,7 +502,7 @@ Nos indica que el binario `runc` (que se ejecuta cuando <<ejecutamos>> `Docker`)
 
 Nice, busquemos referencias de exploits a ver cuál podemos usar:
 
-<img src="https://raw.githubusercontent.com/lanzt/blog/main/assets/images/HTB/thenotebook/320google_CVE_docker18-16-0-ce_githubLIST.png" class="img-to-zoom" data-toggle="modal" data-target=".modal-zoomed-img" style="width: 100%;"/>
+<img src="https://raw.githubusercontent.com/lanzt/blog/main/assets/images/HTB/thenotebook/320google_CVE_docker18-16-0-ce_githubLIST.png" style="width: 100%;"/>
 
 Tenemos varios, dándole unos ojazos, el más sencillo de entender es el de [Frichetten](https://github.com/Frichetten/CVE-2019-5736-PoC), esta hecho en `.go` y solo debemos mover un archivo al sistema, metámosle candela:
 

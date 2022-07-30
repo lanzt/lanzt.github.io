@@ -8,7 +8,7 @@ tags        : [ drupal, snap ]
 ---
 Máquina Linux nivel fácil. Jugaremos con **CVE**s, romperemos **Drupal7** para ejecutar comandos, las malas configuraciones se revelarán y finalmente nos aprovechamos de nuestros permisos para ejecutar un paquete **snap** malicioso y obtener el privesc.
 
-<img src="https://raw.githubusercontent.com/lanzt/blog/main/assets/images/HTB/armageddon/323armageddonHTB.png" class="img-to-zoom" data-toggle="modal" data-target=".modal-zoomed-img" style="width: 100%;"/>
+<img src="https://raw.githubusercontent.com/lanzt/blog/main/assets/images/HTB/armageddon/323armageddonHTB.png" style="width: 100%;"/>
 
 ### TL;DR (Spanish writeup)
 
@@ -24,7 +24,7 @@ Finalmente validando nuestros permisos de ejecución como usuario **<u>root</u>*
 
 #### Clasificación de la máquina según la gentesita
 
-<img src="https://raw.githubusercontent.com/lanzt/blog/main/assets/images/HTB/armageddon/323statistics.png" class="img-to-zoom" data-toggle="modal" data-target=".modal-zoomed-img" style="width: 80%;"/>
+<img src="https://raw.githubusercontent.com/lanzt/blog/main/assets/images/HTB/armageddon/323statistics.png" style="width: 80%;"/>
 
 Tirando a vulns conocidas pero tambien algo juguetona y poco real.
 

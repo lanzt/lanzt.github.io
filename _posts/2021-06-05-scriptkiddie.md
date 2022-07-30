@@ -8,7 +8,7 @@ tags        : [ sudo, command-injection, file-upload, code-analysis ]
 ---
 Máquina Linux nivel fácil. Un servidor web que ejecuta comandos específicos, pero que con uno de ellos podemos agregar un **"template"**, ¿qué puede salir mal? Inspeccionaremos un script al detalle y encontraremos una manera de cambiar el flujo del proceso para que haga lo que queramos :) Y validaremos permisos como **sudo**, con la sorpresa que ejecutando solo 2 líneas somos **root** mediante *msfconsole*.
 
-<img src="https://raw.githubusercontent.com/lanzt/blog/main/assets/images/HTB/scriptkiddie/314scriptkiddieHTB.png" class="img-to-zoom" data-toggle="modal" data-target=".modal-zoomed-img" style="width: 100%;"/>
+<img src="https://raw.githubusercontent.com/lanzt/blog/main/assets/images/HTB/scriptkiddie/314scriptkiddieHTB.png" style="width: 100%;"/>
 
 ### TL;DR (Spanish writeup)
 
@@ -22,7 +22,7 @@ Validando los permisos que tiene **pwn** usando `sudo` en el sistema (como si es
 
 #### Clasificación de la máquina
 
-<img src="https://raw.githubusercontent.com/lanzt/blog/main/assets/images/HTB/scriptkiddie/314statistics.png" class="img-to-zoom" data-toggle="modal" data-target=".modal-zoomed-img" style="width: 90%;"/>
+<img src="https://raw.githubusercontent.com/lanzt/blog/main/assets/images/HTB/scriptkiddie/314statistics.png" style="width: 90%;"/>
 
 Juguetona, con tintes de vulnerabilidades conocidas pero poco real :(
 
@@ -377,7 +377,7 @@ Y tendríamos:
 
 Opa, tenemos una sesión como `pwn`
 
-<img src="https://raw.githubusercontent.com/lanzt/blog/main/assets/images/HTB/scriptkiddie/314google_gifdanceNBA.gif" class="img-to-zoom" data-toggle="modal" data-target=".modal-zoomed-img" style="width: 40%;"/>
+<img src="https://raw.githubusercontent.com/lanzt/blog/main/assets/images/HTB/scriptkiddie/314google_gifdanceNBA.gif" style="width: 40%;"/>
 
 ¡Enumeremos pa vel!
 

@@ -8,7 +8,7 @@ tags        : [ Python3-eval(), XXE, code-analysis ]
 ---
 Máquina Linux nivel fácil. Leeremos archivos del sistema mediante un **XXE** con ayuda de **wrappers** e inspeccionaremos código **Python** para juguetear con la funcion **eval()**.
 
-<img src="https://raw.githubusercontent.com/lanzt/blog/main/assets/images/HTB/bountyhunter/359bountyhunterHTB.png" class="img-to-zoom" data-toggle="modal" data-target=".modal-zoomed-img" style="width: 100%;"/>
+<img src="https://raw.githubusercontent.com/lanzt/blog/main/assets/images/HTB/bountyhunter/359bountyhunterHTB.png" style="width: 100%;"/>
 
 ### TL;DR (Spanish writeup)
 
@@ -26,9 +26,9 @@ Enumerando nuestros permisos veremos que podemos ejecutar un script de `Python` 
 
 ### Clasificación de la máquina según la gentesita
 
-<img src="https://raw.githubusercontent.com/lanzt/blog/main/assets/images/HTB/bountyhunter/359rating.png" class="img-to-zoom" data-toggle="modal" data-target=".modal-zoomed-img" style="width: 30%;"/>
+<img src="https://raw.githubusercontent.com/lanzt/blog/main/assets/images/HTB/bountyhunter/359rating.png" style="width: 30%;"/>
 
-<img src="https://raw.githubusercontent.com/lanzt/blog/main/assets/images/HTB/bountyhunter/359statistics.png" class="img-to-zoom" data-toggle="modal" data-target=".modal-zoomed-img" style="width: 80%;"/>
+<img src="https://raw.githubusercontent.com/lanzt/blog/main/assets/images/HTB/bountyhunter/359statistics.png" style="width: 80%;"/>
 
 > Escribo para tener mis "notas", por si algún día se me olvida todo, leer esto y reencontrarme (o talvez no) :) además de enfocarme en plasmar mis errores y éxitos (por si ves mucho texto), todo desde una perspectiva más de enseñanza que de solo mostrar lo que hice.
 
@@ -147,9 +147,9 @@ Pues nada, exploremos a ver por donde podemos entrar (:
 
 ## Puerto 80 [📌](#puerto-80) {#puerto-80}
 
-<img src="https://raw.githubusercontent.com/lanzt/blog/main/assets/images/HTB/bountyhunter/359page80.png" class="img-to-zoom" data-toggle="modal" data-target=".modal-zoomed-img" style="width: 100%;"/>
+<img src="https://raw.githubusercontent.com/lanzt/blog/main/assets/images/HTB/bountyhunter/359page80.png" style="width: 100%;"/>
 
-<img src="https://raw.githubusercontent.com/lanzt/blog/main/assets/images/HTB/bountyhunter/359page80_2.png" class="img-to-zoom" data-toggle="modal" data-target=".modal-zoomed-img" style="width: 100%;"/>
+<img src="https://raw.githubusercontent.com/lanzt/blog/main/assets/images/HTB/bountyhunter/359page80_2.png" style="width: 100%;"/>
 
 Una página web sobre personitas que se encargan de encontrar fallos en apps. 
 
@@ -157,35 +157,35 @@ La web cuenta con referencias llamativas como `Can use Burp` y `buffer overflows
 
 Viendo el código fuente de la web, encontramos 2 cosas más:
 
-<img src="https://raw.githubusercontent.com/lanzt/blog/main/assets/images/HTB/bountyhunter/359page80_htmlcode_portalPHP.png" class="img-to-zoom" data-toggle="modal" data-target=".modal-zoomed-img" style="width: 100%;"/>
+<img src="https://raw.githubusercontent.com/lanzt/blog/main/assets/images/HTB/bountyhunter/359page80_htmlcode_portalPHP.png" style="width: 100%;"/>
 
 Un link hacia un recurso llamado `portal.php` y:
 
-<img src="https://raw.githubusercontent.com/lanzt/blog/main/assets/images/HTB/bountyhunter/359page80_htmlcode_mailContactMePHP.png" class="img-to-zoom" data-toggle="modal" data-target=".modal-zoomed-img" style="width: 100%;"/>
+<img src="https://raw.githubusercontent.com/lanzt/blog/main/assets/images/HTB/bountyhunter/359page80_htmlcode_mailContactMePHP.png" style="width: 100%;"/>
 
 Una referencia a una configuración para poder enviar emails. Esto puede ser del propio `theme` así que lo tendremos en cuenta, pero no muuuuy en cuenta 😊 
 
 Si damos clic en el link hacia `portal.php` nos encontramos esto:
 
-<img src="https://raw.githubusercontent.com/lanzt/blog/main/assets/images/HTB/bountyhunter/359page80_portalPHP_underDevelopment.png" class="img-to-zoom" data-toggle="modal" data-target=".modal-zoomed-img" style="width: 100%;"/>
+<img src="https://raw.githubusercontent.com/lanzt/blog/main/assets/images/HTB/bountyhunter/359page80_portalPHP_underDevelopment.png" style="width: 100%;"/>
 
 "En mantenimiento" 😔, sin embargo, nos provee de otro link hacia `log_submit.php` 😛 veámoslo:
 
-<img src="https://raw.githubusercontent.com/lanzt/blog/main/assets/images/HTB/bountyhunter/359page80_logsubmitPHP.png" class="img-to-zoom" data-toggle="modal" data-target=".modal-zoomed-img" style="width: 100%;"/>
+<img src="https://raw.githubusercontent.com/lanzt/blog/main/assets/images/HTB/bountyhunter/359page80_logsubmitPHP.png" style="width: 100%;"/>
 
 Un formulario (en pruebas aún) para enviar los datos de un exploit encontrado. Si nos fijamos tenemos vaaaarios campos, si los llenamos y damos clic en `Submit` nos responde esto:
 
-<img src="https://raw.githubusercontent.com/lanzt/blog/main/assets/images/HTB/bountyhunter/359page80_logsubmitPHP_submit.png" class="img-to-zoom" data-toggle="modal" data-target=".modal-zoomed-img" style="width: 100%;"/>
+<img src="https://raw.githubusercontent.com/lanzt/blog/main/assets/images/HTB/bountyhunter/359page80_logsubmitPHP_submit.png" style="width: 100%;"/>
 
 Jmmmmmm, habla de una base de datos y de como se guardarían los datos... Bien, empecemos a probar cosas.
 
 Si revisamos el código fuente vemos que todo se esta ejecutando en la web por medio de `JavaScript` y [AJAX](https://lenguajejs.com/javascript/peticiones-http/ajax/) para eso, ejecutar las peticiones en el cliente sin necesidad de recargar la página:
 
-<img src="https://raw.githubusercontent.com/lanzt/blog/main/assets/images/HTB/bountyhunter/359page80_htmlcode_logsubmitPHP_linkJS.png" class="img-to-zoom" data-toggle="modal" data-target=".modal-zoomed-img" style="width: 100%;"/>
+<img src="https://raw.githubusercontent.com/lanzt/blog/main/assets/images/HTB/bountyhunter/359page80_htmlcode_logsubmitPHP_linkJS.png" style="width: 100%;"/>
 
 Vemos el link hacia `/resources/bountylog.js`, en su código hay 2 cositas llamativas, ¿las ves antes de decirlas?:
 
-<img src="https://raw.githubusercontent.com/lanzt/blog/main/assets/images/HTB/bountyhunter/359page80_jscode_bountylog.png" class="img-to-zoom" data-toggle="modal" data-target=".modal-zoomed-img" style="width: 100%;"/>
+<img src="https://raw.githubusercontent.com/lanzt/blog/main/assets/images/HTB/bountyhunter/359page80_jscode_bountylog.png" style="width: 100%;"/>
 
 Lo primero es que toooooooda la data del formulario esta siendo formateada a [XML](https://rockcontent.com/es/blog/que-es-xml/) (esto nos da entrada a probar ataques como `XPath` o `XXE`) y enviada en **base64** yyyyyyyy que una vez la data sea enviada, viajara hasta un recurso llamado `tracker_diRbPr00f314.php` (en su fuente no hay nada relevante, solo las etiquetas HTML de cada campo y el texto `"If DB were ready, would have added"`.
 
@@ -195,7 +195,7 @@ La cosa es que puede ser o no una contraseña, pero aún no tenemos un usuario a
 
 Si llenamos los campos, abrimos `BurpSuite`, levantamos el **proxy** y enviamos la petición, la data viaja así:
 
-<img src="https://raw.githubusercontent.com/lanzt/blog/main/assets/images/HTB/bountyhunter/359burp_bountysubmit_req.png" class="img-to-zoom" data-toggle="modal" data-target=".modal-zoomed-img" style="width: 100%;"/>
+<img src="https://raw.githubusercontent.com/lanzt/blog/main/assets/images/HTB/bountyhunter/359burp_bountysubmit_req.png" style="width: 100%;"/>
 
 Lo dicho, la encodea en `base64` y hace la petición contra el recurso con un nombre raro, si decodeamos la cadena para ver que esta viajando, obtenemos:
 
@@ -212,7 +212,7 @@ Lo dicho, la encodea en `base64` y hace la petición contra el recurso con un no
 
 Y como respuesta del servidor:
 
-<img src="https://raw.githubusercontent.com/lanzt/blog/main/assets/images/HTB/bountyhunter/359burp_bountysubmit_res.png" class="img-to-zoom" data-toggle="modal" data-target=".modal-zoomed-img" style="width: 100%;"/>
+<img src="https://raw.githubusercontent.com/lanzt/blog/main/assets/images/HTB/bountyhunter/359burp_bountysubmit_res.png" style="width: 100%;"/>
 
 El formateo que vimos antes, pues muy bien (: 
 
@@ -275,7 +275,7 @@ El uso más común es usar la entidad para mediante el `wrapper` `file://` guard
 
 Hay varios recursos con ejemplos, nos quedaremos con [este de **owasp**](https://owasp.org/www-community/vulnerabilities/XML_External_Entity_(XXE)_Processing), este sería el formato para ver archivos del sistema:
 
-<img src="https://raw.githubusercontent.com/lanzt/blog/main/assets/images/HTB/bountyhunter/359google_owasp_xxe_file.png" class="img-to-zoom" data-toggle="modal" data-target=".modal-zoomed-img" style="width: 100%;"/>
+<img src="https://raw.githubusercontent.com/lanzt/blog/main/assets/images/HTB/bountyhunter/359google_owasp_xxe_file.png" style="width: 100%;"/>
 
 Crea una entidad llamada `xxe` que guardara el contenido del archivo `/dev/random` y para ver su contenido llama la entidad dentro de la etiqueta `<foo>`. Movamos nuestro script y agreguemos la entidad:
 
@@ -299,7 +299,7 @@ Le decimos que nos cree la entidad `xxe` que guardara el contenido del archivo `
 ❱ python3 formatXML.py
 ```
 
-<img src="https://raw.githubusercontent.com/lanzt/blog/main/assets/images/HTB/bountyhunter/359bash_script_xxeFileDONE.png" class="img-to-zoom" data-toggle="modal" data-target=".modal-zoomed-img" style="width: 100%;"/>
+<img src="https://raw.githubusercontent.com/lanzt/blog/main/assets/images/HTB/bountyhunter/359bash_script_xxeFileDONE.png" style="width: 100%;"/>
 
 PERFECTISIMOOOOOOOOOOOOOOOOOO, podemos leer archivos del sistemaaaaaaaaaaa.
 
@@ -354,7 +354,7 @@ Pero no nos devuelve ningún resultado :(
 
 Después de buscar cositas en internet caemos en [este recurso](https://github.com/swisskyrepo/PayloadsAllTheThings/blob/master/XXE%20Injection/Files/XXE%20PHP%20Wrapper.xml):
 
-<img src="https://raw.githubusercontent.com/lanzt/blog/main/assets/images/HTB/bountyhunter/359google_payloadall_xxePHPwrapperB64.png" class="img-to-zoom" data-toggle="modal" data-target=".modal-zoomed-img" style="width: 100%;"/>
+<img src="https://raw.githubusercontent.com/lanzt/blog/main/assets/images/HTB/bountyhunter/359google_payloadall_xxePHPwrapperB64.png" style="width: 100%;"/>
 
 Donde se hace uso de un wrapper, distinto al de `file`, ahora se usa uno de `php` que permite ver el contenido de un archivo en `base64`, ya que si intentamos `file` lo que hace la web es interpretar el `PHP` del objeto y no devolvernos el contenido del objeto, pues listo, probemos:
 
@@ -421,11 +421,11 @@ Perfectisimo, tenemos toooooooooooodo el contenido del archivo `index.php`, pues
 ❱ python3 formatXML.py -f /var/www/html/db.php
 ```
 
-<img src="https://raw.githubusercontent.com/lanzt/blog/main/assets/images/HTB/bountyhunter/359bash_script_xxe_wrapperDBfile.png" class="img-to-zoom" data-toggle="modal" data-target=".modal-zoomed-img" style="width: 100%;"/>
+<img src="https://raw.githubusercontent.com/lanzt/blog/main/assets/images/HTB/bountyhunter/359bash_script_xxe_wrapperDBfile.png" style="width: 100%;"/>
 
 Hacemos lo mismo de antes yyyyyyyyy:
 
-<img src="https://raw.githubusercontent.com/lanzt/blog/main/assets/images/HTB/bountyhunter/359bash_dbPHP.png" class="img-to-zoom" data-toggle="modal" data-target=".modal-zoomed-img" style="width: 100%;"/>
+<img src="https://raw.githubusercontent.com/lanzt/blog/main/assets/images/HTB/bountyhunter/359bash_dbPHP.png" style="width: 100%;"/>
 
 OPAAAAAAAAAAAAAA unas credenciales de un usuario de la base de datooooooos llamado `admin`, pero ese usuario no existe en el sistema :( F ¿qué hacemos ahora?
 
@@ -438,7 +438,7 @@ Welcome to Ubuntu 20.04.2 LTS (GNU/Linux 5.4.0-80-generic x86_64)
 ...
 ```
 
-<img src="https://raw.githubusercontent.com/lanzt/blog/main/assets/images/HTB/bountyhunter/359bash_ssh_developmentSH.png" class="img-to-zoom" data-toggle="modal" data-target=".modal-zoomed-img" style="width: 100%;"/>
+<img src="https://raw.githubusercontent.com/lanzt/blog/main/assets/images/HTB/bountyhunter/359bash_ssh_developmentSH.png" style="width: 100%;"/>
 
 Muy bien, estamos dentro del sistema como el usuario `development` (:
 
@@ -822,7 +822,7 @@ if int(ticketCode) % 7 == 4:
 
 Analiza si ese valor extraído al ser dividido por `7` le da un resto de `4`, por si algo:
 
-<img src="https://raw.githubusercontent.com/lanzt/blog/main/assets/images/HTB/bountyhunter/359google_restodivision.png" class="img-to-zoom" data-toggle="modal" data-target=".modal-zoomed-img" style="width: 100%;"/>
+<img src="https://raw.githubusercontent.com/lanzt/blog/main/assets/images/HTB/bountyhunter/359google_restodivision.png" style="width: 100%;"/>
 
 > Tomada de: [superprof](https://www.superprof.es/diccionario/matematicas/aritmetica/resto.html).
 
@@ -865,15 +865,15 @@ Y cuando entre al `eval` leerá la instrucción `exit(1)` y forzara cerrar el pr
 
 Ejecución esperada:
 
-<img src="https://raw.githubusercontent.com/lanzt/blog/main/assets/images/HTB/bountyhunter/359bash_script_tickets_normal.png" class="img-to-zoom" data-toggle="modal" data-target=".modal-zoomed-img" style="width: 100%;"/>
+<img src="https://raw.githubusercontent.com/lanzt/blog/main/assets/images/HTB/bountyhunter/359bash_script_tickets_normal.png" style="width: 100%;"/>
 
 Intentando que `eval()` ejecute la función `exit(1)` para salir con errores del programa:
 
-<img src="https://raw.githubusercontent.com/lanzt/blog/main/assets/images/HTB/bountyhunter/359bash_script_tickets_exit1.png" class="img-to-zoom" data-toggle="modal" data-target=".modal-zoomed-img" style="width: 100%;"/>
+<img src="https://raw.githubusercontent.com/lanzt/blog/main/assets/images/HTB/bountyhunter/359bash_script_tickets_exit1.png" style="width: 100%;"/>
 
 Pos perfeccccto (cuando hay algún error en mi consola sale ese `bad` e.e), en [este recurso](https://www.floyd.ch/?p=584) hay algunos ejemplos, usemos dos de ellos para terminar de validar lo que queremos hacer, ahora vamos a aprovecharnos del módulo `os` para hablar directamente con el sistema, imprimamos una cadena de texto:
 
-<img src="https://raw.githubusercontent.com/lanzt/blog/main/assets/images/HTB/bountyhunter/359bash_script_tickets_osECHO.png" class="img-to-zoom" data-toggle="modal" data-target=".modal-zoomed-img" style="width: 100%;"/>
+<img src="https://raw.githubusercontent.com/lanzt/blog/main/assets/images/HTB/bountyhunter/359bash_script_tickets_osECHO.png" style="width: 100%;"/>
 
 Pues muy bien, ya somos `root` sin aún serlo, ¿sabes por qué? ¿No? Bueno, estamos ejecutando comandos directamente en el sistema. Si nos llevamos esta estructura del archivo `.md` a la máquina víctima, pero en vez de ejecutar un `echo ...` ejecutamos una `/bin/bash`, deberíamos obtener una Shell como el usuario `root`:
 
@@ -892,11 +892,11 @@ Ya estamos en la máquina, ahora simplemente ejecutamos el script con los permis
 development@bountyhunter:/tmp$ sudo /usr/bin/python3.8 /opt/skytrain_inc/ticketValidator.py
 ```
 
-<img src="https://raw.githubusercontent.com/lanzt/blog/main/assets/images/HTB/bountyhunter/359bash_exploitEVAL_rootSH.png" class="img-to-zoom" data-toggle="modal" data-target=".modal-zoomed-img" style="width: 100%;"/>
+<img src="https://raw.githubusercontent.com/lanzt/blog/main/assets/images/HTB/bountyhunter/359bash_exploitEVAL_rootSH.png" style="width: 100%;"/>
 
 TAMOS DENTRO PAPAiiiiiiiiiiiiii, veamos las flags:
 
-<img src="https://raw.githubusercontent.com/lanzt/blog/main/assets/images/HTB/bountyhunter/359flags.png" class="img-to-zoom" data-toggle="modal" data-target=".modal-zoomed-img" style="width: 100%;"/>
+<img src="https://raw.githubusercontent.com/lanzt/blog/main/assets/images/HTB/bountyhunter/359flags.png" style="width: 100%;"/>
 
 Y eso es todo por esta máquina (:
 

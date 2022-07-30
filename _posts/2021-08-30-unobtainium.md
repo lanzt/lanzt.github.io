@@ -8,7 +8,7 @@ tags        : [ kubernetes, lodash, google-cloudstorage-commands, code-analysis,
 ---
 Máquina Linux nivel difícil. Explotaremos una app de Linux. Jugando con librerías de `JavaScript`, la infectaremos (**Prototype Pollution** en `lodash`)  y haremos **command-injection** (en `google-cloudstorage-commands`). Y moveremos internamente muchas cosas con `Kubernetes`.
 
-<img src="https://raw.githubusercontent.com/lanzt/blog/main/assets/images/HTB/unobtainium/338unobtainiumHTB.png" class="img-to-zoom" data-toggle="modal" data-target=".modal-zoomed-img" style="width: 100%;"/>
+<img src="https://raw.githubusercontent.com/lanzt/blog/main/assets/images/HTB/unobtainium/338unobtainiumHTB.png" style="width: 100%;"/>
 
 ### TL;DR (Spanish writeup)
 
@@ -36,7 +36,7 @@ YA FIN 🧎
 
 ### Clasificación de la máquina según la gentesita
 
-<img src="https://raw.githubusercontent.com/lanzt/blog/main/assets/images/HTB/unobtainium/338statistics.png" class="img-to-zoom" data-toggle="modal" data-target=".modal-zoomed-img" style="width: 80%;"/>
+<img src="https://raw.githubusercontent.com/lanzt/blog/main/assets/images/HTB/unobtainium/338statistics.png" style="width: 80%;"/>
 
 Mucha enumeración, algunas vulns conocidas, pero sobre todo bastante llevada a la realidad, me gusta.
 
@@ -773,7 +773,7 @@ var root = require("google-cloudstorage-commands");
 
 Buscando info sobre ella (estaba buscando su uso, pero de los primeros resultados había uno que hablaba de vulnerabilidades :o) encontramos que es una librería deprecada yyyy que tiene una vulnerabilidad:
 
-<img src="https://raw.githubusercontent.com/lanzt/blog/main/assets/images/HTB/unobtainium/338google_googleCloudStorage_commandInj.png" class="img-to-zoom" data-toggle="modal" data-target=".modal-zoomed-img" style="width: 100%;"/>
+<img src="https://raw.githubusercontent.com/lanzt/blog/main/assets/images/HTB/unobtainium/338google_googleCloudStorage_commandInj.png" style="width: 100%;"/>
 
 Opa, curiosamente es el mismo formato que tenemos nosotros en el script. La vulnerabilidad es sencilla, una inyección de comandos por culpa de una mala sanitización (:
 
@@ -807,7 +807,7 @@ Y los usa para tomar las propiedades de los objetos `2` y `3` yyyyy heredárselo
 
 [Este es un ejemplo](https://masteringjs.io/tutorials/lodash/merge) que encontré:
 
-<img src="https://raw.githubusercontent.com/lanzt/blog/main/assets/images/HTB/unobtainium/338google_mergeFunc_example.png" class="img-to-zoom" data-toggle="modal" data-target=".modal-zoomed-img" style="width: 100%;"/>
+<img src="https://raw.githubusercontent.com/lanzt/blog/main/assets/images/HTB/unobtainium/338google_mergeFunc_example.png" style="width: 100%;"/>
 
 Y esta sería una simulación de lo que pasa al crear el mensaje y como la variable `message` hereda el valor del mensaje que enviamos junto a los demás objetos:
 
@@ -857,11 +857,11 @@ Y ahora intentamos subir un archivoooooooooooooooooooooooooooooo:
 
 PERFECTOOOOOOOOOO, podemos subir archivoooooooooooslsssssssslakdjflasdflasjdfl (:
 
-<img src="https://raw.githubusercontent.com/lanzt/blog/main/assets/images/HTB/unobtainium/338google_gif_letsgodrake.gif" class="img-to-zoom" data-toggle="modal" data-target=".modal-zoomed-img" style="width: 60%;"/>
+<img src="https://raw.githubusercontent.com/lanzt/blog/main/assets/images/HTB/unobtainium/338google_gif_letsgodrake.gif" style="width: 60%;"/>
 
 Intentando ver el archivo (que no tiene contenido :P) el servidor se muere e.e
 
-<img src="https://raw.githubusercontent.com/lanzt/blog/main/assets/images/HTB/unobtainium/338burp_unobtainium_todo_pollution_holaTXT.png" class="img-to-zoom" data-toggle="modal" data-target=".modal-zoomed-img" style="width: 100%;"/>
+<img src="https://raw.githubusercontent.com/lanzt/blog/main/assets/images/HTB/unobtainium/338burp_unobtainium_todo_pollution_holaTXT.png" style="width: 100%;"/>
 
 Peeeero tooodos tranquilos, recordemos nuestra vulnerabilidad con `google-cloudstorage-commands`.
 
@@ -871,7 +871,7 @@ Peeeero tooodos tranquilos, recordemos nuestra vulnerabilidad con `google-clouds
 
 Ya podemos crear archivos, tenemos la posibilidad de pasarle el nombre del archivo, veamos como era la inyección de comandos:
 
-<img src="https://raw.githubusercontent.com/lanzt/blog/main/assets/images/HTB/unobtainium/338google_googleCloudStorage_commandInjCut.png" class="img-to-zoom" data-toggle="modal" data-target=".modal-zoomed-img" style="width: 100%;"/>
+<img src="https://raw.githubusercontent.com/lanzt/blog/main/assets/images/HTB/unobtainium/338google_googleCloudStorage_commandInjCut.png" style="width: 100%;"/>
 
 Simplemente debemos colocar: 
 
@@ -881,11 +881,11 @@ Simplemente debemos colocar:
 
 Va a tomar un nombre vacío y después ejecutaría el comando, aún no hemos comprobado que funcione, pero pa eso estamos, ¿no? a veeeeeeeeer:
 
-<img src="https://raw.githubusercontent.com/lanzt/blog/main/assets/images/HTB/unobtainium/338burp_unobtainium_upload_pollution_idINholaTXT.png" class="img-to-zoom" data-toggle="modal" data-target=".modal-zoomed-img" style="width: 100%;"/>
+<img src="https://raw.githubusercontent.com/lanzt/blog/main/assets/images/HTB/unobtainium/338burp_unobtainium_upload_pollution_idINholaTXT.png" style="width: 100%;"/>
 
 Lo que queremos es que tome el resultado del comando `id` y lo guarde en el archivo `hola.txt`, así validamos su contenido con **Todo**, el archivo se creó, por lo que esperamos que se haya ejecutado el comando, validemos:
 
-<img src="https://raw.githubusercontent.com/lanzt/blog/main/assets/images/HTB/unobtainium/338burp_unobtainium_todo_pollution_idINholaTXT.png" class="img-to-zoom" data-toggle="modal" data-target=".modal-zoomed-img" style="width: 100%;"/>
+<img src="https://raw.githubusercontent.com/lanzt/blog/main/assets/images/HTB/unobtainium/338burp_unobtainium_todo_pollution_idINholaTXT.png" style="width: 100%;"/>
 
 Yyyyyyyy sí, **tenemos ejecución remota de comandosssssss**, que bestialidad esooooooooo, me encantoooooooooooooooo...
 
@@ -903,7 +903,7 @@ Y ejecutamos:
 
 Revisamos nuestro listener yyyyyyyyyyyyyyyyyyyyy:
 
-<img src="https://raw.githubusercontent.com/lanzt/blog/main/assets/images/HTB/unobtainium/338bash_nc_pollutionRevSH.png" class="img-to-zoom" data-toggle="modal" data-target=".modal-zoomed-img" style="width: 100%;"/>
+<img src="https://raw.githubusercontent.com/lanzt/blog/main/assets/images/HTB/unobtainium/338bash_nc_pollutionRevSH.png" style="width: 100%;"/>
 
 Sip, es bastante fea jajaj, hacemos un tratamiento de TTY superrápido y tamos listos pa seguir (:
 
@@ -927,7 +927,7 @@ Estando dentro encontramos poquitas cosas, enumerando las variables de entorno t
 root@webapp-deployment-5d764566f4-mbprj:/tmp/testeee$ env
 ```
 
-<img src="https://raw.githubusercontent.com/lanzt/blog/main/assets/images/HTB/unobtainium/338bash_pollutionSH_env.png" class="img-to-zoom" data-toggle="modal" data-target=".modal-zoomed-img" style="width: 100%;"/>
+<img src="https://raw.githubusercontent.com/lanzt/blog/main/assets/images/HTB/unobtainium/338bash_pollutionSH_env.png" style="width: 100%;"/>
 
 La aplicación en `10.96.137.170:3000` fue la que explotamos. Nos llama la atención `10.96.0.1:443`, jugando con `cURL` nos responde:
 
@@ -954,7 +954,7 @@ root@webapp-deployment-5d764566f4-mbprj:/tmp/testeee$ curl -k https://10.96.0.1:
 
 Jmmm... Investigando sobre **Kubernetes** encontramos cositas interesantes:
 
-<img src="https://raw.githubusercontent.com/lanzt/blog/main/assets/images/HTB/unobtainium/338google_necesidadkubernetes.png" class="img-to-zoom" data-toggle="modal" data-target=".modal-zoomed-img" style="width: 100%;"/>
+<img src="https://raw.githubusercontent.com/lanzt/blog/main/assets/images/HTB/unobtainium/338google_necesidadkubernetes.png" style="width: 100%;"/>
 
 > Tomada de: [docker-a-kubernetes](https://www.xataka.com/otros/docker-a-kubernetes-entendiendo-que-contenedores-que-mayores-revoluciones-industria-desarrollo).
 
@@ -968,7 +968,7 @@ En pocas palabras es un gestionador de contenedores (el "maestro de orquesta"), 
 
 Buscando como podemos comunicarnos con **Kubernetes** llegamos a [este recurso](https://kubernetes.io/docs/tasks/run-application/access-api-from-pod/#without-using-a-proxy):
 
-<img src="https://raw.githubusercontent.com/lanzt/blog/main/assets/images/HTB/unobtainium/338google_accessAPI_curl.png" class="img-to-zoom" data-toggle="modal" data-target=".modal-zoomed-img" style="width: 100%;"/>
+<img src="https://raw.githubusercontent.com/lanzt/blog/main/assets/images/HTB/unobtainium/338google_accessAPI_curl.png" style="width: 100%;"/>
 
 Validando si tenemos los archivos necesarios vemos que si:
 
@@ -1027,7 +1027,7 @@ En [este post](https://www.elladodelmal.com/2019/01/hacking-kubernetes-auditoria
 root@webapp-deployment-5d764566f4-mbprj:/tmp/testeee$ ./kube-hunt --cidr 10.96.0.1
 ```
 
-<img src="https://raw.githubusercontent.com/lanzt/blog/main/assets/images/HTB/unobtainium/338bash_pollutionSH_kubeHunter.png" class="img-to-zoom" data-toggle="modal" data-target=".modal-zoomed-img" style="width: 100%;"/>
+<img src="https://raw.githubusercontent.com/lanzt/blog/main/assets/images/HTB/unobtainium/338bash_pollutionSH_kubeHunter.png" style="width: 100%;"/>
 
 Donde únicamente nos reporta una versión, pero dando vueltas con ella no logramos nada :'(
 
@@ -1279,7 +1279,7 @@ Peeeeero ¿y como nos movemoooooooos? :(
 
 Pues acá entra en juego lo que habíamos probado con `cURL` y los servidores node internos, ya que ellos están sirviendo desde contenedores llamados `devnode-deployment...` y nosotros estamos sobre contenedores llamados `webapp-deployment...`. Por lo que simplemente deberíamos volver a ejecutar nuestra explotación, pero contra algún servidor **node** interno (:
 
-<img src="https://raw.githubusercontent.com/lanzt/blog/main/assets/images/HTB/unobtainium/338google_gif_woooooow.gif" class="img-to-zoom" data-toggle="modal" data-target=".modal-zoomed-img" style="width: 60%;"/>
+<img src="https://raw.githubusercontent.com/lanzt/blog/main/assets/images/HTB/unobtainium/338google_gif_woooooow.gif" style="width: 60%;"/>
 
 Podemos crear un script en `bash` que nos haga la gestión muuuucho más rápido y sea estético, así evitamos tener que estar limpiando la terminal por culpa de los comandos `cURL` tan largos :P (además de practicar nuestro scripting en bash).
 
@@ -1367,7 +1367,7 @@ Les dejo el script por si quieren jugar con él, la explotación es totalmente i
 
 Lo movemos a la máquina, nos ponemos en escucha y ejecutamos de nuevo contra el servidor `http://172.17.0.5:3000`:
 
-<img src="https://raw.githubusercontent.com/lanzt/blog/main/assets/images/HTB/unobtainium/338bash_devnodeSH_done.png" class="img-to-zoom" data-toggle="modal" data-target=".modal-zoomed-img" style="width: 100%;"/>
+<img src="https://raw.githubusercontent.com/lanzt/blog/main/assets/images/HTB/unobtainium/338bash_devnodeSH_done.png" style="width: 100%;"/>
 
 PERFECTISIMOOOOOOOOOOOOOOOOOOOOOOO, tamos ahora en uno de los contenedores del **pod** `dev`, que lindura :3
 
@@ -1517,7 +1517,7 @@ Y finalmente este:
 
 ## Generamos <u>POD malicioso</u> [📌](#malicious-pod) {#malicious-pod}
 
-<img src="https://raw.githubusercontent.com/lanzt/blog/main/assets/images/HTB/unobtainium/338google_access2THEnodes.png" class="img-to-zoom" data-toggle="modal" data-target=".modal-zoomed-img" style="width: 100%;"/>
+<img src="https://raw.githubusercontent.com/lanzt/blog/main/assets/images/HTB/unobtainium/338google_access2THEnodes.png" style="width: 100%;"/>
 
 Ese archivo `.yaml` genera un **pod** que cuando se crea nos devuelve una **Reverse Shell** (además de montar la raíz del sistema (`/`) en una ruta llamada `/host`).
 
@@ -1739,7 +1739,7 @@ Intente algunas formas de conseguir una **Shell** sin que se nos cierre pero no 
 
 Veamos la flag de `user.txt`:
 
-<img src="https://raw.githubusercontent.com/lanzt/blog/main/assets/images/HTB/unobtainium/338flags_user.png" class="img-to-zoom" data-toggle="modal" data-target=".modal-zoomed-img" style="width: 100%;"/>
+<img src="https://raw.githubusercontent.com/lanzt/blog/main/assets/images/HTB/unobtainium/338flags_user.png" style="width: 100%;"/>
 
 ...
 

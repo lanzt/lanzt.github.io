@@ -8,7 +8,7 @@ tags        : [ service-account, kerberos, delegation-attack, DNS, PScript, SMBR
 ---
 Máquina **Windows** nivel medio. Fuzzeito lindo para encontrar archivos **PDF** y juegos sucios con su metadata. Gafas bien puestas contra scripts de **PowerShell**, temitas de **DNS** e interacción con **Service Accounts**.
 
-<img src="https://raw.githubusercontent.com/lanzt/blog/main/assets/images/HTB/intelligence/357intelligenceHTB.png" class="img-to-zoom" data-toggle="modal" data-target=".modal-zoomed-img" style="width: 100%;"/>
+<img src="https://raw.githubusercontent.com/lanzt/blog/main/assets/images/HTB/intelligence/357intelligenceHTB.png" style="width: 100%;"/>
 
 ## TL;DR (Spanish writeup)
 
@@ -28,9 +28,9 @@ Indagando y jugando con los **PDFs** encontrados al inicio, vamos a explorar el 
 
 ### Clasificación de la máquina según la gentesita
 
-<img src="https://raw.githubusercontent.com/lanzt/blog/main/assets/images/HTB/intelligence/357rating.png" class="img-to-zoom" data-toggle="modal" data-target=".modal-zoomed-img" style="width: 30%;"/>
+<img src="https://raw.githubusercontent.com/lanzt/blog/main/assets/images/HTB/intelligence/357rating.png" style="width: 30%;"/>
 
-<img src="https://raw.githubusercontent.com/lanzt/blog/main/assets/images/HTB/intelligence/357statistics.png" class="img-to-zoom" data-toggle="modal" data-target=".modal-zoomed-img" style="width: 80%;"/>
+<img src="https://raw.githubusercontent.com/lanzt/blog/main/assets/images/HTB/intelligence/357statistics.png" style="width: 80%;"/>
 
 Tira mucho a la realidad y hay que investigar bastante.
 
@@ -223,13 +223,13 @@ Por ahora no vemos nada más, empecemos a profundizar.
 
 ## Vemos que hay en el puerto 80 [📌](#puerto-80) {#puerto-80}
 
-<img src="https://raw.githubusercontent.com/lanzt/blog/main/assets/images/HTB/intelligence/357page80.png" class="img-to-zoom" data-toggle="modal" data-target=".modal-zoomed-img" style="width: 100%;"/>
+<img src="https://raw.githubusercontent.com/lanzt/blog/main/assets/images/HTB/intelligence/357page80.png" style="width: 100%;"/>
 
 Vemos una página web bastante linda :P
 
 Con lo único con lo que podemos interactuar es con estos dos **links**:
 
-<img src="https://raw.githubusercontent.com/lanzt/blog/main/assets/images/HTB/intelligence/357page80_downloadLinks.png" class="img-to-zoom" data-toggle="modal" data-target=".modal-zoomed-img" style="width: 100%;"/>
+<img src="https://raw.githubusercontent.com/lanzt/blog/main/assets/images/HTB/intelligence/357page80_downloadLinks.png" style="width: 100%;"/>
 
 Los cuales nos llevan a:
 
@@ -385,11 +385,11 @@ Nuestro comando quedaría así:
 
 Ejecutémoslo y veamos si hay algo:
 
-<img src="https://raw.githubusercontent.com/lanzt/blog/main/assets/images/HTB/intelligence/357bash_fuzzPDFs_foundOTHERfile.png" class="img-to-zoom" data-toggle="modal" data-target=".modal-zoomed-img" style="width: 100%;"/>
+<img src="https://raw.githubusercontent.com/lanzt/blog/main/assets/images/HTB/intelligence/357bash_fuzzPDFs_foundOTHERfile.png" style="width: 100%;"/>
 
 OPAAAAAAAAAAAA, encuentra cositas, (bastanteees) podríamos validar algunos a ver si son reales, tomemos el `01-20`:
 
-<img src="https://raw.githubusercontent.com/lanzt/blog/main/assets/images/HTB/intelligence/357page80_PDF_01-20.png" class="img-to-zoom" data-toggle="modal" data-target=".modal-zoomed-img" style="width: 100%;"/>
+<img src="https://raw.githubusercontent.com/lanzt/blog/main/assets/images/HTB/intelligence/357page80_PDF_01-20.png" style="width: 100%;"/>
 
 Pues si existe (y probando con otros también), hagamos el mismo proceso de antes, juguemos con `exiftool` pa ver la metadata:
 
@@ -409,7 +409,7 @@ Ojo, tenemos nuevo nombre, con lo que nos pone a dudar si los otros **PDFs** tam
 
 Aprovechemos este output:
 
-<img src="https://raw.githubusercontent.com/lanzt/blog/main/assets/images/HTB/intelligence/357bash_fuzzPDFs_foundOTHERfile.png" class="img-to-zoom" data-toggle="modal" data-target=".modal-zoomed-img" style="width: 100%;"/>
+<img src="https://raw.githubusercontent.com/lanzt/blog/main/assets/images/HTB/intelligence/357bash_fuzzPDFs_foundOTHERfile.png" style="width: 100%;"/>
 
 Para generar un archivo con únicamente las fechas de los nuevos `PDFs`, así es más fácil después jugar con `cURL` y `exiftool`:
 
@@ -474,7 +474,7 @@ Nos quedaría así:
 
 Ejecutamos yyyyyyyyy:
 
-<img src="https://raw.githubusercontent.com/lanzt/blog/main/assets/images/HTB/intelligence/357bash_oneliner_extractCreatorsPDFs.png" class="img-to-zoom" data-toggle="modal" data-target=".modal-zoomed-img" style="width: 100%;"/>
+<img src="https://raw.githubusercontent.com/lanzt/blog/main/assets/images/HTB/intelligence/357bash_oneliner_extractCreatorsPDFs.png" style="width: 100%;"/>
 
 Ta bueno, vemos demasiados nombres, guardémoslos en un archivo:
 
@@ -491,7 +491,7 @@ Y ya tendríamos un objeto con tooooooooodos los creadores (recuerden, podemos p
 ❱ mv creators.txt.bak creators.txt
 ```
 
-<img src="https://raw.githubusercontent.com/lanzt/blog/main/assets/images/HTB/intelligence/357bash_creatorsTXT.png" class="img-to-zoom" data-toggle="modal" data-target=".modal-zoomed-img" style="width: 100%;"/>
+<img src="https://raw.githubusercontent.com/lanzt/blog/main/assets/images/HTB/intelligence/357bash_creatorsTXT.png" style="width: 100%;"/>
 
 Y ahora sí, tamos finos.
 
@@ -512,11 +512,11 @@ Lo ejecutamos, va a tomar su tiempo en terminar, ya que son varios archivos, per
 
 💥 **2020-06-04-upload.pdf (06-04)**
 
-<img src="https://raw.githubusercontent.com/lanzt/blog/main/assets/images/HTB/intelligence/357bash_PDF_credentialsFOUND_06-04.png" class="img-to-zoom" data-toggle="modal" data-target=".modal-zoomed-img" style="width: 100%;"/>
+<img src="https://raw.githubusercontent.com/lanzt/blog/main/assets/images/HTB/intelligence/357bash_PDF_credentialsFOUND_06-04.png" style="width: 100%;"/>
 
 💥 **2020-12-30-upload.pdf (12-30)**
 
-<img src="https://raw.githubusercontent.com/lanzt/blog/main/assets/images/HTB/intelligence/357bash_PDF_internalITmsg_12-30.png" class="img-to-zoom" data-toggle="modal" data-target=".modal-zoomed-img" style="width: 100%;"/>
+<img src="https://raw.githubusercontent.com/lanzt/blog/main/assets/images/HTB/intelligence/357bash_PDF_internalITmsg_12-30.png" style="width: 100%;"/>
 
 En `06-04` le da la bienvenida a los nuevos usuarios de la compañía, les indica que por favor inicien sesión usando el usuario asignado y la X contraseña, pero les avisa que por favor cambien lo más rápido posible esa contraseña.
 
@@ -553,13 +553,13 @@ Le decimos que tome cada nombre del archivo como un usuario y pruebe con él:
 ❱ crackmapexec smb 10.10.10.248 -u creators.txt -p 'NewIntelligenceCorpUser9876'
 ```
 
-<img src="https://raw.githubusercontent.com/lanzt/blog/main/assets/images/HTB/intelligence/357bash_cme_credentialsFound.png" class="img-to-zoom" data-toggle="modal" data-target=".modal-zoomed-img" style="width: 100%;"/>
+<img src="https://raw.githubusercontent.com/lanzt/blog/main/assets/images/HTB/intelligence/357bash_cme_credentialsFound.png" style="width: 100%;"/>
 
 Opaaa, la contraseña es válida con el usuario `Tiffany.Molina` (: Pues veamos a que podemos acceder con ellas...
 
 Finalmente, nos son útiles para listar carpetas compartidas:
 
-<img src="https://raw.githubusercontent.com/lanzt/blog/main/assets/images/HTB/intelligence/357bash_smbmapWITHtiffany.png" class="img-to-zoom" data-toggle="modal" data-target=".modal-zoomed-img" style="width: 100%;"/>
+<img src="https://raw.githubusercontent.com/lanzt/blog/main/assets/images/HTB/intelligence/357bash_smbmapWITHtiffany.png" style="width: 100%;"/>
 
 Tenemos acceso de lectura a algunos directorios, pero hay dos llamativos: `IT` y `Users`.
 
@@ -569,7 +569,7 @@ Tenemos acceso de lectura a algunos directorios, pero hay dos llamativos: `IT` y
 
 Dando un vistazo lo único interesante se encuentra en `IT` y sería este objeto (script), que si recordamos el último **PDF** nos habla de **Ted** y un **script** para controlar cositas extrañas en la web, así que toma fuerza el revisarlo:
 
-<img src="https://raw.githubusercontent.com/lanzt/blog/main/assets/images/HTB/intelligence/357bash_smbclientWITHtiffany_IT_PScript.png" class="img-to-zoom" data-toggle="modal" data-target=".modal-zoomed-img" style="width: 100%;"/>
+<img src="https://raw.githubusercontent.com/lanzt/blog/main/assets/images/HTB/intelligence/357bash_smbclientWITHtiffany_IT_PScript.png" style="width: 100%;"/>
 
 Descarguémoslo y veamos de que se trata:
 
@@ -739,11 +739,11 @@ Pues pongámonos a escuchar todo lo que pase por la interfaz donde esta la VPN d
 ...
 ```
 
-<img src="https://raw.githubusercontent.com/lanzt/blog/main/assets/images/HTB/intelligence/357bash_responder_listening.png" class="img-to-zoom" data-toggle="modal" data-target=".modal-zoomed-img" style="width: 100%;"/>
+<img src="https://raw.githubusercontent.com/lanzt/blog/main/assets/images/HTB/intelligence/357bash_responder_listening.png" style="width: 100%;"/>
 
 Después de un tiempo, vemos estooooooooooooooooooooooooooooooo:
 
-<img src="https://raw.githubusercontent.com/lanzt/blog/main/assets/images/HTB/intelligence/357bash_responder_hashNTLMv2ted.png" class="img-to-zoom" data-toggle="modal" data-target=".modal-zoomed-img" style="width: 100%;"/>
+<img src="https://raw.githubusercontent.com/lanzt/blog/main/assets/images/HTB/intelligence/357bash_responder_hashNTLMv2ted.png" style="width: 100%;"/>
 
 Tamooooooooooooo, obtenemos el hash [NTLMv2](https://0xdf.gitlab.io/2019/01/13/getting-net-ntlm-hases-from-windows.html) ([acá puedes ver y aprender como identificarlos](https://medium.com/@petergombos/lm-ntlm-net-ntlmv2-oh-my-a9b235c58ed4)) del usuario `Ted.Graves`, como dije antes podemos intentar crackearlo, así que lo tomamos, lo guardamos en un archivo y jugamos con `John The Ripper` (o `Hashcat` o lo que seaaaaaaaaaa):
 
@@ -751,7 +751,7 @@ Tamooooooooooooo, obtenemos el hash [NTLMv2](https://0xdf.gitlab.io/2019/01/13/g
 ❱ john --wordlist=/usr/share/wordlists/rockyou.txt --format=netntlmv2 ted_ntlmv2.hash 
 ```
 
-<img src="https://raw.githubusercontent.com/lanzt/blog/main/assets/images/HTB/intelligence/357bash_JtR_tedNTLMv2_cracked.png" class="img-to-zoom" data-toggle="modal" data-target=".modal-zoomed-img" style="width: 100%;"/>
+<img src="https://raw.githubusercontent.com/lanzt/blog/main/assets/images/HTB/intelligence/357bash_JtR_tedNTLMv2_cracked.png" style="width: 100%;"/>
 
 Perfectísimo, tenemos la contraseña en texto plano de **Ted** (: Ahora a investigar que podemos hacer con ella ¡qué lo cu ra!
 
@@ -787,11 +787,11 @@ Lo que nos muestra es que podemos dumpear la contraseña de alguna cuenta de ser
 
 El uso es sencillo, ejecutémosla primero como `Tiffany` a ver si podíamos desde antes validar esto:
 
-<img src="https://raw.githubusercontent.com/lanzt/blog/main/assets/images/HTB/intelligence/357bash_gMSADumper_Tiffany_groupsCANdump.png" class="img-to-zoom" data-toggle="modal" data-target=".modal-zoomed-img" style="width: 100%;"/>
+<img src="https://raw.githubusercontent.com/lanzt/blog/main/assets/images/HTB/intelligence/357bash_gMSADumper_Tiffany_groupsCANdump.png" style="width: 100%;"/>
 
 Opa, vemos dos cosas, existe una cuenta de servicio llamada `svc_int` yyyyy únicamente pueden ver su contraseña los usuarios de los grupos `DC$` e `itsupport`, pues descubramos quienes están en el grupo `itsupport` (podemos pensar que claramente **Ted** esta, ya que el script fue creado por él y se hablaba que era para dar soporte al departamento de **IT**):
 
-<img src="https://raw.githubusercontent.com/lanzt/blog/main/assets/images/HTB/intelligence/357bash_ldapsearch_Tiffany_itsupportGroupMembers.png" class="img-to-zoom" data-toggle="modal" data-target=".modal-zoomed-img" style="width: 100%;"/>
+<img src="https://raw.githubusercontent.com/lanzt/blog/main/assets/images/HTB/intelligence/357bash_ldapsearch_Tiffany_itsupportGroupMembers.png" style="width: 100%;"/>
 
 Como habíamos dicho, tenía sentido que existiera **Ted**, solo que también existe **Laura** en el grupo, pero como ya tenemos credenciales de **Ted** no entramos en pánico y nos disponemos a jugar con él.
 
@@ -817,7 +817,7 @@ Como habíamos dicho, tenía sentido que existiera **Ted**, solo que también ex
 
 Veamos la contraseña de la cuenta `svc_int` aprovechando que estamos en uno de los grupos que pueden verla:
 
-<img src="https://raw.githubusercontent.com/lanzt/blog/main/assets/images/HTB/intelligence/357bash_gMSADumper_Ted_svc-int_password.png" class="img-to-zoom" data-toggle="modal" data-target=".modal-zoomed-img" style="width: 100%;"/>
+<img src="https://raw.githubusercontent.com/lanzt/blog/main/assets/images/HTB/intelligence/357bash_gMSADumper_Ted_svc-int_password.png" style="width: 100%;"/>
 
 Listoones, ya la tenemos, llegados a este punto ¿pa que nos sirve esto? 
 
@@ -833,7 +833,7 @@ Lo segundo es generar un [**Service Ticket**](https://www.tarlogic.com/es/blog/c
 
 Usamos `getST.py`:
 
-<img src="https://raw.githubusercontent.com/lanzt/blog/main/assets/images/HTB/intelligence/357bash_getST_Administrator.png" class="img-to-zoom" data-toggle="modal" data-target=".modal-zoomed-img" style="width: 100%;"/>
+<img src="https://raw.githubusercontent.com/lanzt/blog/main/assets/images/HTB/intelligence/357bash_getST_Administrator.png" style="width: 100%;"/>
 
 Y ya tendríamos un ticket que nos permite interactuar con los servicios como el usuario `Administrator`:
 
@@ -861,7 +861,7 @@ Y ahora podríamos ejecutar:
 
 > (-k hace la autenticación por Kerberos (o sea, toma nuestro ticket))
 
-<img src="https://raw.githubusercontent.com/lanzt/blog/main/assets/images/HTB/intelligence/357bash_psexec_AdministratorCMD.png" class="img-to-zoom" data-toggle="modal" data-target=".modal-zoomed-img" style="width: 100%;"/>
+<img src="https://raw.githubusercontent.com/lanzt/blog/main/assets/images/HTB/intelligence/357bash_psexec_AdministratorCMD.png" style="width: 100%;"/>
 
 Y también con `wmiexec`, la sintaxis es igual:
 
@@ -869,13 +869,13 @@ Y también con `wmiexec`, la sintaxis es igual:
 ❱ wmiexec.py intelligence.htb/Administrator@dc.intelligence.htb -k -no-pass
 ```
 
-<img src="https://raw.githubusercontent.com/lanzt/blog/main/assets/images/HTB/intelligence/357bash_wmiexec_AdministratorCMD.png" class="img-to-zoom" data-toggle="modal" data-target=".modal-zoomed-img" style="width: 100%;"/>
+<img src="https://raw.githubusercontent.com/lanzt/blog/main/assets/images/HTB/intelligence/357bash_wmiexec_AdministratorCMD.png" style="width: 100%;"/>
 
 Y listooooooooooooooos, tendríamos acceso al sistema como el usuario `Administrator`, por lo tanto, **podríamos hacer cu al qui er COSAAAAAAAAAAAA!!**
 
 Veamos las flags:
 
-<img src="https://raw.githubusercontent.com/lanzt/blog/main/assets/images/HTB/intelligence/357flags.png" class="img-to-zoom" data-toggle="modal" data-target=".modal-zoomed-img" style="width: 100%;"/>
+<img src="https://raw.githubusercontent.com/lanzt/blog/main/assets/images/HTB/intelligence/357flags.png" style="width: 100%;"/>
 
 ...
 

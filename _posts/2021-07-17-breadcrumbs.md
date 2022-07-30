@@ -8,7 +8,7 @@ tags        : [ SQLi, LFI, cookie-hijacking, file-upload, AES, JWT ]
 ---
 Máquina Windows nivel difícil. Jugaremos mucho con inyecciones y robos :P Encontraremos un **LFI**, haremos **cookie-hijacking**, leeremos contraseñas almacenadas, jugando con binarios encontramos una **URL** que nos llevara de la mano a un **SQLi** y haremos desencriptación con claves **AES**.
 
-<img src="https://raw.githubusercontent.com/lanzt/blog/main/assets/images/HTB/breadcrumbs/316breadcrumbsHTB.png" class="img-to-zoom" data-toggle="modal" data-target=".modal-zoomed-img" style="width: 100%;"/>
+<img src="https://raw.githubusercontent.com/lanzt/blog/main/assets/images/HTB/breadcrumbs/316breadcrumbsHTB.png" style="width: 100%;"/>
 
 ### TL;DR (Spanish writeup)
 
@@ -42,7 +42,7 @@ Mucho textoooooooooooo, a darle.
 
 #### Clasificación de la máquina
 
-<img src="https://raw.githubusercontent.com/lanzt/blog/main/assets/images/HTB/breadcrumbs/316statistics.png" class="img-to-zoom" data-toggle="modal" data-target=".modal-zoomed-img" style="width: 90%;"/> 
+<img src="https://raw.githubusercontent.com/lanzt/blog/main/assets/images/HTB/breadcrumbs/316statistics.png" style="width: 90%;"/> 
 
 > Escribo para tener mis "notas", por si algun dia se me olvida todo, leer esto y reencontrarme (o talvez no) :) además de enfocarme en plasmar mis errores y exitos (por si ves mucho texto), todo desde una perspectiva más de enseñanza que de solo plasmar lo que hice.
 

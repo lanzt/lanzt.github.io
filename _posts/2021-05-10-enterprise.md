@@ -8,7 +8,7 @@ tags        : [ buffer-overflow, SQLi, wordpress-plugin, joomla, docker, pivotin
 ---
 Máquina Linux nivel medio, vamos a movernos entre sentencias **SQL** para generar pinchazos e.e Pivotearemos entre contenedores y compartiremos experiencias con el host... Finalmente explotaremos un **buffer overflow** mediante un **ret2libc** para obtener una **/bin/sh** en el host como **root**.
 
-<img src="https://raw.githubusercontent.com/lanzt/blog/main/assets/images/HTB/enterprise/112enterpriseHTB.png" class="img-to-zoom" data-toggle="modal" data-target=".modal-zoomed-img" style="width: 100%;"/>
+<img src="https://raw.githubusercontent.com/lanzt/blog/main/assets/images/HTB/enterprise/112enterpriseHTB.png" style="width: 100%;"/>
 
 ### TL;DR (Spanish writeup)
 
@@ -36,7 +36,7 @@ Estos son los scripts finales, en el post veremos la creación de ellos :)
 
 #### Clasificación de la máquina
 
-<img src="https://raw.githubusercontent.com/lanzt/blog/main/assets/images/HTB/enterprise/112statistics.png" class="img-to-zoom" data-toggle="modal" data-target=".modal-zoomed-img" style="width: 90%;"/>
+<img src="https://raw.githubusercontent.com/lanzt/blog/main/assets/images/HTB/enterprise/112statistics.png" style="width: 90%;"/>
 
 Bastante enumeración y a la vez bastante real, disfrutemos.
 
@@ -1084,7 +1084,7 @@ Probando con `william.riker:u*Z14ru0p#ttj83zS6` logramos entrar :)
 
 Perfectoooo, tamos dentro :')
 
-<img src="https://raw.githubusercontent.com/lanzt/blog/main/assets/images/HTB/enterprise/112birDance.gif" class="img-to-zoom" data-toggle="modal" data-target=".modal-zoomed-img" style="width: 30%;"/>
+<img src="https://raw.githubusercontent.com/lanzt/blog/main/assets/images/HTB/enterprise/112birDance.gif" style="width: 30%;"/>
 
 Bastante camino para llegar acá :) Ahora es muy simple es entablarnos una reverse Shell, simplemente debemos modificar algunos de los plugins que existan en el sitio, como ya jugamos con el plugin **lcars**, sabemos que existe.
 
@@ -1871,7 +1871,7 @@ $
 [*] Got EOF while sending in interactive
 ```
 
-<img src="https://raw.githubusercontent.com/lanzt/blog/main/assets/images/HTB/enterprise/112sad_ok.gif" class="img-to-zoom" data-toggle="modal" data-target=".modal-zoomed-img" style="width: 60%;"/>
+<img src="https://raw.githubusercontent.com/lanzt/blog/main/assets/images/HTB/enterprise/112sad_ok.gif" style="width: 60%;"/>
 
 Jmmm, dando unas vueltas cai en cuenta que el programa está tomando **nuestras** direcciones en memoria, o sea con las que interactúa el programa en **nuestro sistema**, tiene sentido que no sirva, ya que esas **direcciones** probablemente no sean las mismas que usa el programa en la máquina víctima... Juguemos con ella (ya que tiene **gdb**) para extraer las direcciones en memoria y validar si ese es el error:
 
@@ -1973,7 +1973,7 @@ enterprise.htb
 $  
 ```
 
-<img src="https://raw.githubusercontent.com/lanzt/blog/main/assets/images/HTB/enterprise/112boom.gif" class="img-to-zoom" data-toggle="modal" data-target=".modal-zoomed-img" style="width: 90%;"/>
+<img src="https://raw.githubusercontent.com/lanzt/blog/main/assets/images/HTB/enterprise/112boom.gif" style="width: 90%;"/>
 
 PERF3ct0000000000oooOOOOOOOOoooooooVoooo.............
 
