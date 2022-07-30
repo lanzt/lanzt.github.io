@@ -84,15 +84,20 @@ h1,h2,h3,h4,h5,h6 {
 .btn {
     min-width: 180px;
 }
+
+// block-quote -----------------
+
 blockquote {
     font-family: 'Special Elite', cursive;
-    font-weight: 100;
-	font-size: 27px;
+    text-align: justify;
+	font-size: 22px;
 	max-width: 100%;;
 	line-height: 1.2;
 	position: relative;
 	margin: 0;
-	padding: .5rem;
+    padding: .5rem;
+    padding-left: 4rem;
+    padding-right: 4rem;
     cite {
         line-height: 3;
         text-align: left;
@@ -106,17 +111,18 @@ blockquote:before, blockquote:after {
 	height: 4rem;
 }
 blockquote:before {
-    color: #000000;
+    color: rgb(238, 0, 255);
 	content: '“';
-	left: -5rem;
-	top: 0rem;
+	left: -.5rem;
+	top: 2rem;
 }
 blockquote:after {
-    color: #000000;
+    color: rgb(238, 0, 255);
 	content: '”';
-	right: -5rem;
-	bottom: 1rem;
+	right: -.7rem;
+	bottom: 2rem;
 }
+// ------------------------------------
 
 // animation
 .nav-icon, 
