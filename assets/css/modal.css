@@ -1,0 +1,40 @@
+/*  ----------------- zoom images ----------------- */
+/* Thanks to: https://github.com/sharadcodes/jekyll-theme-serial-programmer */
+
+.article-post img {
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+    cursor: zoom-in;
+}
+
+#lightbox {
+    position: fixed;
+    z-index: 1000;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.9);
+    display: none;
+}
+
+#lightbox.active {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+#lightbox img {
+    width: 55vw;
+    max-height: 90%;
+    padding: 2px;
+    background-color: rgb(58, 0, 102);
+    border: 1px solid white;
+}
+
+@media screen and (max-width: 50px) {
+    body {
+        padding: 5.5rem;
+    }
+}

@@ -9,10 +9,12 @@
 <title>{{page.title}} | Lanz Blog</title>
 
 {% seo %}
-    
-<link href="{{ site.baseurl }}/assets/css/prism.css" rel="stylesheet">
 
+<!-- CSS -->
+<link href="{{ site.baseurl }}/assets/css/prism.css" rel="stylesheet">
+<!-- SCSS can't be processed by browser, so we use .CSS to fix it -->
 <link href="{{ site.baseurl }}/assets/css/theme.css" rel="stylesheet">
+<link href="{{ site.baseurl }}/assets/css/modal.css" rel="stylesheet">
 
 <script src="{{ site.baseurl }}/assets/js/jquery.min.js"></script>
 
@@ -89,7 +91,6 @@ ga('send', 'pageview');
     <!-- Content
     ================================================== -->
     <div class="main-content">
-        {% include modal.html %}
         {{ content }}
     </div>
 
@@ -148,14 +149,6 @@ ga('send', 'pageview');
 <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
 <script src="https://cdn.jsdelivr.net/npm/popper.js@1.12.9/dist/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.0.0/dist/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
-
-<script>
-    $('.img-to-zoom').click(function(){
-        $('#zoomed-img').attr('src', $(this).attr('src'));
-        $('#zoomed-img').css('height', $(this).height() * 2.4 );
-       ;
-    });
-</script>
 
 </body>
 </html>

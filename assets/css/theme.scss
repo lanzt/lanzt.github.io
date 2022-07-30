@@ -872,33 +872,3 @@ ul.tag-box li span.size {
     font-weight: 300;
     color: rgb(234, 0, 255);
 }
-
-// ZOOM images
-.img-to-zoom {
-    cursor: -moz-zoom-in; 
-    cursor: -webkit-zoom-in; 
-    cursor: zoom-in;
-    display: block;
-    margin-left: auto;
-    margin-right: auto;
-}
-// - When popup is launched
-#zoomed-img{
-    max-width:fit-content;
-    max-height:90%;
-    object-fit: contain;
-    width: 80%;
-    height: 80%;
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-}
-// - Avoid show background
-.modal-content {
-    background: none;
-}
-// - To try to fix movement when modal is launched and closed
-.modal-open {
-    padding-right: 0 !important;
-}
