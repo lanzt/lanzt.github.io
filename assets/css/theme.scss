@@ -489,6 +489,7 @@ img, img:hover {
 }
 .posttitle {
     font-size:50px;
+    color: white;
     font-weight:700;
     line-height:1.2;
 }
@@ -528,8 +529,14 @@ img, img:hover {
         padding:2px;
     }
 }
-.article-post {    
+.article-post {   
     font-size: 18px;
+    h1 {
+        font-size: 47px;
+    }
+    h2 {
+        font-size: 34px;
+    }
     p {
         margin-top:30px;
         margin-bottom:30px;
