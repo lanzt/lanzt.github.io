@@ -53,12 +53,13 @@ a:focus {
     color: rgb(178, 55, 209);
 }
 
-// Images of site
+// Images of site ----------
 img {
     max-width: 100%;
     height: auto;
     border-radius: 10px;
 }
+// -------------------------
 
 h1,h2,h3,h4,h5,h6 {
     font-weight: 700;
@@ -540,6 +541,14 @@ img, img:hover {
     p {
         margin-top:30px;
         margin-bottom:30px;
+    }
+    blockquote code {
+        font-family: 'Special Elite', cursive;
+        font-size: 22px;
+        color: magenta;
+        padding: 3px 3px 0px 3px;
+        border: 0;
+        background-color: transparent;
     }
     code {
         font-size: 15px;
