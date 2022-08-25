@@ -187,8 +187,8 @@ Entonces, en resumen es muy simple:
 
 Esta es la parte más sencilla, hay varias herramientas, [como las de este hilo](https://security.stackexchange.com/questions/34168/how-can-i-identify-discover-files-hidden-with-ads), pero destacaremos 3:
 
-* [lads.exe](https://github.com/lanzt/blog/tree/main/assets/files/articles/ADS-Windows/lads.exe).
-* [streams.exe](https://github.com/lanzt/blog/tree/main/assets/files/articles/ADS-Windows/streams.exe).
+* [lads.exe](https://github.com/lanzt/lanzt.github.io/releases/tag/ads-windows).
+* [streams.exe](https://github.com/lanzt/lanzt.github.io/releases/tag/ads-windows).
 * `dir /r`.
 
 Las 3 son directas, juguemos:
