@@ -40,18 +40,46 @@ Llevada a la realidad de a poco, aunque toca varios temas reales.
 
 It's time to show your love.
 
-1. [Reconocimiento](#reconocimiento).
-2. [Enumeración](#enumeracion).
-  * [Extraemos subdominio mediante el servicio DNS](#enum-port-53).
-  * [Encontramos carpeta compartida en SMB](#enum-port-smb).
-3. [Explotación](#explotacion).
-  * [Bruteforceamos contraseña de un archivo `.zip`](#john-bruteforce-zip).
-4. [Movimiento lateral: legacyy -> svc_deploy](#lateral-ps-historial).
-  * [Reverse Shell mediante Invoke-Command](#revsh-ps-invokecommand).
-  * [Saltando antivirus, pa que dejen de molestar](#obfuscation-ps-script).
-5. [Escalada de privilegios](#escalada-de-privilegios).
-
-...
+<div class="toctoc">
+<ol>
+      <li>
+        <a href="#reconocimiento">Reconocimiento</a>.
+      </li>
+      <li>
+        <a href="#enumeracion">Enumeración</a>.
+        <ul>
+          <li>
+            <a href="#enum-port-53">Extraemos subdominio mediante el servicio DNS</a>.
+          </li>
+          <li>
+            <a href="#enum-port-smb">Encontramos carpeta compartida en SMB</a>.
+          </li>
+        </ul>
+      </li>
+      <li>
+        <a href="#explotacion">Explotación</a>.
+      </li>
+        <ul>
+          <li>
+            <a href="#john-bruteforce-zip">Bruteforceamos contraseña de un archivo <code>.zip</code></a>.
+          </li>
+        </ul>
+      <li>
+        <a href="#lateral-ps-historial">Movimiento lateral: legacyy -> svc_deploy</a>.
+      </li>
+        <ul>
+          <li>
+            <a href="#revsh-ps-invokecommand">Reverse Shell mediante Invoke-Command</a>.
+          </li>
+          <li>
+            <a href="#obfuscation-ps-script">Saltando antivirus, pa que dejen de molestar</a>.
+          </li>
+        </ul>
+      <li>
+        <a href="#escalada-de-privilegios">Escalada de privilegios</a>.
+      </li>
+    </ol>
+</div>
 
 # Reconocimiento [#](#reconocimiento) {#reconocimiento}
 
