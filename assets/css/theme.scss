@@ -90,7 +90,6 @@ h1,h2,h3,h4,h5,h6 {
 
 blockquote {
     font-family: 'Special Elite', cursive;
-    text-align: justify;
 	font-size: 22px;
 	max-width: 100%;;
 	line-height: 1.2;
@@ -113,16 +112,12 @@ blockquote:before, blockquote:after {
 }
 blockquote:before {
     color: rgb(238, 0, 255);
-	content: '“';
-	left: -.5rem;
-	top: 2rem;
+	content: '>';
+    transform: scale(.5);
+    left: -1.5rem;
+    top: 0.1rem;
 }
-blockquote:after {
-    color: rgb(238, 0, 255);
-	content: '”';
-	right: -.7rem;
-	bottom: 2rem;
-}
+
 // ------------------------------------
 
 // animation
@@ -545,7 +540,7 @@ img, img:hover {
     blockquote code {
         font-family: 'Special Elite', cursive;
         font-size: 22px;
-        color: magenta;
+        color: rgb(255, 217, 0);
         padding: 3px 3px 0px 3px;
         border: 0;
         background-color: transparent;
