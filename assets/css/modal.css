@@ -26,11 +26,13 @@
 }
 
 #lightbox img {
-    width: 55vw;
-    max-height: 90%;
+    width: 73vw;
+    max-height: 92%;
+    max-width: 63%;
+    object-fit: contain;
     padding: 2px;
-    background-color: rgb(58, 0, 102);
-    border: 1px solid white;
+    background-color: rgb(38, 0, 67);
+    border: 1px solid white;    
 }
 
 @media screen and (max-width: 50px) {
