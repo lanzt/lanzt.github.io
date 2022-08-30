@@ -14,12 +14,12 @@ $enable-rounded: false;
 @import "bootstrap/mixins";
 @import 'bootstrap/bootstrap';
 @import 'stars';
-@import url('https://fonts.googleapis.com/css?family=Special+Elite');
-
+@import url('https://fonts.googleapis.com/css?family=Oswald');
+@import url('https://fonts.googleapis.com/css?family=Work Sans');
 
 // general
 body, input, button, select, optgroup, textarea {   
-    font-family: Sen;
+    font-family: 'Work Sans';
 }
 body {
     line-height: 1.7;
@@ -89,7 +89,7 @@ h1,h2,h3,h4,h5,h6 {
 // block-quote -----------------
 
 blockquote {
-    font-family: 'Special Elite', cursive;
+    font-family: 'Oswald';
 	font-size: 22px;
 	max-width: 100%;;
 	line-height: 1.2;
@@ -115,7 +115,7 @@ blockquote:before {
 	content: '>';
     transform: scale(.5);
     left: -1.5rem;
-    top: 0.1rem;
+    top: -0.6rem;
 }
 
 // ------------------------------------
@@ -477,7 +477,7 @@ img, img:hover {
 
 // blog 
 .article-post, .entry-header, .comments, .rating, .authorbox {
-    max-width: 900px;
+    max-width: 2000px;
     padding-left: 20px;
     padding-right: 20px;
     margin-left: auto;
@@ -538,7 +538,7 @@ img, img:hover {
         margin-bottom:30px;
     }
     blockquote code {
-        font-family: 'Special Elite', cursive;
+        font-family: 'Oswald';
         font-size: 22px;
         color: rgb(255, 217, 0);
         padding: 3px 3px 0px 3px;
@@ -546,12 +546,12 @@ img, img:hover {
         background-color: transparent;
     }
     code {
-        font-size: 15px;
-        color: #eac6ff;
+        font-family: 'Work Sans';
+        font-size: 18px;
         padding: 2px 5px;
-        border: 1px solid #29a58e;
-        border-radius: 4px;
-        background-color: #2f0e38ce;
+        //border: 1px solid #29a58e;
+        //border-radius: 4px;
+        //background-color: #2f0e38ce;
     }
     //code[class*="language-"] {
     //    border: 1px solid #f200ff;
