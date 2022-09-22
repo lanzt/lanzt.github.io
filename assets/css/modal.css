@@ -26,9 +26,9 @@
 }
 
 #lightbox img {
-    width: 73vw;
+    width: 83vw;
     max-height: 92%;
-    max-width: 63%;
+    max-width: 73%;
     object-fit: contain;
     padding: 2px;
     background-color: rgb(38, 0, 67);
