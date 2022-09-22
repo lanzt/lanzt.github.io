@@ -478,8 +478,8 @@ img, img:hover {
 // blog 
 .article-post, .entry-header, .comments, .rating, .authorbox {
     max-width: 2000px;
-    padding-left: 20px;
-    padding-right: 20px;
+    padding-left: 40px;
+    padding-right: 40px;
     margin-left: auto;
     margin-right: auto;
 }
@@ -526,7 +526,7 @@ img, img:hover {
     }
 }
 .article-post {   
-    font-size: 18px;
+    font-size: 16px;
     h1 {
         font-size: 47px;
     }
