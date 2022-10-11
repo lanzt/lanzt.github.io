@@ -28,7 +28,7 @@ Finalmente, existe un programa llamado `git-sync` que el usuario `root` ejecuta 
 
 <img src="https://raw.githubusercontent.com/lanzt/blog/main/assets/images/HTB/opensource/471rating.png" style="width: 30%;"/>
 
-<!--<img src="https://raw.githubusercontent.com/lanzt/blog/main/assets/images/HTB/opensource/471statistics.png" style="width: 80%;"/>-->
+<img src="https://raw.githubusercontent.com/lanzt/blog/main/assets/images/HTB/opensource/471statistics.png" style="width: 80%;"/>
 
 Procesos reales, vulns reales, algo de jugueteo para estresarnos, pero bien!
 
