@@ -46,11 +46,13 @@ a {
     color: darken($primary, 17%);
 }
 a:hover {
-    text-decoration: none;
     color: rgb(178, 55, 209);
 }
 a:focus {
     color: rgb(178, 55, 209);
+}
+a:visited {
+    color: darken($primary, 37%);
 }
 
 // Images of site ----------
@@ -539,19 +541,19 @@ img, img:hover {
     }
     blockquote code {
         font-family: 'Oswald';
-        font-size: 22px;
+        font-size: 21px;
         color: rgb(255, 217, 0);
-        padding: 3px 3px 0px 3px;
+        padding: 0px 3px 0px 3px;
         border: 0;
         background-color: transparent;
     }
     code {
         font-family: 'Work Sans';
-        font-size: 18px;
-        padding: 2px 5px;
-        //border: 1px solid #29a58e;
-        //border-radius: 4px;
-        //background-color: #2f0e38ce;
+        font-size: 16px;
+        padding: 0px 4px 2px 5px;
+        border: 1px solid #240a38;
+        border-radius: 7px;
+        background-color: rgba(31, 8, 37, 0.808)
     }
     //code[class*="language-"] {
     //    border: 1px solid #f200ff;
@@ -566,6 +568,7 @@ img, img:hover {
     pre[class*="language-"] code {
         border: none;
         padding: 2px 0;
+        background-color: transparent;
     }
     div.code-toolbar > .toolbar a, div.code-toolbar > .toolbar button, div.code-toolbar > .toolbar span {
         margin-right: 2px;
