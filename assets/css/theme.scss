@@ -43,16 +43,16 @@ body {
 
 // Links (href)
 a {
+    text-decoration: none;
     color: darken($primary, 17%);
 }
 a:hover {
-    color: rgb(178, 55, 209);
+    color: fuchsia;
+    border-bottom: 1px solid;
 }
 a:focus {
-    color: rgb(178, 55, 209);
-}
-a:visited {
-    color: darken($primary, 37%);
+    color: fuchsia;
+    border-bottom: 1px solid;
 }
 
 // Images of site ----------
@@ -129,8 +129,6 @@ blockquote:before {
 .hamburger-bar:after, 
 #menu, 
 body, 
-a, 
-a:hover, 
 body.active-side, 
 .site-content, 
 .show-search, .show-search:hover, 
@@ -288,6 +286,7 @@ img, img:hover {
     a:hover {
         color: rgb(255, 255, 255);
         text-decoration: none;
+        border-bottom: 0px;
     }
     a#menu-home:hover {
         color: rgb(255, 0, 234);
@@ -311,6 +310,14 @@ img, img:hover {
     grid-template-columns: 1fr 1fr 1fr;
     grid-template-rows: 1fr;
     grid-gap: 30px;
+}
+.blog-grid-container a:hover {
+    filter: brightness(120%);
+    -webkit-transition: all .3s ease-in-out;
+    -moz-transition: all .3s ease-in-out;
+    -ms-transition: all .3s ease-in-out;
+    -o-transition: all .3s ease-in-out;
+    transition: all .3s ease-in-out;
 }
 .blog-grid-item {
     color: rgb(0, 0, 0);
@@ -627,10 +634,14 @@ img, img:hover {
     }
     margin-top:120px;
     .badge {
+        border-bottom: 0px;
         font-size: 15px;
         padding:5px 7px;
         display:inline-block;
         margin: 0 3px;
+    }
+    .badge:hover {
+        color: fuchsia;
     }
 }
 
