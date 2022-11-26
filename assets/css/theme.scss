@@ -485,6 +485,12 @@ img, img:hover {
 }
 
 // blog 
+a.navbar-brand {
+    border-bottom: 0px;
+}
+a.navbar-brand:hover {
+    filter: brightness(140%);
+}
 .article-post, .entry-header, .comments, .rating, .authorbox {
     max-width: 2000px;
     padding-left: 40px;
