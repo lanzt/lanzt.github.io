@@ -60,7 +60,7 @@ Two of us.
 Vamos a empezar conociendo qué puertos (servicios) tiene expuestos la máquina a la que queremos atacar, para ello usaré `nmap`:
 
 ```bash
-❱ nmap -p- --open -v 10.10.11.164 -oG initScan
+nmap -p- --open -v 10.10.11.164 -oG initScan
 ```
 
 | Parámetro | Descripción |
@@ -94,7 +94,7 @@ Para seguir profundizando en nuestro reconocimiento podemos usar nuevamente `nma
 **)~**
 
 ```bash
-❱ nmap -p 22,80 -sC -sV 10.10.11.164 -oN portScan
+nmap -p 22,80 -sC -sV 10.10.11.164 -oN portScan
 ```
 
 | Parámetro | Descripción |
@@ -156,7 +156,7 @@ configuration.py  __init__.py  __pycache__  static  templates  utils.py  views.p
 Inspeccionando vemos algunas funcionalidades:
 
 ```bash
-❱ cat views.py
+cat views.py
 ```
 
 ```py
@@ -269,7 +269,7 @@ Sigamos a ver que más podemos encontrar y testear...
 En el código fuente también tenemos este objeto:
 
 ```bash
-❱ cat utils.py
+cat utils.py
 ```
 
 ```py
@@ -528,7 +528,7 @@ drwxrwxr-x 1     144 may 25 23:13 .git
 Si ingresamos podemos jugar con el histórico de commits (que serian los cambios por los que ha pasado el proyecto) y otras cositas llamativas, pero como forma de enumeración nos enfocaremos en eso:
 
 ```bash
-❱ cd .git/
+cd .git/
 ```
 
 Usando el comando [git log](https://desarrolloweb.com/articulos/git-log.html) vemos los commits subidos de la [rama (branch)](https://www.atlassian.com/es/git/tutorials/using-branches) actual:
@@ -538,7 +538,7 @@ Usando el comando [git log](https://desarrolloweb.com/articulos/git-log.html) ve
 Y si queremos ver los cambios con detalle de un commit en específico usamos [git show \<hash del commit\>](https://initialcommit.com/blog/git-show):
 
 ```bash
-❱ git show 2c67a52253c6fe1f206ad82ba747e43208e8cfd9
+git show 2c67a52253c6fe1f206ad82ba747e43208e8cfd9
 ```
 
 Peeeero no encontramos nada relevante :/ Siguiendo vemos otra rama llamada `dev` (nosotros estamos en `public`):
@@ -556,7 +556,7 @@ Pues visualicemos los commits de esa nueva rama:
 Y si vamos recorriendo uno a uno encontramos esta cosita extraña en el commit "added gitignore":
 
 ```bash
-❱ git show be4da71987bbbc8fae7c961fb2de01ebd0be1997
+git show be4da71987bbbc8fae7c961fb2de01ebd0be1997
 ```
 
 <img src="https://raw.githubusercontent.com/lanzt/blog/main/assets/images/HTB/opensource/471bash_git_show_dev_credsPROXY.png" style="width: 100%;"/>
@@ -566,7 +566,7 @@ Tenemos dos cosas que me ponen a dudar: (1) Lo que parecen ser unas credenciales
 Intentando jugar con esas credenciales con **ssh** y `dev01` como usuario no logramos nada y buscando ese puerto (o alguno distinto) internamente en el **Docker** tampoco hay nada... Pensando que quizás `nmap` no nos reportó algún puerto, volvemos a escanear, pero ahora sin argumentos, todo limpio (al no tener nada, por default hará peticiones contra los 1000 puertos más conocidos):
 
 ```bash
-❱ nmap -vvv 10.10.11.164 -oG allScan
+nmap -vvv 10.10.11.164 -oG allScan
 ```
 
 Yyyyyy encontramos un nuevo puerto:
@@ -578,9 +578,9 @@ Yyyyyy encontramos un nuevo puerto:
 Con razón antes no había salido, está filtrado (puede ser algún firewall o bloqueo que evita verlo como abierto) y no es el mismo que estaba en el objeto `settings.json`, pero nos puede servir para ver que trata tanto interna como externamente (**nmap** no nos reporta nada distinto)...
 
 ```bash
-❱ nc 10.10.11.164 3000
-❱ curl http://10.10.11.164:3000
-❱ wget http://10.10.11.164:3000
+nc 10.10.11.164 3000
+curl http://10.10.11.164:3000
+wget http://10.10.11.164:3000
 ```
 
 Pero no logramos respuesta alguna, pero en el Docker:
@@ -610,8 +610,8 @@ Así de sencillo, es la opción que tenemos de reasignar la información de un p
 Descomprimimos y renombramos para comodidad:
 
 ```bash
-❱ gzip -d chisel_1.7.7_linux_amd64.gz 
-❱ mv chisel_1.7.7_linux_amd64 chisel
+gzip -d chisel_1.7.7_linux_amd64.gz 
+mv chisel_1.7.7_linux_amd64 chisel
 ```
 
 Y procedemos a subirlo a la máquina víctima con ayuda de `netcat`, levantamos servidor que una vez alguien se conecte enviara el contenido del objeto `chisel`:
@@ -646,7 +646,7 @@ ca5184d43691ee8d8619377e600fa117  chisel
 Perfecto, para el reenvío de puertos necesitamos levantar primero el servidor (puerto) de nuestra máquina:
 
 ```bash
-❱ ./chisel server -p 1111 --reverse
+./chisel server -p 1111 --reverse
 ```
 
 Con esto levantamos el puerto **1111** para que actúe como listener:
@@ -700,7 +700,7 @@ El par de llaves **SSH** :O :o :O Si la llave privada (`id_rsa`) tiene contenido
 Pues lo tiene, copiamos su contenido, creamos un archivo con ese contenido en nuestra máquina, le damos los permisos necesarios (`chmod 700 <archivo>`) y ejecutamos:
 
 ```bash
-❱ ssh dev01@10.10.11.164 -i dev01.id_rsa
+ssh dev01@10.10.11.164 -i dev01.id_rsa
 ```
 
 Obtenemos finalmente la terminaaaaaal:
@@ -712,7 +712,7 @@ Obtenemos finalmente la terminaaaaaal:
 Enumerando distintos procesos internos encontramos estas tareas programadas usando la herramienta [pspy](https://github.com/DominicBreuker/pspy) (que hace eso, lista en tiempo real los procesos que se estén ejecutando y qué usuario los ejecuta):
 
 ```bash
-dev01@opensource:/tmp/test$ ./pspy
+./pspy
 ```
 
 Prestamos atención a cada proceso y encontramos esto:
@@ -722,7 +722,7 @@ Prestamos atención a cada proceso y encontramos esto:
 Notamos que el usuario con **UID** (User ID) `0` ("[El superusuario debe tener siempre 0](https://es.wikipedia.org/wiki/Identificador_de_usuario)") (o sea, `root`) está ejecutando varias líneas, pero cada línea viene del objeto llamado `/usr/local/bin/git-sync`:
 
 ```bash
-dev01@opensource:/tmp/test$ cat /usr/local/bin/git-sync 
+cat /usr/local/bin/git-sync 
 ```
 
 ```bash
@@ -807,7 +807,7 @@ drwxrwxr-x 8 dev01 dev01 4096 Jun 10 16:53 ..
 Hay varios objetos `.sample`, veamos `pre-commit.sample`, ya que está relacionado con **commit** (ya se entenderá por qué ese y no **commit-msg.sample**):
 
 ```bash
-dev01@opensource:~/.git/hooks$ cat pre-commit.sample
+cat pre-commit.sample
 ```
 
 ```bash
@@ -844,7 +844,7 @@ Jm, esto hace que exista la posibilidad de que cada vez que `root` ejecute `/usr
 Modificamos nombre del archivo `.sample`:
 
 ```bash
-dev01@opensource:~/.git/hooks$ mv pre-commit.sample pre-commit
+mv pre-commit.sample pre-commit
 ```
 
 Y si nos fijamos en el resultado de `pspy` notamoooooooooos:
