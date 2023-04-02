@@ -4,7 +4,7 @@ title       : "HackTheBox - CrimeStoppers"
 author      : lanz
 image       : https://raw.githubusercontent.com/lanzt/blog/main/assets/images/HTB/crimestoppers/120banner.png
 category    : [ htb ]
-tags        : [ LFI, wrapper, reversing, rootkit, crypto, thunderbird ]
+tags        : [ LFI, LFItoRCE, reversing, rootkit, crypto, thunderbird ]
 ---
 Máquina Linux nivel difícil. Explotación web con filtros (**wrappers**) consiguiendo **LFI** y **RCE**, contraseñas de **Thunderbird**, correos llenos de odio, persistencias locas (un **rootkit**) y jugueteo entre **reversing** y **criptografía**.
 
