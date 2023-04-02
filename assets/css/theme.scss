@@ -311,14 +311,21 @@ img, img:hover {
     grid-template-rows: 1fr;
     grid-gap: 30px;
 }
-.blog-grid-container a:hover {
-    filter: brightness(120%);
-    -webkit-transition: all .3s ease-in-out;
-    -moz-transition: all .3s ease-in-out;
-    -ms-transition: all .3s ease-in-out;
-    -o-transition: all .3s ease-in-out;
+/* blog grid image link (hover and before) */
+.blog-grid-container a {
+    filter: brightness(100%);
     transition: all .3s ease-in-out;
+  }
+  
+.blog-grid-container a:hover {
+    filter: brightness(130%);
 }
+  
+.blog-grid-container a:hover,
+.blog-grid-container a:focus {
+    outline: none; /* delete border when we clic */
+}
+// -----------------------------------------------------------
 .blog-grid-item {
     color: rgb(0, 0, 0);
     padding: 0;
