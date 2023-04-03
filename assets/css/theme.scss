@@ -291,11 +291,17 @@ img, img:hover {
     a#menu-home:hover {
         color: rgb(255, 0, 234);
     }
+    a#menu-article:hover {
+        color: rgb(123, 93, 255);
+    }
     a#menu-hackthebox:hover {
         color: rgb(0, 255, 8);
     }
     a#menu-tryhackme:hover {
         color: rgb(0, 8, 227);
+    }
+    a#menu-tags:hover {
+        color: rgb(128, 57, 0);
     }
     a#menu-aboutme:hover {
         color: rgb(255, 0, 238);
