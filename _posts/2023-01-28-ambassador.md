@@ -4,7 +4,7 @@ title       : "HackTheBox - Ambassador"
 author      : lanz
 image       : https://raw.githubusercontent.com/lanzt/blog/main/assets/images/HTB/ambassador/499banner.png
 category    : [ htb ]
-tags        : [ Path-Traversal, Consul, Grafana ]
+tags        : [ path-traversal, Consul, Grafana ]
 ---
 Máquina Linux nivel medio. **Path Traversal** con `Grafana` y sus plugins, credenciales volando y unas verificaciones (**checks**) con el servicio `Consul` algo peligrosas.
 
