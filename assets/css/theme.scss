@@ -48,11 +48,11 @@ a {
 }
 a:hover {
     color: fuchsia;
-    border-bottom: 1px solid;
+    //border-bottom: 1px solid;
 }
 a:focus {
     color: fuchsia;
-    border-bottom: 1px solid;
+    //border-bottom: 1px solid;
 }
 
 // Images of site ----------
@@ -336,7 +336,7 @@ img, img:hover {
 }
 // -----------------------------------------------------------
 .blog-grid-item {
-    color: rgb(0, 0, 0);
+    color: rgb(255, 255, 255);
     padding: 0;
     display: flex;
     align-items: center;
@@ -352,7 +352,8 @@ img, img:hover {
         background: rgb(139,56,255);
         background: radial-gradient(circle, rgba(139,56,255,1) 0%, rgba(40,0,144,0.7510601652770483) 100%);
         &:hover {           
-           .card-title a { 
+           .card-title a {
+                text-shadow: 0 0 10px #000000, 0 0 20px #000000;
                 background-size: 100% 100%;
             }
         }
@@ -362,10 +363,11 @@ img, img:hover {
         font-size:22px;
         line-height:1.4;
         a { 
-            background-image: linear-gradient(180deg, transparent 89%, $primary 0);
+            color: white !important;
+            //background-image: linear-gradient(180deg, transparent 89%, $primary 0);
             background-repeat: no-repeat;
             background-size: 0 100%;
-            transition: background-size .6s ease;
+            //transition: background-size .6s ease;
             position: relative;
             &:hover {
                 text-decoration:none;
@@ -387,7 +389,7 @@ img, img:hover {
         border-bottom-right-radius: 10px;
         background: radial-gradient(circle, rgba(50,0,120,1) 0%, rgba(18,0,63,1) 100%);
         a {
-            color: inherit;
+            color: #00d9db;
             font-weight: 700;
         }
     }
