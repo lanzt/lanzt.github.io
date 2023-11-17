@@ -595,16 +595,12 @@ a.navbar-brand:hover {
         background-color: transparent;
     }
     code {
-        font-family: 'Work Sans';
-        font-size: 16px;
-        padding: 0px 4px 2px 5px;
-        border: 1px solid #240a38;
-        border-radius: 7px;
-        background-color: rgba(31, 8, 37, 0.808)
+        font-family: 'DM Sans';
+        font-size: 20px;
+        background: #c99bff;
+        padding: 0.1rem 0.3rem 0.2rem;
+        border-radius: 0.2rem;
     }
-    //code[class*="language-"] {
-    //    border: 1px solid #f200ff;
-    //}
     pre[class*="language-"] {
         font-size: 15px;
         margin-bottom: 30px;
