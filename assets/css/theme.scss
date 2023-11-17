@@ -15,11 +15,11 @@ $enable-rounded: false;
 @import 'bootstrap/bootstrap';
 @import 'stars';
 @import url('https://fonts.googleapis.com/css?family=Oswald');
-@import url('https://fonts.googleapis.com/css?family=Work Sans');
-@import url('https://fonts.googleapis.com/css?family=Capriola');
+@import url('https://fonts.googleapis.com/css?family=DM Sans'); // Body article
+@import url('https://fonts.googleapis.com/css?family=Capriola'); // Article title
 // general
 body, input, button, select, optgroup, textarea {   
-    font-family: 'Work Sans';
+    font-family: 'DM Sans';
 }
 body {
     line-height: 1.7;
@@ -569,7 +569,7 @@ a.navbar-brand:hover {
     }
 }
 .article-post {   
-    font-size: 16px;
+    font-size: 20px;
     h1 {
         font-size: 50px;
         color: #f278ff;
