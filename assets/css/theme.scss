@@ -535,6 +535,9 @@ a.navbar-brand:hover {
     box-shadow: 0 7px 50px 0 rgba(84,110,122,.15);
 }
 .entry-header {
+    h1 {
+        text-align: center;
+    }
     .author-thumb {
         width:50px;
         border-radius:50%;
@@ -542,6 +545,12 @@ a.navbar-brand:hover {
         border:2px solid darken($primary,20%);
         padding:2px;
     }
+    .align-items-center {
+        text-align: center;
+    }
+}
+.entry-header .d-flex {
+    display: block !important;
 }
 .authorbox {
     margin-top:50px;
@@ -559,7 +568,9 @@ a.navbar-brand:hover {
 .article-post {   
     font-size: 16px;
     h1 {
-        font-size: 47px;
+        font-size: 50px;
+        color: #f278ff;
+        text-shadow: 0px 4px 15px rgb(0 0 0 / 80%);
     }
     h2 {
         font-size: 34px;
