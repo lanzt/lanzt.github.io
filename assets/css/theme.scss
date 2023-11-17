@@ -14,7 +14,8 @@ $enable-rounded: false;
 @import "bootstrap/mixins";
 @import 'bootstrap/bootstrap';
 @import 'stars';
-@import url('https://fonts.googleapis.com/css?family=Oswald');
+
+@import url('https://fonts.googleapis.com/css?family=Kalam'); // Blockquote
 @import url('https://fonts.googleapis.com/css?family=DM Sans'); // Body article
 @import url('https://fonts.googleapis.com/css?family=Capriola'); // Article title
 // general
@@ -91,8 +92,9 @@ h1,h2,h3,h4,h5,h6 {
 // block-quote -----------------
 
 blockquote {
-    font-family: 'Oswald';
+    font-family: 'Kalam';
 	font-size: 22px;
+    color: #9e95ad;
 	max-width: 100%;;
 	line-height: 1.2;
 	position: relative;
@@ -585,7 +587,7 @@ a.navbar-brand:hover {
         margin-bottom:30px;
     }
     blockquote code {
-        font-family: 'Oswald';
+        font-family: var(--url_font_blockquote);
         font-size: 21px;
         color: rgb(255, 217, 0);
         padding: 0px 3px 0px 3px;
