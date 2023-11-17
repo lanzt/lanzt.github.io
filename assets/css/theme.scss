@@ -16,7 +16,7 @@ $enable-rounded: false;
 @import 'stars';
 @import url('https://fonts.googleapis.com/css?family=Oswald');
 @import url('https://fonts.googleapis.com/css?family=Work Sans');
-
+@import url('https://fonts.googleapis.com/css?family=Capriola');
 // general
 body, input, button, select, optgroup, textarea {   
     font-family: 'Work Sans';
@@ -537,6 +537,9 @@ a.navbar-brand:hover {
 .entry-header {
     h1 {
         text-align: center;
+        font-weight: 100;
+        font-family: 'Capriola';
+        text-shadow: 0px 0px 10px rgba(0, 0, 0, 0.8);
     }
     .author-thumb {
         width:50px;
@@ -570,10 +573,12 @@ a.navbar-brand:hover {
     h1 {
         font-size: 50px;
         color: #f278ff;
-        text-shadow: 0px 4px 15px rgba(0, 0, 0, 0.8)
+        text-shadow: 0px 4px 15px rgba(0, 0, 0, 0.8);
     }
     h2 {
-        font-size: 34px;
+        font-size: 40px;
+        color: white;
+        text-shadow: 0px 4px 15px rgba(0, 0, 0, 0.8);
     }
     p {
         margin-top:30px;
