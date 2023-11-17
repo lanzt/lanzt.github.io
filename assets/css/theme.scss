@@ -15,9 +15,11 @@ $enable-rounded: false;
 @import 'bootstrap/bootstrap';
 @import 'stars';
 
+// Fonts
 @import url('https://fonts.googleapis.com/css?family=Kalam'); // Blockquote
 @import url('https://fonts.googleapis.com/css?family=DM Sans'); // Body article
 @import url('https://fonts.googleapis.com/css?family=Capriola'); // Article title
+
 // general
 body, input, button, select, optgroup, textarea {   
     font-family: 'DM Sans';
@@ -45,15 +47,15 @@ body {
 // Links (href)
 a {
     text-decoration: none;
-    color: darken($primary, 17%);
+    color: #26cfd0;
 }
 a:hover {
-    color: fuchsia;
-    //border-bottom: 1px solid;
+    color: #00f0ff;
+    font-weight: 700;
 }
 a:focus {
-    color: fuchsia;
-    //border-bottom: 1px solid;
+    color: #00f0ff;
+    font-weight: 700;
 }
 
 // Images of site ----------
