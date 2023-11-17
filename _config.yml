@@ -1,7 +1,7 @@
 # Site
 name              : "Lanz blog"
 title             : "Lanz blog"
-description       : "Paso a paso, es el momento."
+description       : '"Esa es la ventaja cuando uno lee, que sí sabe cómo son las cosas..."'
 logo              : 'assets/images/lnz.png'
 favicon           : 'assets/images/lnz.png'
 
@@ -25,7 +25,7 @@ authors:
     gravatar      : e56154546cf4be74e393c62d1ae9f9d4
     email         : lanz@lanz.com
     twitter       : https://twitter.com/lanz_qtE
-    description   : "I'm a shadow, just look between me."
+    description   : 'Expone por acá algunos de sus relatos, sus canciones más escuchadas, sus poemas más dedicados. Todo llevado al mundo de la ciberseguridad, porque "hay que divertirse..."'
 
 # Plugins
 plugins:
@@ -64,7 +64,7 @@ adsense-data-ad-slot: "1363087678"
 lazyimages: "disabled"
 
 # Post Author Box ("enabled" or "disabled")
-authorbox: "disabled"
+authorbox: "enabled"
 
 # Sass
 sass:
