@@ -13,19 +13,12 @@ post_class: post-template
     <!-- Author & Date  Box -->
     {% assign author = site.authors[page.author] %}
     {% if page.author %}
-    <div class="d-flex align-items-center mt-4">
-        <div>
-            {% if author.avatar %}
-            <img class="author-thumb" src="{{site.baseurl}}/{{ author.avatar }}" alt="{{ author.display_name }}">
-            {% else %}
-            <img class="author-thumb" src="https://www.gravatar.com/avatar/{{ author.gravatar }}?s=250&d=mm&r=x" alt="{{ author.display_name }}">
-            {% endif %}
-        </div>            
-        <div>
-        Funk <a targ="_blank" class="text-info">{{ author.display_name }}</a> el 
+    <div class="d-flex align-items-center mt-4">          
+        <div><br>
+        Creado
         <span class="post-date"><time class="post-date" datetime="{{ page.date | date:"%Y-%m-%d" }}">{{ page.date | date_to_string }}</time></span>           
         {% if page.last_modified_at %}
-        (Updated: <time datetime="{{ page.last_modified_at | date_to_xmlschema }}" itemprop="dateModified">{{ page.last_modified_at | date: "%b %-d, %Y" }}</time>)
+        (<strong style="color: yellow;">Actualizado</strong>: <time datetime="{{ page.last_modified_at | date_to_xmlschema }}" itemprop="dateModified">{{ page.last_modified_at | date: "%b %-d, %Y" }}</time>)
         {% endif %}
         </div>            
     </div>
