@@ -5,7 +5,7 @@
     <div class="row">
         <div class="wrapavname col-md-3 text-center">
             {% if author.gravatar %}
-            <img class="author-thumb" src="/assets/images/avatar2.jpg" alt="{{ author.display_name }}" style="width: 50%;">
+            <img class="author-thumb" src="/assets/images/avatar2.jpg" alt="{{ author.display_name }}">
             {% else %}
             <img  class="author-thumb" src="{{site.baseurl}}/{{ author.avatar }}" alt="{{ author.display_name }}">
             {% endif %}
