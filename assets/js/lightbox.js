@@ -3,6 +3,7 @@ lightbox.id = "lightbox";
 document.body.appendChild(lightbox);
 
 const images = document.querySelectorAll(".article-post img");
+
 images.forEach((image) => {
   image.addEventListener("click", (e) => {
     lightbox.classList.add("active");
@@ -21,3 +22,14 @@ lightbox.addEventListener("click", (e) => {
   if (e.target !== e.currentTarget) return;
   lightbox.classList.remove("active");
 });
+
+// Agregamos la lógica para cerrar la imagen al hacer scroll
+document.addEventListener("scroll", () => {
+  if (lightbox.classList.contains("active")) {
+    closeLightbox();
+  }
+});
+
+function closeLightbox() {
+  lightbox.classList.remove("active");
+}
