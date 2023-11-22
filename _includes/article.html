@@ -4,7 +4,7 @@
     <!-- Toc if any -->
     {% if page.toc %}
     {% if page.beforetoc %}
-        <p><em>{{page.beforetoc}}</em></p>
+    <p><em>{{page.beforetoc}}</em></p>
     {% endif %}
     <div class="toc mt-4 mb-4 lead">
         <h3 class="font-weight-bold">Summary</h3>
@@ -13,4 +13,5 @@
     {% endif %}
     <!-- End Toc -->
     {{content}}
+    <script src="/assets/js/tabs.js"></script>
 </div>
