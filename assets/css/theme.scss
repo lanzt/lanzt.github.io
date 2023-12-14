@@ -121,7 +121,7 @@ blockquote:before {
 	content: '>';
     transform: scale(.5);
     left: -1.5rem;
-    top: -0.6rem;
+    top: -0.2rem;
 }
 
 // ------------------------------------
@@ -582,6 +582,11 @@ a.navbar-brand:hover {
     }
     h2 {
         font-size: 40px;
+        color: white;
+        text-shadow: 0px 4px 15px rgba(0, 0, 0, 0.8);
+    }
+    h3 {
+        font-size: 30px;
         color: white;
         text-shadow: 0px 4px 15px rgba(0, 0, 0, 0.8);
     }
