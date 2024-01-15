@@ -4,7 +4,7 @@ title       : "HackTheBox - Enterprise"
 author      : lanz
 image       : https://raw.githubusercontent.com/lanzt/blog/main/assets/images/HTB/enterprise/112banner.png
 category    : [ htb ]
-tags        : [ buffer-overflow, SQLi, wordpress-plugin, joomla, docker, pivoting ]
+tags        : [ buffer-overflow, ret2libc, SQLi, wordpress-plugin, joomla, docker, pivoting ]
 ---
 Máquina Linux nivel medio, vamos a movernos entre sentencias **SQL** para generar pinchazos e.e Pivotearemos entre contenedores y compartiremos experiencias con el host... Finalmente explotaremos un **buffer overflow** mediante un **ret2libc** para obtener una **/bin/sh** en el host como **root**.
 
