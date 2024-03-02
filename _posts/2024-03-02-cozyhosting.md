@@ -151,7 +151,7 @@ Si validamos el contenido de esa ruta, nos responde:
 
 <img src="https://raw.githubusercontent.com/lanzt/blog/main/assets/images/HTB/cozyhosting/htb559_bash_curl_page80actuatorEnv.png" style="width: 100%;"/>
 
-Averiguando más y más, entendemos que `Actuator` hace referencia a un conjunto de caracteristicas que podemos agregar a neustro sitio web hosteado con **Spring Boot**:
+Averiguando más y más, entendemos que `Actuator` hace referencia a un conjunto de caracteristicas que podemos agregar a nuestro sitio web hosteado con **Spring Boot**:
 
 * [Spring Boot Actuator](https://www.baeldung.com/spring-boot-actuators).
 * [Qué son los actuators de Spring Boot](https://luiscualquiera.medium.com/qu%C3%A9-son-los-actuators-de-spring-boot-55cecb48f746).
