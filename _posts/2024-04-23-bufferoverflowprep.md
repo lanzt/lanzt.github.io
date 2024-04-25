@@ -4,7 +4,7 @@ title       : "TryHackMe - Buffer Overflow Prep"
 author      : lanz
 image       : https://raw.githubusercontent.com/lanzt/blog/main/assets/images/THM/bufferoverflowprep/thmBufferoverflowprep_banner.png
 category    : [ thm ]
-tags        : [ buffer-overflow ]
+tags        : [ buffer-overflow, ecppt ]
 ---
 Entorno Windows. Jugaremos con un desbordamiento de buffer basado en la pila, lo aprovecharemos para enviar más datos de los necesarios y molestar al sistema, se cansará tanto de nosotros que nos ejecutará código malicioso remotamente.
 
