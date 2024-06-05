@@ -30,8 +30,6 @@ Finalmente, aprovecharemos un permiso que tiene **logan** para ejecutar como cua
 
 ### Clasificación de la máquina según la gentesita
 
-<img src="https://raw.githubusercontent.com/lanzt/blog/main/assets/images/HTB/devvortex/htb577_rating.png" style="width: 30%;"/>
-
 <img src="https://raw.githubusercontent.com/lanzt/blog/main/assets/images/HTB/devvortex/htb577_statistics.png" style="width: 80%;"/>
 
 Mucho CVE, pasos con exploits públicos, por lo tanto, cositas reales.
