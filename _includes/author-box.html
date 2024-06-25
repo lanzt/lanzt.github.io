@@ -4,7 +4,7 @@
 <div class="authorbox mb-5 mt-5 pt-4 pb-4">   
     <div class="row">
         <div class="wrapavname col-md-3 text-center">
-            {% if author.gravatar %}
+            {% if author.avatar %}
             <img class="author-thumb" src="/assets/images/avatar2.jpg" alt="{{ author.display_name }}">
             {% else %}
             <img  class="author-thumb" src="{{site.baseurl}}/{{ author.avatar }}" alt="{{ author.display_name }}">
