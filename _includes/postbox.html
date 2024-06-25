@@ -31,10 +31,10 @@
             <div class="wrapfooter">
                 {% if post.author %}
                     <span class="meta-footer-thumb">
-                        {% if post.os_image %}
-                            <img class="author-thumb" src="{{site.baseurl}}/{{ post.os_image }}" alt="{{ post.os_name }}">
+                        {% if post.footer_image %}
+                            <img class="author-thumb" src="{{site.baseurl}}/{{ post.footer_image }}" alt="{{ post.footer_text }}">
                             <span class="author-meta">
-                                <span class="post-name" style="color: white;">{{ post.os_name }}</span> 
+                                <span class="post-name" style="color: white;">{{ post.footer_text }}</span> 
                                 <span class="post-date">{{ post.date | date_to_string }}</span>
                             </span>     
                         {% elsif author.avatar %}
