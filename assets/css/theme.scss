@@ -324,16 +324,26 @@ img, img:hover {
     grid-template-rows: 1fr;
     grid-gap: 30px;
 }
-/* blog grid image link (hover and before) */
-.blog-grid-container a {
-    filter: brightness(100%);
-    transition: all .3s ease-in-out;
-  }
-  
-.blog-grid-container a:hover {
-    filter: brightness(130%);
+
+.blog-grid-item {
+    overflow: hidden;
+    position: relative;
 }
-  
+
+.maxthumb {
+    overflow: hidden;
+}
+
+.maxthumb img {
+    width: 100%;
+    transition: transform 0.2s ease-in-out, filter 0.2s ease-in-out;
+}
+
+.blog-grid-item:hover .maxthumb img {
+    transform: scale(1.1);
+    filter: grayscale(100%);
+}
+
 .blog-grid-container a:hover,
 .blog-grid-container a:focus {
     outline: none; /* delete border when we clic */
