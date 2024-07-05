@@ -392,25 +392,25 @@ Exploramos las librerías (módulos) asociados al programa, abajo a la izquierda
 
 <img src="https://raw.githubusercontent.com/lanzt/blog/main/assets/images/THM/bufferoverflowprep/thmBufferoverflowprep_module_debugger_monaModulesOutput.png" style="width: 100%;"/>
 
-```txt
+```powershell
 0BA  -----------------------------------------------------------------------------------------------------------------------------------------
 0BA   Base       | Top        | Size       | Rebase | SafeSEH | ASLR  | NXCompat | OS Dll | Version, Modulename & Path
 0BA  -----------------------------------------------------------------------------------------------------------------------------------------
 0BA   0x75900000 | 0x7590a000 | 0x0000a000 | True   | True    | True  |  True    | True   | 6.1.7600.16385 [LPK.dll] (C:\Windows\system32\LPK.dll)
 0BA   0x752d0000 | 0x752d6000 | 0x00006000 | True   | True    | True  |  True    | True   | 6.1.7600.16385 [NSI.dll] (C:\Windows\system32\NSI.dll)
-0BA   0x62500000 | 0x62508000 | 0x00008000 | False  | False   | False |  False   | False  | -1.0- [essfunc.dll] (C:\Users\admin\Desktop\vulnerable-apps\oscp\essfunc.dll)
+0BA   0x62500000 | 0x62508000 | 0x00008000 | False  | False   | False |  False   | False  | -1.0- [essfunc.dll] (C:\\Users\admin\Desktop\vulnerable-apps\oscp\essfunc.dll)
 0BA   0x76a30000 | 0x76afc000 | 0x000cc000 | True   | True    | True  |  True    | True   | 6.1.7600.16385 [MSCTF.dll] (C:\Windows\system32\MSCTF.dll)
 0BA   0x750e0000 | 0x7512a000 | 0x0004a000 | True   | True    | True  |  True    | True   | 6.1.7600.16385 [KERNELBASE.dll] (C:\Windows\system32\KERNELBASE.dll)
 0BA   0x74a10000 | 0x74a4c000 | 0x0003c000 | True   | True    | True  |  True    | True   | 6.1.7600.16385 [mswsock.dll] (C:\Windows\system32\mswsock.dll)
-0BA   0x752e0000 | 0x7537d000 | 0x0009d000 | True   | True    | True  |  True    | True   | 1.0626.7601.17514 [USP10.dll] (C:\Windows\system32\USP10.dll)
+0BA   0x752e0000 | 0x7537d000 | 0x0009d000 | True   | True    | True  |  True    | True   | 1.0626.7601.17514 [USP10.dll] (C:\Windows\system32\\USP10.dll)
 0BA   0x77060000 | 0x770ae000 | 0x0004e000 | True   | True    | True  |  True    | True   | 6.1.7601.17514 [GDI32.dll] (C:\Windows\system32\GDI32.dll)
 0BA   0x75720000 | 0x757f4000 | 0x000d4000 | True   | True    | True  |  True    | True   | 6.1.7600.16385 [kernel32.dll] (C:\Windows\system32\kernel32.dll)
 0BA   0x75d30000 | 0x75ddc000 | 0x000ac000 | True   | True    | True  |  True    | True   | 7.0.7600.16385 [msvcrt.dll] (C:\Windows\system32\msvcrt.dll)
 0BA   0x76e80000 | 0x76fbc000 | 0x0013c000 | True   | True    | True  |  True    | True   | 6.1.7600.16385 [ntdll.dll] (C:\Windows\SYSTEM32\ntdll.dll)
 0BA   0x76bd0000 | 0x76c71000 | 0x000a1000 | True   | True    | True  |  True    | True   | 6.1.7600.16385 [RPCRT4.dll] (C:\Windows\system32\RPCRT4.dll)
 0BA   0x755d0000 | 0x75605000 | 0x00035000 | True   | True    | True  |  True    | True   | 6.1.7600.16385 [WS2_32.dll] (C:\Windows\system32\WS2_32.dll)
-0BA   0x00400000 | 0x00414000 | 0x00014000 | False  | False   | False |  False   | False  | -1.0- [oscp.exe] (C:\Users\admin\Desktop\vulnerable-apps\oscp\oscp.exe)
-0BA   0x76b00000 | 0x76bc9000 | 0x000c9000 | True   | True    | True  |  True    | True   | 6.1.7601.17514 [user32.dll] (C:\Windows\system32\user32.dll)
+0BA   0x00400000 | 0x00414000 | 0x00014000 | False  | False   | False |  False   | False  | -1.0- [oscp.exe] (C:\\Users\admin\Desktop\vulnerable-apps\oscp\oscp.exe)
+0BA   0x76b00000 | 0x76bc9000 | 0x000c9000 | True   | True    | True  |  True    | True   | 6.1.7601.17514 [user32.dll] (C:\Windows\system32\\user32.dll)
 0BA   0x75610000 | 0x7562f000 | 0x0001f000 | True   | True    | True  |  True    | True   | 6.1.7601.17514 [IMM32.DLL] (C:\Windows\system32\IMM32.DLL)
 ```
 
@@ -426,9 +426,11 @@ Ahí obtenemos toda librería asociada al programa, pero las únicas que nos van
 
 Teniendo en cuenta lo anterior, hay una sola librería que nos puede ayudar o al menos que es la que más restricciones tiene desactivadas, `essfunc.dll`.
 
+{% raw %}
 ```bash
-0BA   0x62500000 | 0x62508000 | 0x00008000 | False  | False   | False |  False   | False  | -1.0- [essfunc.dll] (C:\Users\admin\Desktop\vulnerable-apps\oscp\essfunc.dll)
+0BA   0x62500000 | 0x62508000 | 0x00008000 | False  | False   | False |  False   | False  | -1.0- [essfunc.dll] (C:\\Users\admin\Desktop\vulnerable-apps\oscp\essfunc.dll)
 ```
+{% endraw %}
 
 Nos quedaremos con su nombre.
 
@@ -456,19 +458,21 @@ Usando `mona` lo buscamos así:
 
 Obtenemos 9 resultados, 9 momentos en los que la libreria hace uso de la instrucción `JMP ESP`, nos guardamos las direcciones:
 
+{% raw %}
 ```txt
 0BADF00D           [+] Results :
-625011AF             0x625011af : '\xFF\xE4' |  {PAGE_EXECUTE_READ} [essfunc.dll] ASLR: False, Rebase: False, SafeSEH: False, OS: False, v-1.0- (C:\Users\admin\Desktop\vulnerable-apps\oscp\essfunc.dll)
-625011BB             0x625011bb : '\xFF\xE4' |  {PAGE_EXECUTE_READ} [essfunc.dll] ASLR: False, Rebase: False, SafeSEH: False, OS: False, v-1.0- (C:\Users\admin\Desktop\vulnerable-apps\oscp\essfunc.dll)
-625011C7             0x625011c7 : '\xFF\xE4' |  {PAGE_EXECUTE_READ} [essfunc.dll] ASLR: False, Rebase: False, SafeSEH: False, OS: False, v-1.0- (C:\Users\admin\Desktop\vulnerable-apps\oscp\essfunc.dll)
-625011D3             0x625011d3 : '\xFF\xE4' |  {PAGE_EXECUTE_READ} [essfunc.dll] ASLR: False, Rebase: False, SafeSEH: False, OS: False, v-1.0- (C:\Users\admin\Desktop\vulnerable-apps\oscp\essfunc.dll)
-625011DF             0x625011df : '\xFF\xE4' |  {PAGE_EXECUTE_READ} [essfunc.dll] ASLR: False, Rebase: False, SafeSEH: False, OS: False, v-1.0- (C:\Users\admin\Desktop\vulnerable-apps\oscp\essfunc.dll)
-625011EB             0x625011eb : '\xFF\xE4' |  {PAGE_EXECUTE_READ} [essfunc.dll] ASLR: False, Rebase: False, SafeSEH: False, OS: False, v-1.0- (C:\Users\admin\Desktop\vulnerable-apps\oscp\essfunc.dll)
-625011F7             0x625011f7 : '\xFF\xE4' |  {PAGE_EXECUTE_READ} [essfunc.dll] ASLR: False, Rebase: False, SafeSEH: False, OS: False, v-1.0- (C:\Users\admin\Desktop\vulnerable-apps\oscp\essfunc.dll)
-62501203             0x62501203 : '\xFF\xE4' | ascii {PAGE_EXECUTE_READ} [essfunc.dll] ASLR: False, Rebase: False, SafeSEH: False, OS: False, v-1.0- (C:\Users\admin\Desktop\vulnerable-apps\oscp\essfunc.dll)
-62501205             0x62501205 : '\xFF\xE4' | ascii {PAGE_EXECUTE_READ} [essfunc.dll] ASLR: False, Rebase: False, SafeSEH: False, OS: False, v-1.0- (C:\Users\admin\Desktop\vulnerable-apps\oscp\essfunc.dll)
+625011AF             0x625011af : '\xFF\xE4' |  {PAGE_EXECUTE_READ} [essfunc.dll] ASLR: False, Rebase: False, SafeSEH: False, OS: False, v-1.0- (C:\\Users\admin\Desktop\vulnerable-apps\oscp\essfunc.dll)
+625011BB             0x625011bb : '\xFF\xE4' |  {PAGE_EXECUTE_READ} [essfunc.dll] ASLR: False, Rebase: False, SafeSEH: False, OS: False, v-1.0- (C:\\Users\admin\Desktop\vulnerable-apps\oscp\essfunc.dll)
+625011C7             0x625011c7 : '\xFF\xE4' |  {PAGE_EXECUTE_READ} [essfunc.dll] ASLR: False, Rebase: False, SafeSEH: False, OS: False, v-1.0- (C:\\Users\admin\Desktop\vulnerable-apps\oscp\essfunc.dll)
+625011D3             0x625011d3 : '\xFF\xE4' |  {PAGE_EXECUTE_READ} [essfunc.dll] ASLR: False, Rebase: False, SafeSEH: False, OS: False, v-1.0- (C:\\Users\admin\Desktop\vulnerable-apps\oscp\essfunc.dll)
+625011DF             0x625011df : '\xFF\xE4' |  {PAGE_EXECUTE_READ} [essfunc.dll] ASLR: False, Rebase: False, SafeSEH: False, OS: False, v-1.0- (C:\\Users\admin\Desktop\vulnerable-apps\oscp\essfunc.dll)
+625011EB             0x625011eb : '\xFF\xE4' |  {PAGE_EXECUTE_READ} [essfunc.dll] ASLR: False, Rebase: False, SafeSEH: False, OS: False, v-1.0- (C:\\Users\admin\Desktop\vulnerable-apps\oscp\essfunc.dll)
+625011F7             0x625011f7 : '\xFF\xE4' |  {PAGE_EXECUTE_READ} [essfunc.dll] ASLR: False, Rebase: False, SafeSEH: False, OS: False, v-1.0- (C:\\Users\admin\Desktop\vulnerable-apps\oscp\essfunc.dll)
+62501203             0x62501203 : '\xFF\xE4' | ascii {PAGE_EXECUTE_READ} [essfunc.dll] ASLR: False, Rebase: False, SafeSEH: False, OS: False, v-1.0- (C:\\Users\admin\Desktop\vulnerable-apps\oscp\essfunc.dll)
+62501205             0x62501205 : '\xFF\xE4' | ascii {PAGE_EXECUTE_READ} [essfunc.dll] ASLR: False, Rebase: False, SafeSEH: False, OS: False, v-1.0- (C:\\Users\admin\Desktop\vulnerable-apps\oscp\essfunc.dll)
 0BADF00D               Found a total of 9 pointers
 ```
+{% endraw %}
 
 Inicialmente, escogeremos una de las 2 últimas, debido a que están relacionadas con **ASCII**, quizás nos eviten problemas con malinterpretación de caracteres o algo por el estilo (pero puedes probar con cualquiera).
 
