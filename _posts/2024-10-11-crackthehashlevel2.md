@@ -233,11 +233,11 @@ john --wordlist=/opt/seclists/Usernames/Names/names.txt --rules=Borders --format
 
 Pero nada, no logramos encontrarle match al hash, así que hay que ponerse creativo e intentar variantes, como agregar 2 dígitos al inicio y un carácter especial al final, o al inicio, o 10 dígitos al final, etc. También es una posibilidad que el nombre esté en mayúsculas, que solo tenga una letra en mayúscula, varias cositas, pero cero líos, estamos aprendiendo (:
 
-Después de probar y probar, llegue a la conclusión de que me cansé de estar moviendo `$[0-9]` y la de los caracteres de un lado pal otro manualmente, así que me cree este script:
+Después de probar y probar, llegue a la conclusión de que me cansé de estar moviendo `$[0-9]` y la de los caracteres de un lado pal otro manualmente, así que me cree este script (que convertí en repositorio):
 
-> [rule-border-mutation-generator.py](https://github.com/lanzt/blog/blob/main/assets/scripts/THM/crackthehashlevel2/advice-1/rule-border-mutation-generator.py)
+> [https://github.com/lanzt/mutorder](https://github.com/lanzt/mutorder)
 
-El cual necesita simplemente un archivo llamado `rules-syntax.txt` el cual va a contener la sintaxis de como quieres que quede la contraseña:
+El cual necesita simplemente un archivo llamado `rules-syntax.txt` y va a contener la sintaxis de como quieres que quede la contraseña:
 
 ```bash
 ➧ cat rules-syntax.txt:
@@ -414,7 +414,7 @@ john --wordlist=/usr/share/wordlists/misc/top_1000_usa_femalenames_english.txt -
 
 Pero no logramos romperla...
 
-Dándole vueltas a como queremos que quede la contraseña ([rule-border-mutation-generator.py](https://github.com/lanzt/blog/blob/main/assets/scripts/THM/crackthehashlevel2/rule-border-mutation-generator.py)), llegamos a esta:
+Dándole vueltas a como queremos que quede la contraseña ([https://github.com/lanzt/mutorder](https://github.com/lanzt/mutorder)), llegamos a esta:
 
 ```bash
 ➧ cat /usr/share/john/john-local.conf
