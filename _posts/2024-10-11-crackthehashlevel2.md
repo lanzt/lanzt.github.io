@@ -650,8 +650,9 @@ hashcat test.txt -r /usr/share/hashcat/rules/Incisive-leetspeak.rule --stdout
 carli70$
 carlit0$
 [...]
+```
 
-Bien. Por **john** sabemos que la primera letra de la ciudad es en mayúscula, así que usamos la misma regla que en el reto anterior y ejecutamos finalmente:
+Por **john** sabemos que la primera letra de la ciudad es en mayúscula, así que usamos la misma regla que en el reto anterior y ejecutamos:
 
 ```bash
 hashcat -a 0 -m 0 hash_ad3 mexico_towns.txt -r /usr/share/hashcat/rules/Incisive-leetspeak.rule -j 'c' -o hash_ad3.plain
