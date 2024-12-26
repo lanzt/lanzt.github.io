@@ -853,7 +853,7 @@ Creamos mensaje maligno :P
 
 Y ahora intentamos subir un archivoooooooooooooooooooooooooooooo:
 
-![338burp_unobtainium_upload_pollution_withCanUP_done](https://raw.githubusercontent.com/lanzt/blog/main/assets/images/HTB/unobtainium/338burp_unobtainium_upload_pollution_withCanUP_fail.png)
+![338burp_unobtainium_upload_pollution_withCanUP_done](https://raw.githubusercontent.com/lanzt/blog/main/assets/images/HTB/unobtainium/338burp_unobtainium_upload_pollution_withCanUP_done.png)
 
 PERFECTOOOOOOOOOO, podemos subir archivoooooooooooslsssssssslakdjflasdflasjdfl (:
 
