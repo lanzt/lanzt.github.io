@@ -80,7 +80,9 @@ Si quieres clonar el repositorio y acceder a todos:
 git clone https://github.com/lanzt/Lanzboratorios
 ```
 
-Si, por el contrario, quieres jugar con uno en específico, entras a su carpeta y descargas el comprimido (`.zip`), lo descomprimes y listones.
+Si, por el contrario, quieres jugar con este en específico, entras en su carpeta y descargas el comprimido (`.zip`), lo descomprimes y listones.
+
+* [https://github.com/lanzt/Lanzboratorios/tree/main/SQL%20Injection%20-%20Error%20Based](https://github.com/lanzt/Lanzboratorios/tree/main/SQL%20Injection%20-%20Error%20Based)
 
 ```bash
 ❯ ls -lah  
