@@ -2,6 +2,7 @@
 layout      : post
 title       : "Inyección SQL basada en errores"
 author      : lanz
+footer_text : Lanzboratorio
 image       : https://raw.githubusercontent.com/lanzt/blog/main/assets/images/articles/sqli-error-based/lanzbSQLIERRORBASED-banner.png
 category    : [ article ]
 tags        : [ SQLi, sqli-error-based, lanzboratorio ]
@@ -73,12 +74,15 @@ Acá estarán alojados los laboratorios:
 
 ---
 
+Si quieres clonar el repositorio y acceder a todos:
+
 ```bash
 git clone https://github.com/lanzt/Lanzboratorios
 ```
 
+Si, por el contrario, quieres jugar con uno en específico, entras a su carpeta y descargas el comprimido (`.zip`), lo descomprimes y listones.
+
 ```bash
-❯ cd "SQL Injection - Error Based"
 ❯ ls -lah  
 total 20K
 drwxr-xr-x 4 lanz lanz 4.0K Apr 11 16:20 .
