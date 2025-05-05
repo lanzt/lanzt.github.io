@@ -6,7 +6,7 @@ footer_image: assets/images/footer-card/linux-icon.png
 footer_text : Linux
 image       : https://raw.githubusercontent.com/lanzt/blog/main/assets/images/HTB/editorial/htb608-banner.png
 category    : [ htb ]
-tags        : [ ssrf, .git, GitPython, /etc/passwd, sudo ]
+tags        : [ ssrf, .git-folder-leak, GitPython, /etc/passwd, sudo ]
 ---
 Entorno (creado por mí, ¡qué emoción! 😊🥳) Linux nivel fácil. **SSRF** y fuzzeos para encontrar servicios internos, cositas en desarrollo y credenciales voladoras, lecturas históricas mediante **.git** e inyección de comandos explotando la librería **GitPython**.
 
