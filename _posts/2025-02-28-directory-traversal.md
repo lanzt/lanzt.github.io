@@ -6,7 +6,7 @@ footer_image: assets/images/footer-card/folder.png
 footer_text : Lectura de archivos del sistema
 image       : https://raw.githubusercontent.com/lanzt/blog/main/assets/images/articles/directory-traversal/lanzbDIRECTORYTRAVERSAL-banner.png
 category    : [ article ]
-tags        : [ lanzboratorio, directory-traversal, lfi ]
+tags        : [ lanzboratorio, path-traversal, lfi ]
 ---
 Exploraremos las diferencias entre un **salto de directorios** y una **inclusión local de archivos**, practicaremos como conseguir navegar entre carpetas y leeremos mucho.
 
