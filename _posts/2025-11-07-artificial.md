@@ -433,8 +433,6 @@ ssh gael@10.10.11.74
 
 # Escalada de privilegios [#](#escalada-de-privilegios) {#escalada-de-privilegios}
 
----
-
 ## REEEEst crack [📌](#escalada-backrest-cracking) {#escalada-backrest-cracking}
 
 El usuario `gael` tiene asignado el grupo `sysadm`, buscando objetos asociados a ese grupo encontramos:
@@ -600,8 +598,6 @@ ssh root@10.10.11.74 -i root/.ssh/id_rsa
 Y hemos completao la máquina, locura de final, pero entretenido.
 
 # Post-Explotación [#](#post-explotacion) {#post-explotacion}
-
----
 
 ## Flags [📌](#post-explotacion-flags) {#post-explotacion-flags}
 
