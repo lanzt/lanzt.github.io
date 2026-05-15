@@ -585,6 +585,11 @@ a.navbar-brand:hover {
 }
 .article-post {   
     font-size: 20px;
+
+    h1, h2, h3, h4, h5, h6 {
+        margin-top: 40px;
+    }
+
     h1 {
         font-size: 50px;
         color: #f278ff;
