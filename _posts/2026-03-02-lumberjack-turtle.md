@@ -129,8 +129,6 @@ El sitio nos dio suficientes pistas para direccionarnos a probar ese ataque, as�
 
 # Explotación [#](#explotacion) {#explotacion}
 
----
-
 ## Log4Shell [📌](#explotacion-log4shell) {#explotacion-log4shell}
 
 > "El 9 de diciembre de 2021 se revela al público la vulnerabilidad de ejecución remota de código (RCE) denominada Log4Shell, que afecta a la librería de software de código abierto Log4j, desarrollada en lenguaje Java y mantenida por Apache Software Foundation" ~ [incibe.es](https://www.incibe.es/incibe-cert/blog/log4shell-analisis-vulnerabilidades-log4j)
@@ -250,8 +248,6 @@ Guardamos, compilamos, levantamos puerto `4452` (`nc -lvp 4452`) y volvemos a en
 Yyyyy estamos dentro!!!!!!
 
 # Escalada de privilegios [#](#escalada-de-privilegios) {#escalada-de-privilegios}
-
----
 
 ## Docker -> Host [📌](#escalada-docker-host) {#escalada-docker-host}
 
@@ -383,8 +379,6 @@ ssh root@10.48.144.121
 ¡epaleeee, somos `root` en el hoooooOOOooost!
 
 # Post-Explotación [#](#post-explotacion) {#post-explotacion}
-
----
 
 ## Flags [📌](#post-explotacion-flags) {#post-explotacion-flags}
 
